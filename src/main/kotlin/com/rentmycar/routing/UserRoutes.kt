@@ -2,6 +2,8 @@ package com.rentmycar.routing
 
 import com.rentmycar.authentication.jwtConfig
 import com.rentmycar.controllers.UserController
+import io.ktor.server.auth.*
+import io.ktor.server.response.*
 import io.ktor.server.routing.*
 
 fun Route.userRoutes() {
@@ -9,4 +11,10 @@ fun Route.userRoutes() {
 
     post("/register") { userController.register(call) }
     post("/login") { userController.login(call) }
+
+    authenticate {
+        get("/test") {
+            call.respondText("This is a protected route")
+        }
+    }
 }
