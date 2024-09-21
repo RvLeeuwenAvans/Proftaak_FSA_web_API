@@ -1,10 +1,5 @@
-Here’s a sample README for your Kotlin project:
-
----
 
 # RentMyCar Application
-
-Welcome to the RentMyCar application, a sustainable car-sharing platform built with Kotlin and Ktor. This README will guide you through the steps required to install and run this application on your local machine.
 
 ## Prerequisites
 
