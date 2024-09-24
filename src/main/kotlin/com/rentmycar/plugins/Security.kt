@@ -1,13 +1,14 @@
 package com.rentmycar.plugins
 
 import com.rentmycar.authentication.jwtConfig
+import com.rentmycar.repositories.UserRepository
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.auth.jwt.*
 
 fun Application.configureSecurity() {
     val applicationConfig = environment.config
-
+    val userRepository = UserRepository()
 
     authentication {
         jwt {
@@ -15,9 +16,9 @@ fun Application.configureSecurity() {
             realm = config.realm
             verifier(config.verifier())
             validate { credential ->
-                if (credential.payload.getClaim("email").asString()
-                        .isNotEmpty()
-                ) JWTPrincipal(credential.payload) else null
+                if (userRepository.isUserExistByEmail(credential.payload.getClaim("email").asString()))
+                    JWTPrincipal(credential.payload)
+                else null
             }
         }
     }
