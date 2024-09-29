@@ -25,12 +25,12 @@ class UserController(private val config: JWTConfig) {
             return
         }
 
-        if (userRepository.isUserExistByEmail(registrationRequest.email)) {
+        if (userRepository.doesUserExistByEmail(registrationRequest.email)) {
             call.respond(HttpStatusCode.Conflict, "User with this email already exists")
             return
         }
 
-        if (userRepository.isUserExistByUsername(registrationRequest.username)) {
+        if (userRepository.doesUserExistByUsername(registrationRequest.username)) {
             call.respond(HttpStatusCode.Conflict, "User with this username already exists")
             return
         }

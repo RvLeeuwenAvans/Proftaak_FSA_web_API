@@ -5,6 +5,6 @@ import com.rentmycar.repositories.ReservationRepository
 
 class ReservationController(private val config: JWTConfig) {
 
-    private val ReservationRepository = ReservationRepository()
+    private val reservationRepository = ReservationRepository()
 
 }

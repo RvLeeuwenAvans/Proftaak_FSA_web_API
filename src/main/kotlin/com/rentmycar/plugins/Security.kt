@@ -16,7 +16,7 @@ fun Application.configureSecurity() {
             realm = config.realm
             verifier(config.verifier())
             validate { credential ->
-                if (userRepository.isUserExistByEmail(credential.payload.getClaim("email").asString()))
+                if (userRepository.doesUserExistByEmail(credential.payload.getClaim("email").asString()))
                     JWTPrincipal(credential.payload)
                 else null
             }

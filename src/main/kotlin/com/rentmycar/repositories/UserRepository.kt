@@ -14,6 +14,12 @@ class UserRepository {
         }
     }
 
+    internal fun getUserById(id: Int): User? {
+        return transaction {
+            User.find { Users.id eq id }.singleOrNull()
+        }
+    }
+
     private fun getUserByUsername(username: String): User? {
         return transaction {
             User.find { Users.username eq username }.singleOrNull()
@@ -32,11 +38,16 @@ class UserRepository {
         }
     }
 
-    fun isUserExistByEmail(email: String): Boolean {
+    fun doesUserExistById(id: Int): Boolean {
+        return getUserById(id) != null
+    }
+
+    fun doesUserExistByEmail(email: String): Boolean {
         return getUserByEmail(email) != null
     }
 
-    fun isUserExistByUsername(username: String): Boolean {
+    fun doesUserExistByUsername(username: String): Boolean {
         return getUserByUsername(username) != null
     }
+
 }

@@ -4,10 +4,11 @@ import org.jetbrains.exposed.dao.id.IntIdTable
 import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
+import org.jetbrains.exposed.sql.ReferenceOption
 
 object Reservations : IntIdTable() {
-    val userId = reference("user_id", Users)
-    val timeslotId = reference("timeslot_id", Timeslots)
+    val userId = reference("user_id", Users, ReferenceOption.CASCADE)
+    val timeslotId = reference("timeslot_id", Timeslots, ReferenceOption.CASCADE)
 }
 
 class Reservation(id: EntityID<Int>) : IntEntity(id) {
