@@ -5,12 +5,12 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class RegisterCarRequest(
     val userId: Int,
-    val licenseplate: String
+    val licensePlate: String
 ) {
     fun validate(): List<String> {
         val errors = mutableListOf<String>()
 
-        if (licenseplate.isEmpty()) errors.add("License plate name cannot be empty")
+        if (licensePlate.isEmpty()) errors.add("License plate name cannot be empty")
 
         return errors
     }

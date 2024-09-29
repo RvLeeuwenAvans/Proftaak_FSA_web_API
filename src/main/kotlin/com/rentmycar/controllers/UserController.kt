@@ -37,7 +37,7 @@ class UserController(private val config: JWTConfig) {
 
         userRepository.createUser(registrationRequest)
 
-        call.respondText("User registered successfully")
+        call.respond(HttpStatusCode.OK, "User registered successfully")
     }
 
     suspend fun login(call: ApplicationCall) {
@@ -59,7 +59,7 @@ class UserController(private val config: JWTConfig) {
                 .sign(config.algorithm)
             call.respond(mapOf("token" to token))
         } else {
-            call.respondText("Invalid credentials", status = HttpStatusCode.Unauthorized)
+            call.respond( HttpStatusCode.Unauthorized, "Invalid credentials")
         }
     }
 }

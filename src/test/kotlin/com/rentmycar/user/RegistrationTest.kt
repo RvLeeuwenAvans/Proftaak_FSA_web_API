@@ -21,7 +21,7 @@ class RegistrationTest : BaseTest() {
     )
 
     private suspend fun registerUser(client: HttpClient, registrationRequest: RegistrationRequest): HttpResponse =
-        client.post("/register") {
+        client.post("/user/register") {
             contentType(ContentType.Application.Json)
             setBody(Json.encodeToString(RegistrationRequest.serializer(), registrationRequest))
         }

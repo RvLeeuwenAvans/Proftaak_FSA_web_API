@@ -36,7 +36,7 @@ class LoginTest : BaseTest() {
     )
 
     private suspend fun loginUser(client: HttpClient, loginRequest: LoginRequest): HttpResponse =
-        client.post("/login") {
+        client.post("/user/login") {
             contentType(ContentType.Application.Json)
             setBody(Json.encodeToString(LoginRequest.serializer(), loginRequest))
         }
