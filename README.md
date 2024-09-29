@@ -24,8 +24,8 @@ To install PostgreSQL, follow these steps:
 Clone the project repository to your local machine:
 
 ```bash
-git clone https://github.com/JopBogers2/proftaak_1_fsa.git
-cd proftaak_1_fsa
+git clone https://github.com/RvLeeuwenAvans/Proftaak_FSA_web_API.git
+cd Proftaak_FSA_web_API
 ```
 
 ### 3. Configure the Application
