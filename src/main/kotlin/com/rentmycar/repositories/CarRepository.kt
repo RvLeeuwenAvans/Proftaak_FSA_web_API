@@ -19,7 +19,7 @@ class CarRepository {
         }
     }
 
-    private fun getCarBylicensePlate(licensePlate: String): Car? {
+    private fun getCarByLicensePlate(licensePlate: String): Car? {
         return transaction {
             Car.find { Cars.licensePlate eq licensePlate }.singleOrNull()
         }
@@ -34,7 +34,7 @@ class CarRepository {
         }
     }
 
-    fun doeslicensePlateExist(licensePlate: String): Boolean {
-        return getCarBylicensePlate(licensePlate) != null
+    fun doesLicensePlateExist(licensePlate: String): Boolean {
+        return getCarByLicensePlate(licensePlate) != null
     }
 }
