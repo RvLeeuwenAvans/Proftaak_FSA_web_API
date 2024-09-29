@@ -7,9 +7,9 @@ import org.jetbrains.exposed.sql.transactions.transaction
 
 class CarRepository {
 
-    fun getCarsByUser(user: User): List<Car> {
+    fun getCarOwner(car: Car): User {
         return transaction {
-            Car.find { Cars.userId eq user.id }.toList()
+            car.userId.toUser()
         }
     }
 
