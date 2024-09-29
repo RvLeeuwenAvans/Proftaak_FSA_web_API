@@ -9,7 +9,7 @@ class CarRepository {
 
     fun getCarsByUser(user: User): List<Car> {
         return transaction {
-            Car.find { Cars.user eq user.id }.toList()
+            Car.find { Cars.userId eq user.id }.toList()
         }
     }
 
@@ -19,22 +19,22 @@ class CarRepository {
         }
     }
 
-    private fun getCarByLicensePlate(licensePlate: String): Car? {
-        return transaction {
-            Car.find { Cars.licensePlate eq licensePlate }.singleOrNull()
-        }
-    }
-
-    fun registerCar(owner: User, carlicensePlate: String): Car {
+    fun registerCar(owner: User, carLicensePlate: String): Car {
         return transaction {
             Car.new {
-                user = owner
-                licensePlate = carlicensePlate
+                userId = owner
+                licensePlate = carLicensePlate
             }
         }
     }
 
     fun doesLicensePlateExist(licensePlate: String): Boolean {
         return getCarByLicensePlate(licensePlate) != null
+    }
+
+    private fun getCarByLicensePlate(licensePlate: String): Car? {
+        return transaction {
+            Car.find { Cars.licensePlate eq licensePlate }.singleOrNull()
+        }
     }
 }
