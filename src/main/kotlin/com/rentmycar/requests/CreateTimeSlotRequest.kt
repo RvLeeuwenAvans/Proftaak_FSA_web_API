@@ -10,7 +10,6 @@ import kotlinx.serialization.Contextual
 @Serializable
 data class CreateTimeSlotRequest(
     val carId: Int,
-    val userId: Int,
     @Contextual val availableFrom: LocalDateTime,
     @Contextual val availableUntil: LocalDateTime,
 ) {

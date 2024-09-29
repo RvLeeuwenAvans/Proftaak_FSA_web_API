@@ -4,7 +4,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class BookReservationRequest(
-    val userId: Int,
     val licensePlate: String
 ) {
     fun validate(): List<String> {

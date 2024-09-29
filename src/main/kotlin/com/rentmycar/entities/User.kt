@@ -21,6 +21,8 @@ class User(id: EntityID<Int>) : IntEntity(id) {
     var username by Users.username
     var email by Users.email
     var password by Users.password
+
+    fun toUser() = User(id)
 }
 
 

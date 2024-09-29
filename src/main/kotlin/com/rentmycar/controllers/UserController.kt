@@ -56,6 +56,7 @@ class UserController(private val config: JWTConfig) {
                 .withAudience(config.audience)
                 .withIssuer(config.issuer)
                 .withClaim("email", user.email)
+                .withClaim("id", user.id.value)
                 .sign(config.algorithm)
             call.respond(mapOf("token" to token))
         } else {
