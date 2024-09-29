@@ -2,14 +2,14 @@ package com.rentmycar.repositories
 
 import com.rentmycar.entities.Car
 import com.rentmycar.entities.Cars
-import com.rentmycar.requests.RegistrationRequest
+import com.rentmycar.entities.User
 import org.jetbrains.exposed.sql.transactions.transaction
 
 class CarRepository {
 
-    fun getCarsByUserId(userId: Int): List<Car> {
+    fun getCarsByUser(user: User): List<Car> {
         return transaction {
-            Car.find { Cars.userId eq userId }.toList()
+            Car.find { Cars.user eq user.id }.toList()
         }
     }
 
@@ -19,16 +19,22 @@ class CarRepository {
         }
     }
 
-    private fun getCarByTimeslotId(timeslotId: Int): Car? {
+    private fun getCarByLicenseplate(licenseplate: String): Car? {
         return transaction {
-            Car.find { Cars.timeslotId eq timeslotId }.singleOrNull()
+            Car.find { Cars.licenseplate eq licenseplate }.singleOrNull()
         }
     }
 
-    fun createCar(request: RegistrationRequest): Car {
+    fun insertCar(car: Car): Car {
         return transaction {
             Car.new {
+                user = car.user
+                licenseplate = car.licenseplate
             }
         }
+    }
+
+    fun doesLicenseplateExist(licenseplate: String): Boolean {
+        return getCarByLicenseplate(licenseplate) != null
     }
 }
