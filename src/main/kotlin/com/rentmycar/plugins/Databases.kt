@@ -1,5 +1,8 @@
 package com.rentmycar.plugins
 
+import com.rentmycar.entities.Cars
+import com.rentmycar.entities.Reservations
+import com.rentmycar.entities.Timeslots
 import com.rentmycar.entities.Users
 import io.ktor.server.application.*
 import org.jetbrains.exposed.sql.Database
@@ -17,5 +20,8 @@ fun Application.configureDatabases() {
 
     transaction {
         SchemaUtils.create(Users)
+        SchemaUtils.create(Cars)
+        SchemaUtils.create(Timeslots)
+        SchemaUtils.create(Reservations)
     }
 }
