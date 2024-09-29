@@ -19,22 +19,22 @@ class CarRepository {
         }
     }
 
-    private fun getCarByLicenseplate(licenseplate: String): Car? {
+    private fun getCarBylicensePlate(licensePlate: String): Car? {
         return transaction {
-            Car.find { Cars.licenseplate eq licenseplate }.singleOrNull()
+            Car.find { Cars.licensePlate eq licensePlate }.singleOrNull()
         }
     }
 
-    fun insertCar(car: Car): Car {
+    fun registerCar(owner: User, carlicensePlate: String): Car {
         return transaction {
             Car.new {
-                user = car.user
-                licenseplate = car.licenseplate
+                user = owner
+                licensePlate = carlicensePlate
             }
         }
     }
 
-    fun doesLicenseplateExist(licenseplate: String): Boolean {
-        return getCarByLicenseplate(licenseplate) != null
+    fun doeslicensePlateExist(licensePlate: String): Boolean {
+        return getCarBylicensePlate(licensePlate) != null
     }
 }

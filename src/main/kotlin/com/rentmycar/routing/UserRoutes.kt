@@ -9,12 +9,10 @@ import io.ktor.server.routing.*
 fun Route.userRoutes() {
     val userController = UserController(jwtConfig(environment.config))
 
-    post("/register") { userController.register(call) }
-    post("/login") { userController.login(call) }
+    post("/user/register") { userController.register(call) }
+    post("/user/login") { userController.login(call) }
 
     authenticate {
-        get("/test") {
-            call.respondText("This is a protected route")
-        }
+        get("/test") { call.respondText("This is a protected route") }
     }
 }

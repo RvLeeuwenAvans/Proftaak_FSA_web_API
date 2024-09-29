@@ -38,10 +38,6 @@ class UserRepository {
         }
     }
 
-    fun doesUserExistById(id: Int): Boolean {
-        return getUserById(id) != null
-    }
-
     fun doesUserExistByEmail(email: String): Boolean {
         return getUserByEmail(email) != null
     }
