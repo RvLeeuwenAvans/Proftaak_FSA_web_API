@@ -7,12 +7,6 @@ import org.jetbrains.exposed.sql.transactions.transaction
 
 class CarRepository {
 
-    fun getCarOwner(car: Car): User {
-        return transaction {
-            car.userId.toUser()
-        }
-    }
-
     fun getCarById(carId: Int): Car? {
         return transaction {
             Car.find { Cars.id eq carId }.singleOrNull()
@@ -22,7 +16,7 @@ class CarRepository {
     fun registerCar(owner: User, carLicensePlate: String): Car {
         return transaction {
             Car.new {
-                userId = owner
+                this.owner = owner
                 licensePlate = carLicensePlate
             }
         }

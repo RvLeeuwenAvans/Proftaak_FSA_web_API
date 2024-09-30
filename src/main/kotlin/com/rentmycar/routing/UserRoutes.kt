@@ -9,7 +9,7 @@ import io.ktor.server.routing.*
 fun Route.userRoutes() {
     val userController = UserController(jwtConfig(environment.config))
 
-    post("/user/register") { userController.register(call) }
+    post("/user/register") { userController.registerUser(call) }
     post("/user/login") { userController.login(call) }
 
     authenticate {

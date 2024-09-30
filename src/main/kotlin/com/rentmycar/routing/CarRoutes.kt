@@ -8,6 +8,6 @@ fun Route.carRoutes() {
     val carController = CarController()
 
     authenticate {
-        post("/car/register") { carController.register(call) }
+        post("/car/register") { carController.registerCar(call) }
     }
 }
