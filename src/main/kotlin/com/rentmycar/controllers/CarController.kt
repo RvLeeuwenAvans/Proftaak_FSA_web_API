@@ -1,6 +1,5 @@
 package com.rentmycar.controllers
 
-import com.rentmycar.entities.User
 import com.rentmycar.repositories.CarRepository
 import com.rentmycar.repositories.UserRepository
 import com.rentmycar.requests.RegisterCarRequest
@@ -15,37 +14,29 @@ class CarController {
 
     private val carRepository = CarRepository()
 
-    suspend fun register(call: ApplicationCall) {
+    suspend fun registerCar(call: ApplicationCall) {
         val principal = call.principal<JWTPrincipal>()
-
-        // todo: refactor
         val userId = principal?.payload?.getClaim("id")?.asInt()
 
-        if (userId == null) {
-            call.respond(HttpStatusCode.NotFound, "User doesn't exist")
-            return
-        }
-
-        // todo: refactor
-        val user = UserRepository().getUserById(userId)
+        val user = userId?.let { UserRepository().getUserById(it) } ?: return call.respond(
+            HttpStatusCode.NotFound,
+            "User not found"
+        )
 
         val registrationRequest = call.receive<RegisterCarRequest>()
         val validationErrors = registrationRequest.validate()
 
-        if (validationErrors.isNotEmpty()) {
-            call.respond(HttpStatusCode.BadRequest, "Invalid registration data: ${validationErrors.joinToString(", ")}")
-            return
-        }
+        if (validationErrors.isNotEmpty()) return call.respond(
+            HttpStatusCode.BadRequest,
+            "Invalid registration data: ${validationErrors.joinToString(", ")}"
+        )
 
-        if (carRepository.doesLicensePlateExist(registrationRequest.licensePlate)) {
-            call.respond(HttpStatusCode.Conflict, "License plate is already registered")
-            return
-        }
+        if (carRepository.doesLicensePlateExist(registrationRequest.licensePlate)) return call.respond(
+            HttpStatusCode.Conflict,
+            "License plate is already registered"
+        )
 
-        // todo: refactor
-        if (user != null) {
-            carRepository.registerCar(user, registrationRequest.licensePlate)
-            call.respond(HttpStatusCode.OK, "Car registered successfully")
-        }
+        carRepository.registerCar(user, registrationRequest.licensePlate)
+        call.respond(HttpStatusCode.OK, "Car registered successfully")
     }
 }

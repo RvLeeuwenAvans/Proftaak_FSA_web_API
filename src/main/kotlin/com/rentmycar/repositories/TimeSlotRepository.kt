@@ -11,7 +11,7 @@ class TimeSlotRepository {
     fun createTimeSlot(vehicle: Car, carAvailableFrom: LocalDateTime, carAvailableUntil: LocalDateTime): Timeslot {
         return transaction {
             Timeslot.new {
-                carId = vehicle
+                car = vehicle
                 availableFrom = carAvailableFrom
                 availableUntil = carAvailableUntil
             }
@@ -34,7 +34,7 @@ class TimeSlotRepository {
 
     private fun getTimeSlotsByCar(car: Car): List<Timeslot> {
         return transaction {
-            Timeslot.find { Timeslots.carId eq car.id }.toList()
+            Timeslot.find { Timeslots.car eq car.id }.toList()
         }
     }
 }
