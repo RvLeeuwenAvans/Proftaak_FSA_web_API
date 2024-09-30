@@ -73,6 +73,6 @@ class ReservationController {
         )
 
         reservationRepository.removeReservation(reservation)
-        call.respond(HttpStatusCode.OK, "reservation created successfully")
+        call.respond(HttpStatusCode.OK, "reservation removed successfully")
     }
 }

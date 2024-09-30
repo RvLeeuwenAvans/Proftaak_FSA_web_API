@@ -15,7 +15,9 @@ class ReservationRepository {
         }
     }
 
-    fun removeReservation(reservation: Reservation) = Reservations.deleteWhere { Reservations.id eq reservation.id }
+    fun removeReservation(reservation: Reservation) = transaction {
+        Reservations.deleteWhere { Reservations.id eq reservation.id }
+    }
 
     fun getReservationById(reservationId: Int): Reservation? = transaction {
         Reservation.find(Reservations.id eq reservationId).singleOrNull()
@@ -23,7 +25,7 @@ class ReservationRepository {
 
     fun doesReservationExistByTimeSlot(reservationId: Int) = getReservationByTimeslotId(reservationId) != null
 
-    private fun getReservationByTimeslotId(timeslotId: Int): Car? = transaction {
-        Car.find { Reservations.timeslot eq timeslotId }.singleOrNull()
+    private fun getReservationByTimeslotId(timeslotId: Int): Reservation? = transaction {
+        Reservation.find { Reservations.timeslot eq timeslotId }.singleOrNull()
     }
 }
