@@ -3,13 +3,13 @@ package com.rentmycar.requests
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class BookReservationRequest(
-    val licensePlate: String
+data class RemoveReservationRequest(
+    val reservationId: Int
 ) {
     fun validate(): List<String> {
         val errors = mutableListOf<String>()
 
-        if (licensePlate.isEmpty()) errors.add("License plate name cannot be empty")
+        if (reservationId == 0) errors.add("No reservation Id given")
 
         return errors
     }

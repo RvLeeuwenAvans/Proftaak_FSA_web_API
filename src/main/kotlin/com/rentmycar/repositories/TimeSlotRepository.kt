@@ -7,16 +7,14 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import java.time.LocalDateTime
 
 class TimeSlotRepository {
-
-    fun createTimeSlot(vehicle: Car, carAvailableFrom: LocalDateTime, carAvailableUntil: LocalDateTime): Timeslot {
-        return transaction {
+    fun createTimeSlot(vehicle: Car, carAvailableFrom: LocalDateTime, carAvailableUntil: LocalDateTime): Timeslot =
+        transaction {
             Timeslot.new {
                 car = vehicle
                 availableFrom = carAvailableFrom
                 availableUntil = carAvailableUntil
             }
         }
-    }
 
     fun doesTimeSlotHaveConflicts(
         car: Car,
@@ -32,9 +30,11 @@ class TimeSlotRepository {
         }
     }
 
-    private fun getTimeSlotsByCar(car: Car): List<Timeslot> {
-        return transaction {
-            Timeslot.find { Timeslots.car eq car.id }.toList()
-        }
+    fun getTimeSlotsById(timeSlotId: Int): Timeslot? = transaction {
+        Timeslot.find { Timeslots.id eq timeSlotId }.singleOrNull()
+    }
+
+    private fun getTimeSlotsByCar(car: Car): List<Timeslot> = transaction {
+        Timeslot.find { Timeslots.car eq car.id }.toList()
     }
 }
