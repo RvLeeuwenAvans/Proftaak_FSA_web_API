@@ -1,4 +1,4 @@
-package com.rentmycar.requests
+package com.rentmycar.requests.timeslot
 
 import kotlinx.datetime.Clock
 import kotlinx.serialization.Serializable

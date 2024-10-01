@@ -1,6 +1,7 @@
 package com.rentmycar.plugins
 
 import com.rentmycar.authentication.jwtConfig
+import com.rentmycar.entities.User
 import com.rentmycar.repositories.UserRepository
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
@@ -22,4 +23,11 @@ fun Application.configureSecurity() {
             }
         }
     }
+}
+
+fun ApplicationCall.user(): User {
+    val userId = this.principal<JWTPrincipal>()?.getClaim("id", Int::class)
+        ?: throw IllegalArgumentException("User not authenticated")
+
+    return UserRepository().getUserById(userId)
 }

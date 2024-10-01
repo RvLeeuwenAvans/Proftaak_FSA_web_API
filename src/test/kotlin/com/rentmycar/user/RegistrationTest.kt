@@ -1,7 +1,7 @@
 package com.rentmycar.user
 
 import com.rentmycar.BaseTest
-import com.rentmycar.requests.RegistrationRequest
+import com.rentmycar.requests.user.RegistrationRequest
 import io.ktor.client.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*

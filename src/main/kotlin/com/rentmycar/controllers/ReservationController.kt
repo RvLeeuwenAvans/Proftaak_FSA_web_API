@@ -1,10 +1,10 @@
 package com.rentmycar.controllers
 
+import com.rentmycar.plugins.user
 import com.rentmycar.repositories.ReservationRepository
 import com.rentmycar.repositories.TimeSlotRepository
-import com.rentmycar.repositories.UserRepository
-import com.rentmycar.requests.CreateReservationRequest
-import com.rentmycar.requests.RemoveReservationRequest
+import com.rentmycar.requests.reservation.CreateReservationRequest
+import com.rentmycar.requests.reservation.RemoveReservationRequest
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
@@ -17,13 +17,7 @@ class ReservationController {
     private val reservationRepository = ReservationRepository()
 
     suspend fun createReservation(call: ApplicationCall) {
-        val principal = call.principal<JWTPrincipal>()
-        val userId = principal?.payload?.getClaim("id")?.asInt()
-
-        val user = userId?.let { UserRepository().getUserById(it) } ?: return call.respond(
-            HttpStatusCode.NotFound,
-            "User not found"
-        )
+        val user  = call.user()
 
         val createReservationRequest = call.receive<CreateReservationRequest>()
         val validationErrors = createReservationRequest.validate()

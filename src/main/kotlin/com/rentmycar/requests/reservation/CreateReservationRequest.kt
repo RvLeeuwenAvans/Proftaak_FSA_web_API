@@ -1,4 +1,4 @@
-package com.rentmycar.requests
+package com.rentmycar.requests.reservation
 
 import kotlinx.serialization.Serializable
 
