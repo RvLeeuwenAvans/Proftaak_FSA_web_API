@@ -4,8 +4,8 @@ import com.auth0.jwt.JWT
 import com.rentmycar.authentication.JWTConfig
 import com.rentmycar.authentication.PasswordHasher
 import com.rentmycar.repositories.UserRepository
-import com.rentmycar.requests.LoginRequest
-import com.rentmycar.requests.RegistrationRequest
+import com.rentmycar.requests.user.LoginRequest
+import com.rentmycar.requests.user.RegistrationRequest
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*

@@ -3,7 +3,7 @@ package com.rentmycar.user
 import com.rentmycar.BaseTest
 import com.rentmycar.authentication.PasswordHasher
 import com.rentmycar.entities.User
-import com.rentmycar.requests.LoginRequest
+import com.rentmycar.requests.user.LoginRequest
 import io.ktor.client.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*

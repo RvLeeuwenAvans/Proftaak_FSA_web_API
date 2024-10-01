@@ -1,12 +1,10 @@
 package com.rentmycar.controllers
 
+import com.rentmycar.plugins.user
 import com.rentmycar.repositories.CarRepository
-import com.rentmycar.repositories.UserRepository
-import com.rentmycar.requests.RegisterCarRequest
+import com.rentmycar.requests.car.RegisterCarRequest
 import io.ktor.http.*
 import io.ktor.server.application.*
-import io.ktor.server.auth.*
-import io.ktor.server.auth.jwt.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 
@@ -15,13 +13,7 @@ class CarController {
     private val carRepository = CarRepository()
 
     suspend fun registerCar(call: ApplicationCall) {
-        val principal = call.principal<JWTPrincipal>()
-        val userId = principal?.payload?.getClaim("id")?.asInt()
-
-        val user = userId?.let { UserRepository().getUserById(it) } ?: return call.respond(
-            HttpStatusCode.NotFound,
-            "User not found"
-        )
+        val user  = call.user()
 
         val registrationRequest = call.receive<RegisterCarRequest>()
         val validationErrors = registrationRequest.validate()
