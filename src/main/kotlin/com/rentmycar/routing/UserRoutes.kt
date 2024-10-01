@@ -10,9 +10,9 @@ fun Route.userRoutes() {
     val userController = UserController(jwtConfig(environment.config))
 
     post("/user/register") { userController.registerUser(call) }
-    post("/user/login") { userController.login(call) }
+    post("/user/login") { userController.loginUser(call) }
 
     authenticate {
-        get("/test") { call.respondText("This is a protected route") }
+        post("/user/update") { userController.updateUser(call) }
     }
 }

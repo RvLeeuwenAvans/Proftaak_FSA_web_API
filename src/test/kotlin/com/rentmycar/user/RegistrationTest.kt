@@ -1,7 +1,7 @@
 package com.rentmycar.user
 
 import com.rentmycar.BaseTest
-import com.rentmycar.requests.user.RegistrationRequest
+import com.rentmycar.requests.user.UserRegistrationRequest
 import io.ktor.client.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
@@ -12,7 +12,7 @@ import kotlin.test.Test
 
 class RegistrationTest : BaseTest() {
 
-    private val validRegistrationRequest = RegistrationRequest(
+    private val validRegistrationRequest = UserRegistrationRequest(
         firstName = "John",
         lastName = "Doe",
         username = "johndoe",
@@ -20,10 +20,10 @@ class RegistrationTest : BaseTest() {
         password = "password123"
     )
 
-    private suspend fun registerUser(client: HttpClient, registrationRequest: RegistrationRequest): HttpResponse =
+    private suspend fun registerUser(client: HttpClient, registrationRequest: UserRegistrationRequest): HttpResponse =
         client.post("/user/register") {
             contentType(ContentType.Application.Json)
-            setBody(Json.encodeToString(RegistrationRequest.serializer(), registrationRequest))
+            setBody(Json.encodeToString(UserRegistrationRequest.serializer(), registrationRequest))
         }
 
     @Test
@@ -57,7 +57,7 @@ class RegistrationTest : BaseTest() {
 
     @Test
     fun testRegistrationFailsForInvalidData() = withTestApplication {
-        val invalidRegistrationRequest = RegistrationRequest(
+        val invalidRegistrationRequest = UserRegistrationRequest(
             firstName = "",
             lastName = "",
             username = "",

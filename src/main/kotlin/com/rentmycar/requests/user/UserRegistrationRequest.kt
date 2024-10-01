@@ -3,7 +3,7 @@ package com.rentmycar.requests.user
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class RegistrationRequest(
+data class UserRegistrationRequest(
     val firstName: String,
     val lastName: String,
     val username: String,

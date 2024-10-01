@@ -3,7 +3,7 @@ package com.rentmycar.user
 import com.rentmycar.BaseTest
 import com.rentmycar.authentication.PasswordHasher
 import com.rentmycar.entities.User
-import com.rentmycar.requests.user.LoginRequest
+import com.rentmycar.requests.user.UserLoginRequest
 import io.ktor.client.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
@@ -30,15 +30,15 @@ class LoginTest : BaseTest() {
         }
     }
 
-    private val validLoginRequest = LoginRequest(
+    private val validLoginRequest = UserLoginRequest(
         email = "johndoe@example.com",
         password = "password123"
     )
 
-    private suspend fun loginUser(client: HttpClient, loginRequest: LoginRequest): HttpResponse =
+    private suspend fun loginUser(client: HttpClient, loginRequest: UserLoginRequest): HttpResponse =
         client.post("/user/login") {
             contentType(ContentType.Application.Json)
-            setBody(Json.encodeToString(LoginRequest.serializer(), loginRequest))
+            setBody(Json.encodeToString(UserLoginRequest.serializer(), loginRequest))
         }
 
     @Test
@@ -65,7 +65,7 @@ class LoginTest : BaseTest() {
 
     @Test
     fun testLoginFailsForInvalidData() = withTestApplication {
-        val invalidLoginRequest = LoginRequest(
+        val invalidLoginRequest = UserLoginRequest(
             email = "invalid-email",
             password = ""
         )
