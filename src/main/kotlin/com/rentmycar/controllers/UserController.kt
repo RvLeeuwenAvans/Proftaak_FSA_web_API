@@ -3,9 +3,11 @@ package com.rentmycar.controllers
 import com.auth0.jwt.JWT
 import com.rentmycar.authentication.JWTConfig
 import com.rentmycar.authentication.PasswordHasher
+import com.rentmycar.plugins.user
 import com.rentmycar.repositories.UserRepository
-import com.rentmycar.requests.user.LoginRequest
-import com.rentmycar.requests.user.RegistrationRequest
+import com.rentmycar.requests.user.UserLoginRequest
+import com.rentmycar.requests.user.UserRegistrationRequest
+import com.rentmycar.requests.user.UserUpdateRequest
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
@@ -17,7 +19,7 @@ class UserController(private val config: JWTConfig) {
 
     suspend fun registerUser(call: ApplicationCall) {
 
-        val registrationRequest = call.receive<RegistrationRequest>()
+        val registrationRequest = call.receive<UserRegistrationRequest>()
         val validationErrors = registrationRequest.validate()
 
         if (validationErrors.isNotEmpty()) return call.respond(
@@ -39,8 +41,8 @@ class UserController(private val config: JWTConfig) {
         call.respond(HttpStatusCode.OK, "User registered successfully")
     }
 
-    suspend fun login(call: ApplicationCall) {
-        val loginRequest = call.receive<LoginRequest>()
+    suspend fun loginUser(call: ApplicationCall) {
+        val loginRequest = call.receive<UserLoginRequest>()
         val validationErrors = loginRequest.validate()
 
         if (validationErrors.isNotEmpty()) return call.respond(
@@ -64,5 +66,14 @@ class UserController(private val config: JWTConfig) {
         } else {
             call.respond(HttpStatusCode.Unauthorized, "Invalid credentials")
         }
+    }
+
+    suspend fun updateUser(call: ApplicationCall) {
+        val updateRequest = call.receive<UserUpdateRequest>()
+        val user = call.user()
+
+        userRepository.updateUser(user, updateRequest)
+
+        call.respond(HttpStatusCode.OK, "User updated successfully")
     }
 }
