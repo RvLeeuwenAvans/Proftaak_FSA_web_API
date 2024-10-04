@@ -28,7 +28,9 @@ class TimeSlotController {
         val car = CarRepository().getCarById(createTimeSlotRequest.carId)
             ?: return call.respond(HttpStatusCode.NotFound, "Car does not exist")
 
-        if (user.id.value != car.ownerId.value) return call.respond(HttpStatusCode.BadRequest, "user is not the car's owner")
+        if (user.id.value != car.ownerId) {
+            return call.respond(HttpStatusCode.BadRequest, "user is not the car's owner")
+        }
 
         val availableFrom = createTimeSlotRequest.availableFrom.toJavaLocalDateTime()
         val availableUntil = createTimeSlotRequest.availableUntil.toJavaLocalDateTime()
