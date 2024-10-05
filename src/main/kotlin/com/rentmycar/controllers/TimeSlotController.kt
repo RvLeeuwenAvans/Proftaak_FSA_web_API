@@ -28,7 +28,7 @@ class TimeSlotController {
         val car = CarRepository().getCarById(createTimeSlotRequest.carId)
             ?: return call.respond(HttpStatusCode.NotFound, "Car does not exist")
 
-        if (user.id.value != car.ownerId) {
+        if (user.id.value != car.ownerId.value) {
             return call.respond(HttpStatusCode.BadRequest, "user is not the car's owner")
         }
 
