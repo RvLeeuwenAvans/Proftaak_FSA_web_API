@@ -1,6 +1,8 @@
 package com.rentmycar.plugins
 
 import com.rentmycar.entities.*
+import com.rentmycar.entities.seeders.seedBrandsAndModels
+import com.rentmycar.entities.seeders.seedFuels
 import io.ktor.server.application.*
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
@@ -27,5 +29,9 @@ fun Application.configureDatabases() {
         SchemaUtils.create(Locations)     // Locations table
         SchemaUtils.create(Images)        // Images table
         SchemaUtils.create(Reservations)  // Reservations table
+
+        // Seed tables with default values for testing purposes.
+        seedFuels()
+        seedBrandsAndModels()
     }
 }

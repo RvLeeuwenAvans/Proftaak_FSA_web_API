@@ -5,6 +5,8 @@ import com.rentmycar.entities.Cars
 import com.rentmycar.entities.Model
 import com.rentmycar.entities.Fuel
 import com.rentmycar.entities.User
+import org.jetbrains.exposed.sql.Op
+import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.transactions.transaction
 
 class CarRepository {
@@ -22,7 +24,8 @@ class CarRepository {
         fuel: Fuel,
         year: Int,
         color: String,
-        transmission: String
+        transmission: String,
+        price: Double? = 0.0
     ): Car = transaction {
         Car.new {
             this.owner = owner
@@ -32,7 +35,56 @@ class CarRepository {
             this.year = year
             this.color = color
             this.transmission = transmission
+            this.price = price ?: 0.0
         }
+    }
+
+    fun updateCar(
+        id: Int,
+        year: Int? = null,
+        color: String? = null,
+        transmission: String? = null,
+        price: Double?= null
+    ): Car? = transaction {
+        val car = getCarById(id)
+
+        car?.apply {
+            year?.let { this.year = it }
+            color?.let { this.color = it }
+            transmission?.let { this.transmission = it }
+            price?.let { this.price = it }
+        }
+
+        return@transaction car
+    }
+
+    fun deleteCar(id: Int) = transaction {
+        val car = getCarById(id)
+        car?.delete()
+    }
+
+    // TODO: Part of the epic link: https://proftaakfsa1.atlassian.net/browse/KAN-28
+    fun getFilteredCars(
+        ownerId: Int? = null,
+    ): List<Car> = transaction {
+        Car.find {
+            var conditions: Op<Boolean> = Op.TRUE
+
+            ownerId?.let {
+                conditions = conditions and (Cars.user eq it)
+            }
+
+            // TODO: timeslot
+            // TODO: location
+            // TODO: hasImages?
+            // TODO: year (range)
+            // TODO: price (range)
+            // TODO: category / fuel types
+            // TODO: transmission
+            // TODO: model
+
+            conditions
+        }.toList()
     }
 
     // Check if a license plate already exists
