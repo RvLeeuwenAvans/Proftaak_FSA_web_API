@@ -24,6 +24,8 @@ data class CreateTimeSlotRequest(
         if (availableUntil < Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()))
             errors.add("The end of a timeslot cannot be in the past")
 
+        if (availableFrom > availableUntil) errors.add("The end of a timeslot cannot be before the start")
+
         return errors
     }
 }

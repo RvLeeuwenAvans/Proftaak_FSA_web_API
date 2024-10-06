@@ -9,6 +9,6 @@ fun Route.reservationRoutes() {
 
     authenticate {
         post("/reservation/create") { reservationController.createReservation(call) }
-        post("/reservation/remove") { reservationController.removeReservation(call) }
+        delete("/reservation/remove") { reservationController.removeReservation(call) }
     }
 }

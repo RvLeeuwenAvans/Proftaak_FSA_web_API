@@ -17,7 +17,7 @@ class ReservationController {
     private val reservationRepository = ReservationRepository()
 
     suspend fun createReservation(call: ApplicationCall) {
-        val user  = call.user()
+        val user = call.user()
 
         val createReservationRequest = call.receive<CreateReservationRequest>()
         val validationErrors = createReservationRequest.validate()
@@ -33,11 +33,10 @@ class ReservationController {
                 "Timeslot is already reserved"
             )
 
-        val timeslot =
-            TimeSlotRepository().getTimeSlotsById(createReservationRequest.timeslotId) ?: return call.respond(
-                HttpStatusCode.NotFound,
-                "Timeslot does not exist"
-            )
+        val timeslot = TimeSlotRepository().getTimeSlot(createReservationRequest.timeslotId) ?: return call.respond(
+            HttpStatusCode.NotFound,
+            "Timeslot does not exist"
+        )
 
         reservationRepository.createReservation(user, timeslot)
         call.respond(HttpStatusCode.OK, "reservation created successfully")

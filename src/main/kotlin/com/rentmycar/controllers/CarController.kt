@@ -28,9 +28,8 @@ class CarController {
      * Check whether the user is the owner of the car.
      */
     private fun isCarOwner(carId: Int, userId: Int) {
-        val foundCar = carRepository.getCarById(carId)
+        val foundCar = carRepository.getCarById(carId) ?: throw Error("Car not found.")
 
-        if (foundCar == null) throw Error("Car not found.")
         if (foundCar.ownerId.value != userId)
             throw Error("Only owner of the car can update the car.")
     }
