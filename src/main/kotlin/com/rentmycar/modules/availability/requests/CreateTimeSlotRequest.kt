@@ -16,7 +16,7 @@ data class CreateTimeSlotRequest(
     fun validate(): List<String> {
         val errors = mutableListOf<String>()
 
-        if (carId == 0) errors.add("No car Id given")
+        if (carId <= 0) errors.add("No car Id given")
 
         if (availableFrom < Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()))
             errors.add("The start of a timeslot cannot be in the past")

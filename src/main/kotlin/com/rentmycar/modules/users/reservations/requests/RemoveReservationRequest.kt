@@ -9,7 +9,7 @@ data class RemoveReservationRequest(
     fun validate(): List<String> {
         val errors = mutableListOf<String>()
 
-        if (reservationId == 0) errors.add("No reservation Id given")
+        if (reservationId <= 0) errors.add("No reservation Id given")
 
         return errors
     }
