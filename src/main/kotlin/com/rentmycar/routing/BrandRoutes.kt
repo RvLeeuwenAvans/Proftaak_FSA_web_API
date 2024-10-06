@@ -1,11 +1,11 @@
 package com.rentmycar.routing
 
-import com.rentmycar.controllers.BrandController
+import com.rentmycar.modules.cars.brands.BrandService
 import io.ktor.server.auth.*
 import io.ktor.server.routing.*
 
 fun Route.brandRoutes() {
-    val brandController = BrandController()
+    val brandController = BrandService()
     val prefix = "/brand"
 
     authenticate {

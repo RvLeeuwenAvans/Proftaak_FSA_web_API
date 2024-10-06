@@ -1,8 +1,16 @@
 package com.rentmycar.plugins
 
-import com.rentmycar.entities.*
-import com.rentmycar.entities.seeders.seedBrandsAndModels
-import com.rentmycar.entities.seeders.seedFuels
+import com.rentmycar.modules.availability.Timeslots
+import com.rentmycar.modules.cars.Cars
+import com.rentmycar.modules.cars.brands.Brands
+import com.rentmycar.modules.cars.brands.models.Models
+import com.rentmycar.modules.cars.fuels.Fuels
+import com.rentmycar.modules.cars.images.Images
+import com.rentmycar.modules.cars.locations.Locations
+import com.rentmycar.modules.cars.seedBrandsAndModels
+import com.rentmycar.modules.cars.seedFuels
+import com.rentmycar.modules.users.Users
+import com.rentmycar.modules.users.reservations.Reservations
 import io.ktor.server.application.*
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils

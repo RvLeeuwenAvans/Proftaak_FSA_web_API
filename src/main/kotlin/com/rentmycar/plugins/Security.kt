@@ -1,8 +1,8 @@
 package com.rentmycar.plugins
 
 import com.rentmycar.authentication.jwtConfig
-import com.rentmycar.entities.User
-import com.rentmycar.repositories.UserRepository
+import com.rentmycar.modules.users.User
+import com.rentmycar.modules.users.UserRepository
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.auth.jwt.*

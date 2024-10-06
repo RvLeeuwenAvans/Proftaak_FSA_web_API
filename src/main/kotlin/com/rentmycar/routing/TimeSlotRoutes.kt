@@ -1,6 +1,6 @@
 package com.rentmycar.routing
 
-import com.rentmycar.controllers.TimeSlotController
+import com.rentmycar.modules.availability.TimeSlotController
 import io.ktor.server.auth.*
 import io.ktor.server.routing.*
 

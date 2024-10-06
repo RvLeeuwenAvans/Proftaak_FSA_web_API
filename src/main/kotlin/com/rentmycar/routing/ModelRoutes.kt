@@ -1,11 +1,11 @@
 package com.rentmycar.routing
 
-import com.rentmycar.controllers.ModelController
+import com.rentmycar.modules.cars.brands.models.ModelService
 import io.ktor.server.auth.*
 import io.ktor.server.routing.*
 
 fun Route.modelRoutes() {
-    val modelController = ModelController()
+    val modelController = ModelService()
     val prefix = "/model"
 
     authenticate {

@@ -1,11 +1,11 @@
 package com.rentmycar.routing
 
-import com.rentmycar.controllers.FuelController
+import com.rentmycar.modules.cars.fuels.FuelService
 import io.ktor.server.auth.*
 import io.ktor.server.routing.*
 
 fun Route.fuelRoutes() {
-    val fuelController = FuelController()
+    val fuelController = FuelService()
     val prefix = "/fuel"
 
     authenticate {

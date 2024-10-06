@@ -1,18 +1,17 @@
 package com.rentmycar.routing
 
 import com.rentmycar.authentication.jwtConfig
-import com.rentmycar.controllers.UserController
+import com.rentmycar.modules.users.UserService
 import io.ktor.server.auth.*
-import io.ktor.server.response.*
 import io.ktor.server.routing.*
 
 fun Route.userRoutes() {
-    val userController = UserController(jwtConfig(environment.config))
+    val userService = UserService(jwtConfig(environment.config))
 
-    post("/user/register") { userController.registerUser(call) }
-    post("/user/login") { userController.loginUser(call) }
+    post("/user/register") { userService.registerUser(call) }
+    post("/user/login") { userService.loginUser(call) }
 
     authenticate {
-        post("/user/update") { userController.updateUser(call) }
+        post("/user/update") { userService.updateUser(call) }
     }
 }

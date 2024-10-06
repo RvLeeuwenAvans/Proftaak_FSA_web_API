@@ -1,6 +1,6 @@
 package com.rentmycar
 
-import com.rentmycar.entities.Users
+import com.rentmycar.modules.users.Users
 import com.rentmycar.plugins.configureDatabases
 import io.ktor.server.config.*
 import io.ktor.server.testing.*
