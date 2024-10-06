@@ -14,5 +14,6 @@ fun Route.userRoutes() {
 
     authenticate {
         post("/user/update") { userController.updateUser(call) }
+        delete("user/delete") { userController.deleteUser(call) }
     }
 }

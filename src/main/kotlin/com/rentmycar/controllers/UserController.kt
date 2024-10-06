@@ -68,6 +68,9 @@ class UserController(private val config: JWTConfig) {
         }
     }
 
+    /**
+     * updates the currently authenticated user, retrieving the user via JWT token.
+     */
     suspend fun updateUser(call: ApplicationCall) {
         val updateRequest = call.receive<UserUpdateRequest>()
         val user = call.user()
@@ -75,5 +78,16 @@ class UserController(private val config: JWTConfig) {
         userRepository.updateUser(user, updateRequest)
 
         call.respond(HttpStatusCode.OK, "User updated successfully")
+    }
+
+    /**
+     * removes the currently authenticated user, retrieving the user via JWT token.
+     */
+    suspend fun deleteUser(call: ApplicationCall) {
+        val user = call.user()
+
+        userRepository.deleteUser(user)
+
+        call.respond(HttpStatusCode.OK, "User deleted successfully")
     }
 }
