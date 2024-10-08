@@ -37,4 +37,6 @@ class TimeSlotRepository {
     private fun getTimeSlotsByCar(car: Car): List<Timeslot> = transaction {
         Timeslot.find { Timeslots.car eq car.id }.toList()
     }
+
+    fun hasLinkedTimeslots(car: Car): Boolean = getTimeSlotsByCar(car).isNotEmpty()
 }

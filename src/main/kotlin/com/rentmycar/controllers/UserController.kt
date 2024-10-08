@@ -12,6 +12,7 @@ import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
+import java.util.*
 
 class UserController(private val config: JWTConfig) {
 
@@ -61,6 +62,7 @@ class UserController(private val config: JWTConfig) {
                 .withIssuer(config.issuer)
                 .withClaim("email", user.email)
                 .withClaim("id", user.id.value)
+                .withExpiresAt(Date(System.currentTimeMillis() + 3600000))
                 .sign(config.algorithm)
             call.respond(mapOf("token" to token))
         } else {

@@ -8,6 +8,8 @@ fun Route.timeSlotRoutes() {
     val reservationController = TimeSlotController()
 
     authenticate {
-        post("/timeSlot/create") { reservationController.createTimeslot(call) }
+        route("/timeSlot") {
+            post("/create") { reservationController.createTimeslot(call) }
+        }
     }
 }
