@@ -6,9 +6,10 @@ import io.ktor.server.routing.*
 
 fun Route.fuelRoutes() {
     val fuelController = FuelController()
-    val prefix = "/fuel"
 
     authenticate {
-        get("$prefix/all") { fuelController.getAllFuels(call) }
+        route("/fuel") {
+            get("/all") { fuelController.getAllFuels(call) }
+        }
     }
 }

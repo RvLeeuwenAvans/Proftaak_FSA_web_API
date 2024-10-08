@@ -6,10 +6,11 @@ import io.ktor.server.routing.*
 
 fun Route.modelRoutes() {
     val modelController = ModelController()
-    val prefix = "/model"
 
     authenticate {
-        get("$prefix/all") { modelController.getAllModels(call) }
-        get("$prefix/brand/{id}") { modelController.getModelsByBrand(call) }
+        route("/model") {
+            get("/all") { modelController.getAllModels(call) }
+            get("/brand/{id}") { modelController.getModelsByBrand(call) }
+        }
     }
 }

@@ -7,12 +7,13 @@ import io.ktor.server.routing.*
 fun Route.carRoutes() {
 
     val carController = CarController()
-    val prefix = "/car"
 
     authenticate {
-        post("$prefix/register") { carController.registerCar(call) }
-        put("$prefix/update") { carController.updateCar(call) }
-        get("$prefix/filtered") { carController.getFilteredCars(call) }
-        delete("$prefix/delete/{id}") { carController.deleteCar(call) }
+        route("/car") {
+            post("/register") { carController.registerCar(call) }
+            put("/update") { carController.updateCar(call) }
+            get("/filtered") { carController.getFilteredCars(call) }
+            delete("/delete/{id}") { carController.deleteCar(call) }
+        }
     }
 }
