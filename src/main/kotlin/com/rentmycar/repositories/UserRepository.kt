@@ -40,6 +40,9 @@ class UserRepository {
         data.password?.let { user.password = PasswordHasher.hashPassword(it) }
     }
 
+    fun deleteUser(user: User) = transaction {
+        User[user.id].delete()
+    }
 
     fun doesUserExistByEmail(email: String) = getUserByEmail(email) != null
 
