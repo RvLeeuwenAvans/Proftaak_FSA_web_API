@@ -12,9 +12,10 @@ fun Route.userRoutes() {
     route("/user") {
         post("/register") { userController.registerUser(call) }
         post("/login") { userController.loginUser(call) }
-        
-    authenticate {
-        post("/update") { userController.updateUser(call) }
-        delete("/delete") { userController.deleteUser(call) }
+
+        authenticate {
+            post("/update") { userController.updateUser(call) }
+            delete("/delete") { userController.deleteUser(call) }
+        }
     }
 }
