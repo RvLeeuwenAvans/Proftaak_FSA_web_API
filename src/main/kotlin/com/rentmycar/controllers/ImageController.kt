@@ -26,7 +26,7 @@ class ImageController {
         call.respond(images.map { it.path })
     }
     suspend fun uploadImage(call: ApplicationCall) {
-        val user = call.user();
+        val user = call.user()
         val carId = call.parameters["carId"]?.toInt() ?: throw IllegalArgumentException("Car ID is missing or invalid")
         val images = imageRepository.getByCar(carId)
         deleteImages(images)
@@ -56,7 +56,7 @@ class ImageController {
         for(image in images){
             File("uploads/${image.path}").delete()
             transaction {
-                image.delete();
+                image.delete()
             }
         }
     }
