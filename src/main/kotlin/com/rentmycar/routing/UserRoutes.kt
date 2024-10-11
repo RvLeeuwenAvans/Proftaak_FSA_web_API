@@ -3,7 +3,6 @@ package com.rentmycar.routing
 import com.rentmycar.authentication.jwtConfig
 import com.rentmycar.controllers.UserController
 import io.ktor.server.auth.*
-import io.ktor.server.response.*
 import io.ktor.server.routing.*
 
 fun Route.userRoutes() {

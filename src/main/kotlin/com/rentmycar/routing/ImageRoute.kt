@@ -7,7 +7,7 @@ import io.ktor.server.routing.*
 import java.io.File
 
 fun Route.imageRoutes() {
-    val imageController = ImageController();
+    val imageController = ImageController()
 
     authenticate {
         route("/image/{carId}") {
