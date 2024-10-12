@@ -1,15 +1,16 @@
 package com.rentmycar.entities
 
-import kotlinx.serialization.Serializable
+import com.rentmycar.responses.ModelDTO
 import org.jetbrains.exposed.dao.id.IntIdTable
 import org.jetbrains.exposed.dao.*
 import org.jetbrains.exposed.dao.id.EntityID
+import org.jetbrains.exposed.sql.ReferenceOption
 import org.jetbrains.exposed.sql.transactions.transaction
 
 // Define the Models table
 object Models : IntIdTable() {
     val name = varchar("name", 50)
-    val brand = reference("brand_id", Brands) // Relationship to Brand
+    val brand = reference("brand_id", Brands, ReferenceOption.CASCADE)
 }
 
 // Define the Model entity
@@ -19,14 +20,6 @@ class Model(id: EntityID<Int>) : IntEntity(id) {
     var name by Models.name
     var brand by Brand referencedOn Models.brand // Each model belongs to a brand
 }
-
-@Serializable
-data class ModelDTO(
-    val id: Int,
-    val name: String,
-    val brandId: Int,
-    val brandName: String,
-)
 
 fun Model.toDTO(): ModelDTO = transaction {
     ModelDTO(

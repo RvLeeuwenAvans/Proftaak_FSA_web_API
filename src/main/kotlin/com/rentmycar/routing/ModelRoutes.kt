@@ -13,4 +13,12 @@ fun Route.modelRoutes() {
             get("/brand/{id}") { modelController.getModelsByBrand(call) }
         }
     }
+
+    authenticate("admin") {
+        route("/model") {
+            post("/") { modelController.createModel(call) }
+            put("/") { modelController.updateModel(call) }
+            delete("/{id}") { modelController.deleteModel(call) }
+        }
+    }
 }

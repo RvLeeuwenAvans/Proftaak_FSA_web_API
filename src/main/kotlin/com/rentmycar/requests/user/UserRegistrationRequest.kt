@@ -1,5 +1,6 @@
 package com.rentmycar.requests.user
 
+import com.rentmycar.utils.UserRole
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -8,8 +9,12 @@ data class UserRegistrationRequest(
     val lastName: String,
     val username: String,
     val email: String,
-    val password: String
+    val password: String,
 ) {
+    // TODO: update this function if needed.
+    fun generateRole(): UserRole =
+        if (this.email.endsWith("@student.avans.nl")) UserRole.ADMIN else UserRole.DEFAULT
+
     fun validate(): List<String> {
         val errors = mutableListOf<String>()
 

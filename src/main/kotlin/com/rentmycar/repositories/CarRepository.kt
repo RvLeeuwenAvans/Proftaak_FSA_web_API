@@ -3,8 +3,9 @@ package com.rentmycar.repositories
 import com.rentmycar.entities.Car
 import com.rentmycar.entities.Cars
 import com.rentmycar.entities.Model
-import com.rentmycar.entities.Fuel
 import com.rentmycar.entities.User
+import com.rentmycar.utils.FuelType
+import com.rentmycar.utils.Transmission
 import org.jetbrains.exposed.sql.Op
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -21,7 +22,7 @@ class CarRepository {
         owner: User,
         licensePlate: String,
         model: Model,
-        fuel: Fuel,
+        fuel: String,
         year: Int,
         color: String,
         transmission: String,
@@ -31,10 +32,10 @@ class CarRepository {
             this.owner = owner
             this.licensePlate = licensePlate
             this.model = model
-            this.fuel = fuel
+            this.fuel = FuelType.valueOf(fuel)
             this.year = year
             this.color = color
-            this.transmission = transmission
+            this.transmission = Transmission.valueOf(transmission)
             this.price = price ?: 0.0
         }
     }
@@ -44,15 +45,17 @@ class CarRepository {
         year: Int? = null,
         color: String? = null,
         transmission: String? = null,
-        price: Double?= null
+        price: Double?= null,
+        fuel: String? = null,
     ): Car? = transaction {
         val car = getCarById(id)
 
         car?.apply {
             year?.let { this.year = it }
             color?.let { this.color = it }
-            transmission?.let { this.transmission = it }
+            transmission?.let { this.transmission = Transmission.valueOf(it) }
             price?.let { this.price = it }
+            fuel?.let { this.fuel = FuelType.valueOf(it) }
         }
 
         return@transaction car
@@ -63,7 +66,7 @@ class CarRepository {
         car?.delete()
     }
 
-    // TODO: Part of the epic link: https://proftaakfsa1.atlassian.net/browse/KAN-28
+    // TODO: Part of the epic link: https://proftaakfsa1.atlassian.net/browse/KAN-30
     fun getFilteredCars(
         ownerId: Int? = null,
     ): List<Car> = transaction {

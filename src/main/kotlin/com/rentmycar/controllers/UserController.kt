@@ -15,7 +15,6 @@ import io.ktor.server.response.*
 import java.util.*
 
 class UserController(private val config: JWTConfig) {
-
     private val userRepository = UserRepository()
 
     suspend fun registerUser(call: ApplicationCall) {
@@ -38,7 +37,8 @@ class UserController(private val config: JWTConfig) {
             "User with this username already exists"
         )
 
-        userRepository.createUser(registrationRequest)
+        val generatedRole = registrationRequest.generateRole()
+        userRepository.createUser(registrationRequest, generatedRole)
         call.respond(HttpStatusCode.OK, "User registered successfully")
     }
 

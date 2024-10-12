@@ -1,5 +1,6 @@
 package com.rentmycar.requests.car
 
+import com.rentmycar.utils.FuelType.Companion.fuelTypes
 import com.rentmycar.utils.Transmission.Companion.transmissions
 import kotlinx.serialization.Serializable
 import java.util.Calendar
@@ -11,6 +12,7 @@ data class UpdateCarRequest(
     val year: Int? = null,
     val color: String? = null,
     val transmission: String? = null,
+    val fuel: String? = null,
     val price: Double? = null,
 ) {
     fun validate(): List<String> {
@@ -24,6 +26,8 @@ data class UpdateCarRequest(
         val currentYear = calendar.get(Calendar.YEAR).toInt()
         if (year != null && (year < 1886 || year > currentYear)) errors.add("Year must be between 1886 and $currentYear")
 
+        if (fuel != null && !fuelTypes.contains(fuel.uppercase()))
+            errors.add("Fuel is invalid")
         if (transmission != null && !transmissions.contains(transmission.uppercase()))
             errors.add("Transmission is invalid")
 
