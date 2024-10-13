@@ -23,7 +23,7 @@ class ImageController {
         val carId = call.parameters["carId"]?.toInt() ?: throw IllegalArgumentException("Car ID is missing or invalid")
         val images = imageRepository.getByCar(carId)
 
-        call.respond(images.map { it.path })
+        call.respond(HttpStatusCode.OK, images.map { it.path })
     }
     suspend fun uploadImage(call: ApplicationCall) {
         val user = call.user()

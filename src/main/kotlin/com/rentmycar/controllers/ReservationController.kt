@@ -13,7 +13,6 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 
 class ReservationController {
-
     private val reservationRepository = ReservationRepository()
 
     suspend fun createReservation(call: ApplicationCall) {
@@ -33,10 +32,11 @@ class ReservationController {
                 "Timeslot is already reserved"
             )
 
-        val timeslot = TimeSlotRepository().getTimeSlot(createReservationRequest.timeslotId) ?: return call.respond(
-            HttpStatusCode.NotFound,
-            "Timeslot does not exist"
-        )
+        val timeslot =
+            TimeSlotRepository().getTimeSlot(createReservationRequest.timeslotId) ?: return call.respond(
+                HttpStatusCode.NotFound,
+                "Timeslot does not exist"
+            )
 
         reservationRepository.createReservation(user, timeslot)
         call.respond(HttpStatusCode.OK, "reservation created successfully")
@@ -62,7 +62,7 @@ class ReservationController {
 
         if (userId != reservation.reservorId.value) return call.respond(
             HttpStatusCode.BadRequest,
-            "user is the owner of the reservation"
+            "user is not the owner of the reservation"
         )
 
         reservationRepository.removeReservation(reservation)

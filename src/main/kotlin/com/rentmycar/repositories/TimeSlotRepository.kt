@@ -1,7 +1,8 @@
 package com.rentmycar.repositories
 
-import com.rentmycar.authentication.PasswordHasher
-import com.rentmycar.entities.*
+import com.rentmycar.entities.Car
+import com.rentmycar.entities.Timeslot
+import com.rentmycar.entities.Timeslots
 import com.rentmycar.requests.timeslot.TimeSlotUpdateRequest
 import kotlinx.datetime.toJavaLocalDateTime
 import org.jetbrains.exposed.sql.and
@@ -32,7 +33,7 @@ class TimeSlotRepository {
     ): Boolean {
         val timeSlotRange = timeSlot.availableFrom.rangeUntil(timeSlot.availableFrom)
 
-        return !getTimeSlots(timeSlot.id.value).none { existingTimeSlot ->
+        return !getTimeSlots(timeSlot.car).none { existingTimeSlot ->
             (timeSlotRange.contains(existingTimeSlot.availableFrom) ||
                     timeSlotRange.contains(existingTimeSlot.availableUntil))
 
@@ -49,20 +50,11 @@ class TimeSlotRepository {
         return !getTimeSlots(car).none { existingTimeSlot ->
             (newTimeSlotRange.contains(existingTimeSlot.availableFrom) ||
                     newTimeSlotRange.contains(existingTimeSlot.availableUntil))
-
         }
     }
 
     fun getTimeSlot(id: Int): Timeslot? = transaction {
         Timeslot.find { Timeslots.id eq id }.singleOrNull()
-    }
-
-    fun getTimeSlot(reservation: Reservation): Timeslot? = transaction {
-        Timeslot.find { Timeslots.id eq reservation.timeslot.id }.singleOrNull()
-    }
-
-    private fun getTimeSlots(id: Int) = transaction {
-        Timeslot.find { Timeslots.id eq id }.toList()
     }
 
     fun getTimeSlots(fromDate: LocalDateTime, tillDateTime: LocalDateTime): List<Timeslot> = transaction {
@@ -72,7 +64,7 @@ class TimeSlotRepository {
         }.toList()
     }
 
-    private fun getTimeSlots(car: Car): List<Timeslot> = transaction {
+    fun getTimeSlots(car: Car): List<Timeslot> = transaction {
         Timeslot.find { Timeslots.car eq car.id }.toList()
     }
 

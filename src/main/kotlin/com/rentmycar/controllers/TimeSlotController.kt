@@ -1,5 +1,6 @@
 package com.rentmycar.controllers
 
+import com.rentmycar.entities.toDTO
 import com.rentmycar.plugins.user
 import com.rentmycar.repositories.CarRepository
 import com.rentmycar.repositories.TimeSlotRepository
@@ -10,11 +11,11 @@ import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
+import io.ktor.server.routing.*
 import kotlinx.datetime.toJavaLocalDateTime
 import java.time.LocalTime
 
 class TimeSlotController {
-
     private val timeSlotRepository = TimeSlotRepository()
 
     suspend fun createTimeSlot(call: ApplicationCall) {
@@ -31,9 +32,10 @@ class TimeSlotController {
         val car = CarRepository().getCarById(createTimeSlotRequest.carId)
             ?: return call.respond(HttpStatusCode.NotFound, "Car does not exist")
 
-        if (user.id.value != car.ownerId.value) {
-            return call.respond(HttpStatusCode.BadRequest, "user is not the car's owner")
-        }
+        if (user.id.value != car.ownerId.value) return call.respond(
+            HttpStatusCode.BadRequest,
+            "user is not the car's owner"
+        )
 
         val availableFrom = createTimeSlotRequest.availableFrom.toJavaLocalDateTime()
         val availableUntil = createTimeSlotRequest.availableUntil.toJavaLocalDateTime()
@@ -79,6 +81,56 @@ class TimeSlotController {
         call.respond(HttpStatusCode.OK, "Timeslot updated successfully")
     }
 
+    suspend fun getTimeslotsByDateRange(call: RoutingCall) {
+        val from = call.parameters["fromDate"] ?: return call.respond(
+            HttpStatusCode.BadRequest,
+            "From Date is missing or invalid"
+        )
+        val until = call.parameters["untilDate"] ?: return call.respond(
+            HttpStatusCode.BadRequest,
+            "Until Date is missing or invalid"
+        )
+
+        val timeslots = timeSlotRepository.getTimeSlots(
+            java.time.LocalDateTime.parse(from),
+            java.time.LocalDateTime.parse(until)
+        )
+
+        if (timeslots.isEmpty()) return call.respond(HttpStatusCode.NotFound, "No time slots found")
+
+        call.respond(HttpStatusCode.OK, timeslots.map { it.toDTO() })
+    }
+
+    suspend fun getTimeslotById(call: RoutingCall) {
+        val timeSlotId = call.parameters["timeslotId"]?.toInt()
+            ?: throw IllegalArgumentException("Timeslot ID is missing or invalid")
+        val timeslot = timeSlotRepository.getTimeSlot(timeSlotId) ?: return call.respond(
+            HttpStatusCode.NotFound,
+            "No timeslot found"
+        )
+
+        call.respond(HttpStatusCode.OK, timeslot.toDTO())
+    }
+
+    suspend fun getTimeslotsByCarId(call: RoutingCall) {
+        val carId = call.parameters["carId"]?.toInt()
+            ?: throw IllegalArgumentException("carId ID is missing or invalid")
+
+        val car = CarRepository().getCarById(carId) ?: return call.respond(
+            HttpStatusCode.NotFound,
+            "No car found"
+        )
+
+        val timeslots = timeSlotRepository.getTimeSlots(car).ifEmpty {
+            return call.respond(
+                HttpStatusCode.NotFound,
+                "No timeslot found"
+            )
+        }
+
+        call.respond(HttpStatusCode.OK, timeslots.map { it.toDTO() })
+    }
+
     suspend fun removeTimeSlot(call: ApplicationCall) {
         val user = call.user()
 
@@ -93,7 +145,9 @@ class TimeSlotController {
         val timeSlot = timeSlotRepository.getTimeSlot(timeslotId)
             ?: return call.respond(HttpStatusCode.NotFound, "Time slot does not exist")
 
-        if (timeSlot.availableFrom.toLocalTime() < LocalTime.now()) return call.respond(
+        if (timeSlot.availableFrom.toLocalTime() < LocalTime.now() ||
+            timeSlot.availableUntil.toLocalTime() < LocalTime.now()
+        ) return call.respond(
             HttpStatusCode.BadRequest,
             "cannot delete an active or past timeslot"
         )
@@ -104,19 +158,6 @@ class TimeSlotController {
 
         timeSlotRepository.deleteTimeSlot(timeSlot)
     }
-
-//    suspend fun getTimeSlot(call: ApplicationCall) {
-//        val timeslotId = sanitizeId(call.parameters["id"])
-//
-//        // Validate the request.
-//        if (timeslotId == -1) return call.respond(
-//            HttpStatusCode.BadRequest,
-//            "Timeslot ID is invalid."
-//        )
-//
-//        val timeSlot = timeSlotRepository.getTimeSlot(timeslotId)
-//            ?: return call.respond(HttpStatusCode.NotFound, "Time slot does not exist")
-//    }
 
     private fun sanitizeId(id: String? = null): Int =
         if (id == null || !isNumeric(id)) -1 else id.toInt()

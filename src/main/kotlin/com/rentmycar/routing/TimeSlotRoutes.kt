@@ -10,9 +10,13 @@ fun Route.timeSlotRoutes() {
     authenticate {
         route("/timeSlot") {
             post("/create") { timeSlotController.createTimeSlot(call) }
-//            get { "/{id}" } { timeSlotController.readTimeSlot(call) }
-            post("/update") { timeSlotController.updateTimeSlot(call) }
-            delete("/remove/{id}") { timeSlotController.removeTimeSlot(call) }
+            get("/{timeslotId}}") { timeSlotController.getTimeslotById(call) }
+            patch("/update") { timeSlotController.updateTimeSlot(call) }
+            delete("/{timeslotId}}") { timeSlotController.removeTimeSlot(call) }
+            route("/all") {
+                get("/car/{carId}}") { timeSlotController.getTimeslotsByCarId(call) }
+                get("/from/{fromDate}/until/{untilDate}") { timeSlotController.getTimeslotsByDateRange(call) }
+            }
         }
     }
 }
