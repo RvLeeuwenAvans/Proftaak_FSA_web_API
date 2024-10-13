@@ -5,7 +5,9 @@ import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import kotlinx.serialization.Contextual
+import kotlinx.serialization.Serializable
 
+@Serializable
 class TimeSlotUpdateRequest(
     val timeSlotId: Int,
     @Contextual val availableFrom: LocalDateTime? = null,

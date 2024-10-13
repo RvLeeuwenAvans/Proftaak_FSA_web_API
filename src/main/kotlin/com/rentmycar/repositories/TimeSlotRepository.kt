@@ -29,14 +29,14 @@ class TimeSlotRepository {
     }
 
     fun doesTimeSlotHaveConflicts(
+        car: Car,
         timeSlot: Timeslot
     ): Boolean {
         val timeSlotRange = timeSlot.availableFrom.rangeUntil(timeSlot.availableFrom)
 
-        return !getTimeSlots(timeSlot.car).none { existingTimeSlot ->
+        return !getTimeSlots(car).none { existingTimeSlot ->
             (timeSlotRange.contains(existingTimeSlot.availableFrom) ||
                     timeSlotRange.contains(existingTimeSlot.availableUntil))
-
         }
     }
 

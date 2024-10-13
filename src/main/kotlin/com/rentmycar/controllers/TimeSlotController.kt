@@ -63,16 +63,19 @@ class TimeSlotController {
         val timeslot = TimeSlotRepository().getTimeSlot(timeSlotUpdateRequest.timeSlotId)
             ?: return call.respond(HttpStatusCode.NotFound, "Timeslot does not exist")
 
-        if (timeslot.availableFrom.toLocalTime() < LocalTime.now()) return call.respond(
+        if (timeslot.availableFrom.toLocalTime() > LocalTime.now()) return call.respond(
             HttpStatusCode.BadRequest,
             "cannot edit an active or past timeslot"
         )
 
-        if (user.id.value != timeslot.car.ownerId.value) {
+        val car = CarRepository().getCarById(timeslot.id.value) ?: return call.respond("No car found")
+
+        if (user.id.value != car.ownerId.value) {
             return call.respond(HttpStatusCode.BadRequest, "user is not the timeslot's owner")
         }
 
-        if (timeSlotRepository.doesTimeSlotHaveConflicts(timeslot)) return call.respond(
+        //todo: fix
+        if (timeSlotRepository.doesTimeSlotHaveConflicts(car, timeslot)) return call.respond(
             HttpStatusCode.Conflict,
             "timeslot overlaps with already an existing timeslots."
         )
