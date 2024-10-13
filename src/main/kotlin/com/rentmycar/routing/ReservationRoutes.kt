@@ -8,7 +8,9 @@ fun Route.reservationRoutes() {
     val reservationController = ReservationController()
 
     authenticate {
-        post("/reservation/create") { reservationController.createReservation(call) }
-        delete("/reservation/remove") { reservationController.removeReservation(call) }
+        route("/reservation") {
+            post("/create") { reservationController.createReservation(call) }
+            post("/remove") { reservationController.removeReservation(call) }
+        }
     }
 }

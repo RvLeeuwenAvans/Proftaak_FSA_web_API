@@ -12,6 +12,7 @@ import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
+import java.util.*
 
 class UserController(private val config: JWTConfig) {
 
@@ -61,6 +62,7 @@ class UserController(private val config: JWTConfig) {
                 .withIssuer(config.issuer)
                 .withClaim("email", user.email)
                 .withClaim("id", user.id.value)
+                .withExpiresAt(Date(System.currentTimeMillis() + 3600000))
                 .sign(config.algorithm)
             call.respond(mapOf("token" to token))
         } else {
@@ -68,6 +70,9 @@ class UserController(private val config: JWTConfig) {
         }
     }
 
+    /**
+     * updates the currently authenticated user, retrieving the user via JWT token.
+     */
     suspend fun updateUser(call: ApplicationCall) {
         val updateRequest = call.receive<UserUpdateRequest>()
         val user = call.user()
@@ -75,5 +80,16 @@ class UserController(private val config: JWTConfig) {
         userRepository.updateUser(user, updateRequest)
 
         call.respond(HttpStatusCode.OK, "User updated successfully")
+    }
+
+    /**
+     * removes the currently authenticated user, retrieving the user via JWT token.
+     */
+    suspend fun deleteUser(call: ApplicationCall) {
+        val user = call.user()
+
+        userRepository.deleteUser(user)
+
+        call.respond(HttpStatusCode.OK, "User deleted successfully")
     }
 }

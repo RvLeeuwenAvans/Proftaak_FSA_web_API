@@ -5,6 +5,7 @@ import com.rentmycar.entities.Cars
 import com.rentmycar.entities.Model
 import com.rentmycar.entities.Fuel
 import com.rentmycar.entities.User
+import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.sql.Op
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -44,7 +45,7 @@ class CarRepository {
         year: Int? = null,
         color: String? = null,
         transmission: String? = null,
-        price: Double?= null
+        price: Double? = null
     ): Car? = transaction {
         val car = getCarById(id)
 
@@ -93,5 +94,9 @@ class CarRepository {
     // Fetch a car by its license plate
     private fun getCarByLicensePlate(licensePlate: String): Car? = transaction {
         Car.find { Cars.licensePlate eq licensePlate }.singleOrNull()
+    }
+
+    fun getUserCarById(carId: Int, userId: EntityID<Int>): Car = transaction {
+        Car.find { (Cars.id eq carId) and (Cars.user eq userId) }.single()
     }
 }
