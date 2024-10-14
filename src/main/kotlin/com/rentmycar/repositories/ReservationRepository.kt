@@ -15,17 +15,19 @@ class ReservationRepository {
         }
     }
 
-    fun removeReservation(reservation: Reservation) = transaction {
-        Reservations.deleteWhere { Reservations.id eq reservation.id }
-    }
-
-    fun getReservationById(reservationId: Int): Reservation? = transaction {
+    fun getReservation(reservationId: Int): Reservation? = transaction {
         Reservation.find(Reservations.id eq reservationId).singleOrNull()
     }
 
-    fun doesReservationExistByTimeSlot(reservationId: Int) = getReservationByTimeslotId(reservationId) != null
+    fun getReservation(timeSlot: Timeslot): Reservation? = transaction {
+        Reservation.find { Reservations.timeslot eq timeSlot.id }.singleOrNull()
+    }
 
-    private fun getReservationByTimeslotId(timeslotId: Int): Reservation? = transaction {
-        Reservation.find { Reservations.timeslot eq timeslotId }.singleOrNull()
+    fun getReservations(user: User): List<Reservation> = transaction {
+        Reservation.find(Reservations.user eq user.id).toList()
+    }
+
+    fun deleteReservation(reservation: Reservation) = transaction {
+        Reservations.deleteWhere { Reservations.id eq reservation.id }
     }
 }

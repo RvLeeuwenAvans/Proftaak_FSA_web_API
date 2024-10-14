@@ -1,11 +1,17 @@
 package com.rentmycar.services
 
-import com.rentmycar.entities.*
+import com.rentmycar.entities.Car
+import com.rentmycar.entities.TimeslotDTO
+import com.rentmycar.entities.User
+import com.rentmycar.entities.toDTO
 import com.rentmycar.repositories.TimeSlotRepository
 import com.rentmycar.services.exceptions.NotAllowedException
+import com.rentmycar.services.exceptions.NotFoundException
 import com.rentmycar.services.exceptions.OverlappingTimeSlotException
-import com.rentmycar.services.exceptions.TimeSlotNotFoundException
-import kotlinx.datetime.*
+import kotlinx.datetime.Clock
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 
 class TimeSlotService {
     private val timeSlotRepository = TimeSlotRepository()
@@ -21,7 +27,8 @@ class TimeSlotService {
         timeSlotRepository.createTimeSlot(car, timeSlotRange)
     }
 
-    fun getTimeSlot(id: Int) = timeSlotRepository.getTimeSlot(id) ?: throw TimeSlotNotFoundException(id)
+    fun getTimeSlot(id: Int) =
+        timeSlotRepository.getTimeSlot(id) ?: throw NotFoundException("Time slot with id: $id not found")
 
     fun getTimeSlots(timeSlotRange: OpenEndRange<LocalDateTime>) =
         timeSlotRepository.getTimeSlots(timeSlotRange)
@@ -48,7 +55,11 @@ class TimeSlotService {
         ) throw OverlappingTimeSlotException()
 
         if (isFutureTimeSlot(timeSlotDTO)) throw NotAllowedException("cannot edit an active or past timeslot")
-        if (!CarService().isCarOwner(user, timeSlotDTO.carId)) throw NotAllowedException("user is not the timeslot's owner")
+        if (!CarService().isCarOwner(
+                user,
+                timeSlotDTO.carId
+            )
+        ) throw NotAllowedException("user is not the timeslot's owner")
 
         timeSlotRepository.updateTimeSlot(timeSlot, updatedTimeSlotRange)
     }
@@ -56,7 +67,11 @@ class TimeSlotService {
     fun deleteTimeSlot(id: Int, user: User) {
         val timeSlot = getTimeSlot(id)
         if (isFutureTimeSlot(timeSlot.toDTO())) throw throw NotAllowedException("cannot delete an active or past timeslot")
-        if (!CarService().isCarOwner(user, timeSlot.toDTO().carId)) throw NotAllowedException("user is not the timeslot's owner")
+        if (!CarService().isCarOwner(
+                user,
+                timeSlot.toDTO().carId
+            )
+        ) throw NotAllowedException("user is not the timeslot's owner")
 
         timeSlotRepository.deleteTimeSlot(timeSlot)
     }
