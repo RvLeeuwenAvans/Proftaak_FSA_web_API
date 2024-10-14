@@ -89,7 +89,7 @@ class TimeSlotController {
 
     suspend fun getTimeslotById(call: RoutingCall) {
         try {
-            val timeSlotId = call.parameters["timeslotId"]?.toIntOrNull() ?: return call.respond(
+            val timeSlotId = call.parameters["id"]?.toIntOrNull() ?: return call.respond(
                 HttpStatusCode.BadRequest,
                 "Timeslot ID is missing or invalid"
             )
@@ -131,6 +131,7 @@ class TimeSlotController {
             )
 
             timeSlotService.deleteTimeSlot(timeslotId, user)
+            call.respond(HttpStatusCode.OK, "Timeslot deleted")
         } catch (e: Exception) {
             return call.respond(
                 HttpStatusCode.InternalServerError,
