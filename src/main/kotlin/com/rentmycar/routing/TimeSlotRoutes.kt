@@ -5,11 +5,16 @@ import io.ktor.server.auth.*
 import io.ktor.server.routing.*
 
 fun Route.timeSlotRoutes() {
-    val reservationController = TimeSlotController()
+    val timeSlotController = TimeSlotController()
 
     authenticate {
-        route("/timeSlot") {
-            post("/create") { reservationController.createTimeslot(call) }
+        route("/timeSlots") {
+            get("/{id}") { timeSlotController.getTimeslotById(call) }
+            get("/car/{carId}}") { timeSlotController.getTimeslotsByCarId(call) }
+            get("/between/{fromDate}/{untilDate}") { timeSlotController.getTimeslotsByDateRange(call) }
+            post("/create") { timeSlotController.createTimeSlot(call) }
+            patch("/update") { timeSlotController.updateTimeSlot(call) }
+            delete("/{id}") { timeSlotController.removeTimeSlot(call) }
         }
     }
 }
