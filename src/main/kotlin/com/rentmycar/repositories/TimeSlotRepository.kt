@@ -3,70 +3,52 @@ package com.rentmycar.repositories
 import com.rentmycar.entities.Car
 import com.rentmycar.entities.Timeslot
 import com.rentmycar.entities.Timeslots
-import com.rentmycar.requests.timeslot.TimeSlotUpdateRequest
 import kotlinx.datetime.toJavaLocalDateTime
+import kotlinx.datetime.toKotlinLocalDateTime
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.transactions.transaction
-import java.time.LocalDateTime
 
 class TimeSlotRepository {
-    fun createTimeSlot(vehicle: Car, carAvailableFrom: LocalDateTime, carAvailableUntil: LocalDateTime): Timeslot =
+    fun createTimeSlot(vehicle: Car, timeSlotRange: OpenEndRange<kotlinx.datetime.LocalDateTime>): Timeslot =
         transaction {
             Timeslot.new {
                 car = vehicle
-                availableFrom = carAvailableFrom
-                availableUntil = carAvailableUntil
+                availableFrom = timeSlotRange.start.toJavaLocalDateTime()
+                availableUntil = timeSlotRange.endExclusive.toJavaLocalDateTime()
             }
         }
 
-    fun updateTimeSlot(timeSlot: Timeslot, data: TimeSlotUpdateRequest) = transaction {
-        data.availableFrom?.let { timeSlot.availableFrom = it.toJavaLocalDateTime() }
-        data.availableUntil?.let { timeSlot.availableUntil = it.toJavaLocalDateTime() }
-    }
+    fun getTimeSlot(id: Int): Timeslot? = transaction { Timeslot.find { Timeslots.id eq id }.singleOrNull() }
 
-    fun deleteTimeSlot(timeSlot: Timeslot) = transaction {
-        Timeslot[timeSlot.id].delete()
-    }
-
-    fun doesTimeSlotHaveConflicts(
-        car: Car,
-        timeSlot: Timeslot
-    ): Boolean {
-        val timeSlotRange = timeSlot.availableFrom.rangeUntil(timeSlot.availableFrom)
-
-        return !getTimeSlots(car).none { existingTimeSlot ->
-            (timeSlotRange.contains(existingTimeSlot.availableFrom) ||
-                    timeSlotRange.contains(existingTimeSlot.availableUntil))
-        }
-    }
-
-    fun doesTimeSlotHaveConflicts(
-        car: Car,
-        carAvailableFrom: LocalDateTime,
-        carAvailableUntil: LocalDateTime
-    ): Boolean {
-        val newTimeSlotRange = carAvailableFrom.rangeUntil(carAvailableUntil)
-
-        return !getTimeSlots(car).none { existingTimeSlot ->
-            (newTimeSlotRange.contains(existingTimeSlot.availableFrom) ||
-                    newTimeSlotRange.contains(existingTimeSlot.availableUntil))
-        }
-    }
-
-    fun getTimeSlot(id: Int): Timeslot? = transaction {
-        Timeslot.find { Timeslots.id eq id }.singleOrNull()
-    }
-
-    fun getTimeSlots(fromDate: LocalDateTime, tillDateTime: LocalDateTime): List<Timeslot> = transaction {
+    fun getTimeSlots(timeSlotRange: OpenEndRange<kotlinx.datetime.LocalDateTime>): List<Timeslot> = transaction {
         Timeslot.find {
-            (Timeslots.availableFrom.between(fromDate, tillDateTime)
-                .and(Timeslots.availableUntil.between(fromDate, tillDateTime)))
+            Timeslots.availableFrom.between(
+                timeSlotRange.start.toJavaLocalDateTime(),
+                timeSlotRange.endExclusive.toJavaLocalDateTime()
+            ).and(
+                Timeslots.availableUntil.between(
+                    timeSlotRange.start.toJavaLocalDateTime(),
+                    timeSlotRange.endExclusive.toJavaLocalDateTime()
+                )
+            )
         }.toList()
     }
+
+    fun getTimeSlots(car: Car, timeSlotRange: OpenEndRange<kotlinx.datetime.LocalDateTime>): List<Timeslot> =
+        getTimeSlots(car).filter { existingTimeSlot ->
+            (timeSlotRange.contains(existingTimeSlot.availableFrom.toKotlinLocalDateTime()) ||
+                    timeSlotRange.contains(existingTimeSlot.availableUntil.toKotlinLocalDateTime()))
+        }
 
     fun getTimeSlots(car: Car): List<Timeslot> = transaction {
         Timeslot.find { Timeslots.car eq car.id }.toList()
     }
 
-    fun hasLinkedTimeslots(car: Car): Boolean = getTimeSlots(car).isNotEmpty()
+    fun updateTimeSlot(timeSlot: Timeslot, updatedTimeSlotRange: OpenEndRange<kotlinx.datetime.LocalDateTime>) =
+        transaction {
+            updatedTimeSlotRange.start.let { timeSlot.availableFrom = it.toJavaLocalDateTime() }
+            updatedTimeSlotRange.endExclusive.let { timeSlot.availableUntil = it.toJavaLocalDateTime() }
+        }
+
+    fun deleteTimeSlot(timeSlot: Timeslot) = transaction { Timeslot[timeSlot.id].delete() }
 }

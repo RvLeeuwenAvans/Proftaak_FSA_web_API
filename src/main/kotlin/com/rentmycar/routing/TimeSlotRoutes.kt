@@ -8,15 +8,13 @@ fun Route.timeSlotRoutes() {
     val timeSlotController = TimeSlotController()
 
     authenticate {
-        route("/timeSlot") {
-            post("/create") { timeSlotController.createTimeSlot(call) }
+        route("/timeSlots") {
             get("/{timeslotId}") { timeSlotController.getTimeslotById(call) }
+            get("/car/{carId}}") { timeSlotController.getTimeslotsByCarId(call) }
+            get("/between/{fromDate}/{untilDate}") { timeSlotController.getTimeslotsByDateRange(call) }
+            post("/create") { timeSlotController.createTimeSlot(call) }
             patch("/update") { timeSlotController.updateTimeSlot(call) }
             delete("/{timeslotId}") { timeSlotController.removeTimeSlot(call) }
-            route("/all") {
-                get("/car/{carId}}") { timeSlotController.getTimeslotsByCarId(call) }
-                get("/from/{fromDate}/until/{untilDate}") { timeSlotController.getTimeslotsByDateRange(call) }
-            }
         }
     }
 }

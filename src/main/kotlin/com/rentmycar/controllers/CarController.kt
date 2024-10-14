@@ -7,7 +7,6 @@ import com.rentmycar.repositories.CarRepository
 import com.rentmycar.repositories.FuelRepository
 import com.rentmycar.repositories.ModelRepository
 import com.rentmycar.repositories.TimeSlotRepository
-import com.rentmycar.repositories.UserRepository
 import com.rentmycar.requests.car.RegisterCarRequest
 import com.rentmycar.requests.car.UpdateCarRequest
 import com.rentmycar.utils.isNumeric
@@ -172,7 +171,7 @@ class CarController {
         }
 
         // Make sure there are no timeslots linked to the car.
-        if (timeslotRepository.hasLinkedTimeslots(foundCar)) return call.respond(
+        if (timeslotRepository.getTimeSlots(foundCar).isNotEmpty()) return call.respond(
             HttpStatusCode.BadRequest,
             "Car cannot be deleted while it has linked timeslots."
         )
