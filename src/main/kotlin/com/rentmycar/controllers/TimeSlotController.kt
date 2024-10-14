@@ -30,6 +30,7 @@ class TimeSlotController {
             )
 
             timeSlotService.createTimeSlot(createTimeSlotRequest.carId, user, timeSlotRange)
+            call.respond(HttpStatusCode.OK, "Timeslot created successfully")
         } catch (e: Exception) {
             return call.respond(
                 HttpStatusCode.InternalServerError,
@@ -49,7 +50,12 @@ class TimeSlotController {
                 "Invalid update request: ${validationErrors.joinToString(", ")}"
             )
 
-            timeSlotService.updateTimeSlot(timeSlotUpdateRequest.timeSlotId, user)
+            timeSlotService.updateTimeSlot(
+                timeSlotUpdateRequest.timeSlotId,
+                user,
+                timeSlotUpdateRequest.availableFrom,
+                timeSlotUpdateRequest.availableUntil
+            )
             call.respond(HttpStatusCode.OK, "Timeslot updated successfully")
         } catch (e: Exception) {
             return call.respond(

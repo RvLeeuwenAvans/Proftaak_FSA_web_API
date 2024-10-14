@@ -34,15 +34,15 @@ class TimeSlotRepository {
         }.toList()
     }
 
-    fun getTimeSlots(car: Car, timeSlotRange: OpenEndRange<kotlinx.datetime.LocalDateTime>): List<Timeslot> =
+    fun getTimeSlots(car: Car): List<Timeslot> = transaction {
+        Timeslot.find { Timeslots.car eq car.id }.toList()
+    }
+
+    fun getOverlappingTimeSlots(car: Car, timeSlotRange: OpenEndRange<kotlinx.datetime.LocalDateTime>): List<Timeslot> =
         getTimeSlots(car).filter { existingTimeSlot ->
             (timeSlotRange.contains(existingTimeSlot.availableFrom.toKotlinLocalDateTime()) ||
                     timeSlotRange.contains(existingTimeSlot.availableUntil.toKotlinLocalDateTime()))
         }
-
-    fun getTimeSlots(car: Car): List<Timeslot> = transaction {
-        Timeslot.find { Timeslots.car eq car.id }.toList()
-    }
 
     fun updateTimeSlot(timeSlot: Timeslot, updatedTimeSlotRange: OpenEndRange<kotlinx.datetime.LocalDateTime>) =
         transaction {
