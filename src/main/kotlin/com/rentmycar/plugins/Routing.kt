@@ -8,7 +8,6 @@ fun Application.configureRouting() {
     routing {
         userRoutes()
         carRoutes()
-        fuelRoutes()
         brandRoutes()
         modelRoutes()
         timeSlotRoutes()

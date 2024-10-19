@@ -1,6 +1,6 @@
 package com.rentmycar.entities
 
-import kotlinx.serialization.Serializable
+import com.rentmycar.responses.BrandDTO
 import org.jetbrains.exposed.dao.id.IntIdTable
 import org.jetbrains.exposed.dao.*
 import org.jetbrains.exposed.dao.id.EntityID
@@ -8,7 +8,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 
 // Define the Brands table
 object Brands : IntIdTable() {
-    val name = varchar("name", 100)
+    val name = varchar("name", 100).uniqueIndex()
 }
 
 // Define the Brand entity
@@ -17,12 +17,6 @@ class Brand(id: EntityID<Int>) : IntEntity(id) {
 
     var name by Brands.name
 }
-
-@Serializable
-data class BrandDTO (
-    val id: Int,
-    val name: String,
-)
 
 fun Brand.toDTO() = transaction {
     BrandDTO(

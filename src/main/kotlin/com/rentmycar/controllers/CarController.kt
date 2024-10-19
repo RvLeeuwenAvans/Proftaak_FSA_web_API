@@ -4,12 +4,11 @@ import com.rentmycar.entities.Car
 import com.rentmycar.entities.toDTO
 import com.rentmycar.plugins.user
 import com.rentmycar.repositories.CarRepository
-import com.rentmycar.repositories.FuelRepository
 import com.rentmycar.repositories.ModelRepository
 import com.rentmycar.repositories.TimeSlotRepository
 import com.rentmycar.requests.car.RegisterCarRequest
 import com.rentmycar.requests.car.UpdateCarRequest
-import com.rentmycar.utils.isNumeric
+import com.rentmycar.utils.sanitizeId
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
@@ -20,7 +19,6 @@ class CarController {
 
     private val carRepository = CarRepository()
     private val modelRepository = ModelRepository()  // Assuming you have a ModelRepository
-    private val fuelRepository = FuelRepository()    // Assuming you have a FuelRepository
     private val timeslotRepository = TimeSlotRepository()
 
     /**
@@ -35,12 +33,6 @@ class CarController {
     private fun isCarOwner(car: Car, userId: Int) {
         if (car.ownerId.value != userId) throw error("Only owner of the car can update the car.")
     }
-
-    /**
-     * Get Int-typed id from String?-typed id.
-     */
-    private fun sanitizeId(id: String? = null): Int =
-        if (id == null || !isNumeric(id)) -1 else id.toInt()
 
     // Register a new car
     suspend fun registerCar(call: ApplicationCall) {
@@ -65,15 +57,12 @@ class CarController {
         val model = modelRepository.getModel(registrationRequest.modelId)
             ?: return call.respond(HttpStatusCode.NotFound, "Model not found")
 
-        val fuel = fuelRepository.getFuel(registrationRequest.fuelId)
-            ?: return call.respond(HttpStatusCode.NotFound, "Fuel type not found")
-
         // register the car
         carRepository.registerCar(
             owner = user,
             licensePlate = registrationRequest.licensePlate,
             model = model,
-            fuel = fuel,
+            fuel = registrationRequest.fuel,
             year = registrationRequest.year,
             color = registrationRequest.color,
             transmission = registrationRequest.transmission,
@@ -113,6 +102,7 @@ class CarController {
             year = request.year,
             color = request.color,
             transmission = request.transmission,
+            fuel = request.fuel,
             price = request.price,
         )
 
@@ -179,7 +169,7 @@ class CarController {
         carRepository.deleteCar(carId)
         return call.respond(
             HttpStatusCode.OK,
-            "Car is successfully deleted."
+            "Car deleted successfully."
         )
     }
 }

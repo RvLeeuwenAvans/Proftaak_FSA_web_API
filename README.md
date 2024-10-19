@@ -74,3 +74,15 @@ If you encounter any issues during installation or running the application, cons
 
 - **Database Connection**: Ensure PostgreSQL is running and that the credentials in `application.conf` are correct.
 - **Dependencies**: If you encounter missing dependencies, try running `./gradlew clean build` to refresh your Gradle cache.
+
+<hr />
+
+## Additional information
+
+### User Registration
+
+Current implementation is as follows: 
+1. **Default**: to create a default user, use any email. 
+2. **Admin**: to create an admin user, use email which ends with `@student.avans.nl`.
+
+The way how we assign roles in our application can be expanded / changed in the future.

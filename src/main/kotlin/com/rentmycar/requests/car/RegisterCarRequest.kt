@@ -1,5 +1,6 @@
 package com.rentmycar.requests.car
 
+import com.rentmycar.utils.FuelType.Companion.fuelTypes
 import com.rentmycar.utils.Transmission.Companion.transmissions
 import kotlinx.serialization.Serializable
 import java.util.Calendar
@@ -8,7 +9,7 @@ import java.util.Calendar
 data class RegisterCarRequest(
     val licensePlate: String,
     val modelId: Int,
-    val fuelId: Int,
+    val fuel: String,
     val year: Int,
     val color: String,
     val transmission: String,
@@ -22,7 +23,7 @@ data class RegisterCarRequest(
 
         if (modelId < 0) errors.add("Model ID is invalid")
 
-        if (fuelId < 0) errors.add("Fuel ID is invalid")
+        if (!fuelTypes.contains(fuel.uppercase())) errors.add("Fuel is invalid")
 
         val calendar = Calendar.getInstance()
         val currentYear = calendar.get(Calendar.YEAR).toInt()
@@ -30,7 +31,7 @@ data class RegisterCarRequest(
 
         if (color.isBlank()) errors.add("Color cannot be blank")
 
-        if (transmission.isBlank() || !transmissions.contains(transmission.uppercase()))
+        if (!transmissions.contains(transmission.uppercase()))
             errors.add("Transmission is invalid")
 
         if (price != null && price < 0.0) errors.add("Price must be a non-negative number")
