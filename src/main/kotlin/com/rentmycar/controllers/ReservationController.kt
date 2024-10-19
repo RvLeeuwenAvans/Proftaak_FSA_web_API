@@ -1,72 +1,86 @@
 package com.rentmycar.controllers
 
+import com.rentmycar.entities.toDTO
 import com.rentmycar.plugins.user
-import com.rentmycar.repositories.ReservationRepository
-import com.rentmycar.repositories.TimeSlotRepository
 import com.rentmycar.requests.reservation.CreateReservationRequest
-import com.rentmycar.requests.reservation.RemoveReservationRequest
+import com.rentmycar.services.ReservationService
+import com.rentmycar.services.TimeSlotService
 import io.ktor.http.*
 import io.ktor.server.application.*
-import io.ktor.server.auth.*
-import io.ktor.server.auth.jwt.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 
 class ReservationController {
-
-    private val reservationRepository = ReservationRepository()
+    private val reservationService = ReservationService()
 
     suspend fun createReservation(call: ApplicationCall) {
-        val user  = call.user()
+        try {
+            val user = call.user()
 
-        val createReservationRequest = call.receive<CreateReservationRequest>()
-        val validationErrors = createReservationRequest.validate()
+            val createReservationRequest = call.receive<CreateReservationRequest>()
+            val validationErrors = createReservationRequest.validate()
 
-        if (validationErrors.isNotEmpty()) return call.respond(
-            HttpStatusCode.BadRequest,
-            "Invalid creation data: ${validationErrors.joinToString(", ")}"
-        )
+            if (validationErrors.isNotEmpty()) return call.respond(
+                HttpStatusCode.BadRequest,
+                "Invalid creation data: ${validationErrors.joinToString(", ")}"
+            )
 
-        if (reservationRepository.doesReservationExistByTimeSlot(createReservationRequest.timeslotId))
+            reservationService.createReservation(user, createReservationRequest.timeslotId)
+            call.respond(HttpStatusCode.OK, "reservation created successfully")
+        } catch (e: Exception) {
             return call.respond(
-                HttpStatusCode.Conflict,
-                "Timeslot is already reserved"
+                HttpStatusCode.InternalServerError,
+                e.message ?: "Internal Server Error"
+            )
+        }
+    }
+
+    suspend fun getReservationForTimeSlot(call: ApplicationCall) {
+        try {
+            val timeSlotId = call.parameters["id"]?.toIntOrNull() ?: return call.respond(
+                HttpStatusCode.BadRequest,
+                "Timeslot ID is missing or invalid"
             )
 
-        val timeslot =
-            TimeSlotRepository().getTimeSlotsById(createReservationRequest.timeslotId) ?: return call.respond(
-                HttpStatusCode.NotFound,
-                "Timeslot does not exist"
+            val timeSlot = TimeSlotService().getTimeSlot(timeSlotId)
+            val reservation = reservationService.getReservation(timeSlot)
+            call.respond(HttpStatusCode.OK, reservation.toDTO())
+        } catch (e: Exception) {
+            return call.respond(
+                HttpStatusCode.InternalServerError,
+                e.message ?: "Internal Server Error"
             )
+        }
+    }
 
-        reservationRepository.createReservation(user, timeslot)
-        call.respond(HttpStatusCode.OK, "reservation created successfully")
+    suspend fun getReservationsForUser(call: ApplicationCall) {
+        try {
+            val user = call.user()
+            val reservations = reservationService.getReservations(user)
+            call.respond(HttpStatusCode.OK, reservations.map { it.toDTO() })
+        } catch (e: Exception) {
+            return call.respond(
+                HttpStatusCode.InternalServerError,
+                e.message ?: "Internal Server Error"
+            )
+        }
     }
 
     suspend fun removeReservation(call: ApplicationCall) {
-        val principal = call.principal<JWTPrincipal>()
-        val userId = principal?.payload?.getClaim("id")?.asInt()
-
-        val removeReservationRequest = call.receive<RemoveReservationRequest>()
-        val validationErrors = removeReservationRequest.validate()
-
-        if (validationErrors.isNotEmpty()) return call.respond(
-            HttpStatusCode.BadRequest,
-            "Invalid creation data: ${validationErrors.joinToString(", ")}"
-        )
-
-        val reservation =
-            reservationRepository.getReservationById(removeReservationRequest.reservationId) ?: return call.respond(
-                HttpStatusCode.NotFound,
-                "Reservation does not exist"
+        try {
+            val user = call.user()
+            val reservationId = call.parameters["id"]?.toIntOrNull() ?: return call.respond(
+                HttpStatusCode.BadRequest,
+                "Reservation ID is missing or invalid"
             )
 
-        if (userId != reservation.reservorId.value) return call.respond(
-            HttpStatusCode.BadRequest,
-            "user is the owner of the reservation"
-        )
-
-        reservationRepository.removeReservation(reservation)
-        call.respond(HttpStatusCode.OK, "reservation removed successfully")
+            reservationService.deleteReservation(user, reservationId)
+            call.respond(HttpStatusCode.OK, "reservation removed successfully")
+        } catch (e: Exception) {
+            return call.respond(
+                HttpStatusCode.InternalServerError,
+                e.message ?: "Internal Server Error"
+            )
+        }
     }
 }

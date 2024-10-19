@@ -25,9 +25,8 @@ class CarController {
      * Check whether the user is the owner of the car.
      */
     private fun isCarOwner(carId: Int, userId: Int) {
-        val foundCar = carRepository.getCarById(carId)
+        val foundCar = carRepository.getCarById(carId) ?: throw Error("Car not found.")
 
-        if (foundCar == null) throw Error("Car not found.")
         if (foundCar.ownerId.value != userId)
             throw Error("Only owner of the car can update the car.")
     }
@@ -162,7 +161,7 @@ class CarController {
         }
 
         // Make sure there are no timeslots linked to the car.
-        if (timeslotRepository.hasLinkedTimeslots(foundCar)) return call.respond(
+        if (timeslotRepository.getTimeSlots(foundCar).isNotEmpty()) return call.respond(
             HttpStatusCode.BadRequest,
             "Car cannot be deleted while it has linked timeslots."
         )
