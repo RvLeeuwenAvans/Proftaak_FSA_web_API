@@ -13,6 +13,7 @@ fun Route.carRoutes() {
             post("/register") { carController.registerCar(call) }
             put("/update") { carController.updateCar(call) }
             get("/filtered") { carController.getFilteredCars(call) }
+            get("/directions") {carController.getDirectionsToCar(call) }
             delete("/delete/{id}") { carController.deleteCar(call) }
         }
     }

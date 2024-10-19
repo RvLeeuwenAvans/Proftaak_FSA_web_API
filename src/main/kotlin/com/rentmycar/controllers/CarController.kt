@@ -4,8 +4,10 @@ import com.rentmycar.entities.Car
 import com.rentmycar.entities.toDTO
 import com.rentmycar.plugins.user
 import com.rentmycar.repositories.CarRepository
+import com.rentmycar.repositories.LocationRepository
 import com.rentmycar.repositories.ModelRepository
 import com.rentmycar.repositories.TimeSlotRepository
+import com.rentmycar.requests.car.DirectionsToCarRequest
 import com.rentmycar.requests.car.RegisterCarRequest
 import com.rentmycar.requests.car.UpdateCarRequest
 import com.rentmycar.utils.sanitizeId
@@ -30,6 +32,7 @@ class CarController {
         if (foundCar.ownerId.value != userId)
             throw Error("Only owner of the car can update the car.")
     }
+
     private fun isCarOwner(car: Car, userId: Int) {
         if (car.ownerId.value != userId) throw error("Only owner of the car can update the car.")
     }
@@ -132,6 +135,16 @@ class CarController {
         )
     }
 
+    suspend fun getDirectionsToCar(call: ApplicationCall) {
+        val request = call.receive<DirectionsToCarRequest>()
+        request.validate()
+
+        val location = LocationRepository().getByCar(request.carId)
+        return call.respond(
+            "https://www.google.com/maps/dir/?api=1&origin=${request.latitude},${request.longitude}&destination=${location.latitude},${location.longitude}&travelmode=walking"
+        )
+    }
+
     /**
      * Delete the car.
      */
@@ -147,7 +160,8 @@ class CarController {
 
         // Make sure car exists.
         val foundCar = carRepository.getCarById(carId)
-        if (foundCar == null) return call.respond(HttpStatusCode.NotFound, "Car not found."
+        if (foundCar == null) return call.respond(
+            HttpStatusCode.NotFound, "Car not found."
         )
 
         // Make sure user is the owner of the car.
