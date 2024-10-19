@@ -25,6 +25,7 @@ repositories {
 }
 
 dependencies {
+
     implementation("org.mindrot:jbcrypt:0.4")
     implementation("io.ktor:ktor-server-core-jvm")
     implementation("io.ktor:ktor-server-auth-jvm")
@@ -44,7 +45,10 @@ dependencies {
     implementation("org.jetbrains.exposed:exposed-jdbc:$exposed_version")
     implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.1")
 
+    testImplementation("io.mockk:mockk:1.12.0")
     testImplementation("io.ktor:ktor-server-test-host-jvm")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
-
+    testImplementation("io.ktor:ktor-server-tests:2.0.0")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.1")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.8.1")
 }
