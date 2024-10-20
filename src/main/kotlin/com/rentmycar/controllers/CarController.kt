@@ -17,8 +17,8 @@ import io.ktor.server.response.*
 
 
 class CarController {
-
-    private val carRepository = CarRepository()
+    private val carService = CarService()
+    private val modelService = ModelService()
 
     suspend fun registerCar(call: ApplicationCall) {
         val user = call.user()
@@ -26,8 +26,8 @@ class CarController {
         val registrationRequest = call.receive<RegisterCarRequest>()
         registrationRequest.validate()
 
-        val model = ModelService().get(registrationRequest.modelId)
-        CarService().register(user, model, registrationRequest)
+        val model = modelService.get(registrationRequest.modelId)
+        carService.register(user, model, registrationRequest)
 
         call.respond(HttpStatusCode.OK, "Car registered successfully")
     }
@@ -38,7 +38,7 @@ class CarController {
         val updateRequest = call.receive<UpdateCarRequest>()
 
         updateRequest.validate()
-        CarService().update(user, updateRequest)
+        carService.update(user, updateRequest)
 
         call.respond(HttpStatusCode.OK, "Car updated successfully")
     }
@@ -53,7 +53,7 @@ class CarController {
             "Owner ID is invalid."
         )
 
-        val filteredCars = carRepository.getFilteredCars(
+        val filteredCars = CarRepository().getFilteredCars(
             ownerId,
             // etc.
         )
@@ -78,7 +78,7 @@ class CarController {
         val user = call.user()
         val carId = sanitizeId(call.parameters["id"])
 
-        CarService().delete(user, carId)
+        carService.delete(user, carId)
 
         return call.respond(
             HttpStatusCode.OK,

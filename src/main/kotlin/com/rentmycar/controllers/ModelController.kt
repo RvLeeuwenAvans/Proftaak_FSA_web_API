@@ -11,9 +11,10 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 
 class ModelController {
+    private val modelService = ModelService()
 
     suspend fun getAllModels(call: ApplicationCall) {
-        val models = ModelService().getAll()
+        val models = modelService.getAll()
 
         return call.respond(
             HttpStatusCode.OK,
@@ -24,7 +25,7 @@ class ModelController {
     suspend fun getModelsByBrand(call: ApplicationCall) {
         val id = sanitizeId(call.parameters["id"])
 
-        val models = ModelService().getByBrand(id)
+        val models = modelService.getByBrand(id)
 
         return call.respond(
             HttpStatusCode.OK,
@@ -36,7 +37,7 @@ class ModelController {
         val request = call.receive<CreateModelRequest>()
         request.validate()
 
-        ModelService().create(request.name, request.brandId)
+        modelService.create(request.name, request.brandId)
 
         return call.respond(HttpStatusCode.OK, "Model successfully created.")
     }
@@ -45,7 +46,7 @@ class ModelController {
         val request = call.receive<UpdateModelRequest>()
         request.validate()
 
-        ModelService().update(request.id, request.name, request.brandId)
+        modelService.update(request.id, request.name, request.brandId)
 
         return call.respond(HttpStatusCode.OK, "Model successfully updated.")
     }
@@ -53,7 +54,7 @@ class ModelController {
     suspend fun deleteModel(call: ApplicationCall) {
         val modelId = sanitizeId(call.parameters["id"])
 
-        ModelService().delete(modelId)
+        modelService.delete(modelId)
 
         return call.respond(HttpStatusCode.OK, "Model deleted successfully.")
     }

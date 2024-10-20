@@ -16,9 +16,12 @@ import java.io.File
 import java.util.*
 
 class ImageController {
+    private val imageService = ImageService()
+    private val carService = CarService()
+
     suspend fun getImages(call: ApplicationCall) {
         val carId = sanitizeId(call.parameters["id"])
-        val images = ImageService().getByCar(carId)
+        val images = imageService.getByCar(carId)
 
         call.respond(HttpStatusCode.OK, images.map { it.path })
     }
@@ -27,9 +30,9 @@ class ImageController {
         val user = call.user()
         val carId = sanitizeId(call.parameters["id"])
 
-        CarService().ensureCarOwner(user, carId)
-        ImageService().delete(carId)
-        val car = CarService().getCar(carId)
+        carService.ensureCarOwner(user, carId)
+        imageService.delete(carId)
+        val car = carService.getCar(carId)
 
         uploadImages(call.receiveMultipart(), car)
 
@@ -55,7 +58,7 @@ class ImageController {
         val path = "$fileName.$fileExtension"
         val fileBytes = part.provider().readRemaining().readByteArray()
         File("uploads/$path").writeBytes(fileBytes)
-        ImageService().create(path, car)
+        imageService.create(path, car)
     }
 
 }
