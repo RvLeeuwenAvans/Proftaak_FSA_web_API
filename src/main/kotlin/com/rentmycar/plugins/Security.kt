@@ -7,6 +7,7 @@ import com.rentmycar.utils.UserRole
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.auth.jwt.*
+import javax.naming.AuthenticationException
 
 fun Application.configureSecurity() {
     val applicationConfig = environment.config
@@ -42,7 +43,7 @@ fun Application.configureSecurity() {
 
 fun ApplicationCall.user(): User {
     val userId = this.principal<JWTPrincipal>()?.getClaim("id", Int::class)
-        ?: throw IllegalArgumentException("User not authenticated")
+        ?: throw AuthenticationException("User not authenticated")
 
     return UserRepository().getUserById(userId)
 }

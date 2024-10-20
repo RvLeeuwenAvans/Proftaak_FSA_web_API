@@ -4,6 +4,7 @@ import com.rentmycar.BaseTest
 import com.rentmycar.authentication.PasswordHasher
 import com.rentmycar.entities.User
 import com.rentmycar.requests.user.UserLoginRequest
+import com.rentmycar.utils.UserRole
 import io.ktor.client.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
@@ -13,6 +14,7 @@ import kotlinx.serialization.json.Json
 import org.jetbrains.exposed.sql.transactions.transaction
 import kotlin.test.BeforeTest
 import kotlin.test.Test
+import kotlin.test.assertContains
 
 class LoginTest : BaseTest() {
 
@@ -26,6 +28,7 @@ class LoginTest : BaseTest() {
                 username = "johndoe"
                 email = "johndoe@example.com"
                 password = hashedPassword
+                role = UserRole.DEFAULT
             }
         }
     }
@@ -53,14 +56,14 @@ class LoginTest : BaseTest() {
     fun testLoginFailsForInvalidCredentials() = withTestApplication {
         val response = loginUser(client, validLoginRequest.copy(password = "wrongpassword"))
         assertEquals(HttpStatusCode.Unauthorized, response.status)
-        assertEquals("Invalid credentials", response.bodyAsText())
+        assertEquals("{\"error\":\"Password is not correct\"}", response.bodyAsText())
     }
 
     @Test
     fun testLoginFailsForUnregisteredEmail() = withTestApplication {
         val response = loginUser(client, validLoginRequest.copy(email = "unknown@example.com"))
-        assertEquals(HttpStatusCode.Unauthorized, response.status)
-        assertEquals("Invalid credentials", response.bodyAsText())
+        assertEquals(HttpStatusCode.NotFound, response.status)
+        assertContains("{\"error\":\"User with email unknown@example.com not found\"}", response.bodyAsText())
     }
 
     @Test
@@ -73,7 +76,7 @@ class LoginTest : BaseTest() {
         val response = loginUser(client, invalidLoginRequest)
         assertEquals(HttpStatusCode.BadRequest, response.status)
         assertEquals(
-            "Invalid login data: Email must be valid, Password cannot be empty",
+            "{\"errors\":[\"Email must be valid\",\"Password cannot be empty\"]}",
             response.bodyAsText()
         )
     }

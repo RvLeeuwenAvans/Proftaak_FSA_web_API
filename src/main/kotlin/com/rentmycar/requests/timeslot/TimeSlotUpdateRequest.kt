@@ -1,5 +1,6 @@
 package com.rentmycar.requests.timeslot
 
+import com.rentmycar.services.exceptions.RequestValidationException
 import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
@@ -13,7 +14,7 @@ class TimeSlotUpdateRequest(
     @Contextual val availableFrom: LocalDateTime? = null,
     @Contextual val availableUntil: LocalDateTime? = null
 ) {
-    fun validate(): List<String> {
+    fun validate() {
         val errors = mutableListOf<String>()
 
         if (timeSlotId <= 0) errors.add("No time slot Id given")
@@ -32,6 +33,8 @@ class TimeSlotUpdateRequest(
             availableFrom > availableUntil
         ) errors.add("The end of a time slot cannot be before the start")
 
-        return errors
+        if (errors.isNotEmpty()) {
+            throw RequestValidationException(errors)
+        }
     }
 }

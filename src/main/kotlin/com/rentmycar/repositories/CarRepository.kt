@@ -6,6 +6,7 @@ import com.rentmycar.entities.Model
 import com.rentmycar.entities.User
 import com.rentmycar.utils.FuelType
 import com.rentmycar.utils.Transmission
+import io.ktor.server.plugins.*
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.sql.Op
 import org.jetbrains.exposed.sql.and
@@ -13,12 +14,10 @@ import org.jetbrains.exposed.sql.transactions.transaction
 
 class CarRepository {
 
-    // Fetch a car by its ID
-    fun getCarById(carId: Int): Car? = transaction {
-        Car.find { Cars.id eq carId }.singleOrNull()
+    fun getCarById(carId: Int): Car = transaction {
+        Car.find { Cars.id eq carId }.singleOrNull() ?: throw NotFoundException("Car with id $carId not found")
     }
 
-    // Register a new car
     fun registerCar(
         owner: User,
         licensePlate: String,
@@ -46,26 +45,21 @@ class CarRepository {
         year: Int? = null,
         color: String? = null,
         transmission: String? = null,
-        price: Double?= null,
+        price: Double? = null,
         fuel: String? = null,
-    ): Car? = transaction {
+    ): Car = transaction {
         val car = getCarById(id)
 
-        car?.apply {
+        car.apply {
             year?.let { this.year = it }
             color?.let { this.color = it }
             transmission?.let { this.transmission = Transmission.valueOf(it) }
             price?.let { this.price = it }
             fuel?.let { this.fuel = FuelType.valueOf(it) }
         }
-
-        return@transaction car
     }
 
-    fun deleteCar(id: Int) = transaction {
-        val car = getCarById(id)
-        car?.delete()
-    }
+    fun deleteCar(id: Int) = transaction { getCarById(id).delete() }
 
     // TODO: Part of the epic link: https://proftaakfsa1.atlassian.net/browse/KAN-30
     fun getFilteredCars(
@@ -91,15 +85,12 @@ class CarRepository {
         }.toList()
     }
 
-    // Check if a license plate already exists
-    fun doesLicensePlateExist(licensePlate: String) = getCarByLicensePlate(licensePlate) != null
-
-    // Fetch a car by its license plate
-    private fun getCarByLicensePlate(licensePlate: String): Car? = transaction {
+    fun getCarByLicensePlate(licensePlate: String): Car? = transaction {
         Car.find { Cars.licensePlate eq licensePlate }.singleOrNull()
     }
 
     fun getUserCarById(carId: Int, userId: EntityID<Int>): Car = transaction {
-        Car.find { (Cars.id eq carId) and (Cars.user eq userId) }.single()
+        Car.find { (Cars.id eq carId) and (Cars.user eq userId) }.singleOrNull()
+            ?: throw NotFoundException("Car with id $carId not found")
     }
 }

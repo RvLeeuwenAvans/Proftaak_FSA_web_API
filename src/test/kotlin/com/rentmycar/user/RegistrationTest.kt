@@ -41,7 +41,7 @@ class RegistrationTest : BaseTest() {
         // Try to register again with the same email
         val response = registerUser(client, validRegistrationRequest.copy(username = "john"))
         assertEquals(HttpStatusCode.Conflict, response.status)
-        assertEquals("User with this email already exists", response.bodyAsText())
+        assertEquals("{\"error\":\"User with email johndoe@example.com already exists\"}", response.bodyAsText())
     }
 
     @Test
@@ -52,7 +52,7 @@ class RegistrationTest : BaseTest() {
         // Try to register again with the same username
         val response = registerUser(client, validRegistrationRequest.copy(email = "john@example.com"))
         assertEquals(HttpStatusCode.Conflict, response.status)
-        assertEquals("User with this username already exists", response.bodyAsText())
+        assertEquals("{\"error\":\"User with username johndoe already exists\"}", response.bodyAsText())
     }
 
     @Test
@@ -68,7 +68,7 @@ class RegistrationTest : BaseTest() {
         val response = registerUser(client, invalidRegistrationRequest)
         assertEquals(HttpStatusCode.BadRequest, response.status)
         assertEquals(
-            "Invalid registration data: First name cannot be empty, Last name cannot be empty, Username cannot be empty, Email must be valid, Password must be at least 6 characters long",
+            "{\"errors\":[\"First name cannot be empty\",\"Last name cannot be empty\",\"Username cannot be empty\",\"Email must be valid\",\"Password must be at least 6 characters long\"]}",
             response.bodyAsText()
         )
     }

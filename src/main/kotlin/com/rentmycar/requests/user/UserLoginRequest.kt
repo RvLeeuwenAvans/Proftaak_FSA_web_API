@@ -1,5 +1,6 @@
 package com.rentmycar.requests.user
 
+import com.rentmycar.services.exceptions.RequestValidationException
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -7,7 +8,7 @@ data class UserLoginRequest(
     val email: String,
     val password: String
 ) {
-    fun validate(): List<String> {
+    fun validate() {
         val errors = mutableListOf<String>()
 
         if (email.isBlank() || !email.contains("@")) {
@@ -18,6 +19,8 @@ data class UserLoginRequest(
             errors.add("Password cannot be empty")
         }
 
-        return errors
+        if (errors.isNotEmpty()) {
+            throw RequestValidationException(errors)
+        }
     }
 }
