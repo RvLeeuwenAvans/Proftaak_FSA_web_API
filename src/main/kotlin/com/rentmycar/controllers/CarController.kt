@@ -9,6 +9,7 @@ import com.rentmycar.requests.car.RegisterCarRequest
 import com.rentmycar.requests.car.UpdateCarRequest
 import com.rentmycar.services.CarService
 import com.rentmycar.services.ModelService
+import com.rentmycar.utils.LocationData
 import com.rentmycar.utils.sanitizeId
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -43,19 +44,38 @@ class CarController {
         call.respond(HttpStatusCode.OK, "Car updated successfully")
     }
 
-    // TODO: part of the epic link: https://proftaakfsa1.atlassian.net/browse/kan-28
-
     suspend fun getFilteredCars(call: ApplicationCall) {
         val ownerId = sanitizeId(call.request.queryParameters["ownerId"])
+        val category = call.request.queryParameters["category"]
+        val minPrice = call.request.queryParameters["minPrice"]?.toIntOrNull()
+        val maxPrice = call.request.queryParameters["maxPrice"]?.toIntOrNull()
 
-        if (ownerId == -1) return call.respond(
-            HttpStatusCode.BadRequest,
-            "Owner ID is invalid."
-        )
+        val longitude = call.request.queryParameters["longitude"]?.toDoubleOrNull()
+        val latitude = call.request.queryParameters["latitude"]?.toDoubleOrNull()
+        var radius = call.request.queryParameters["radius"]?.toIntOrNull()
+
+        // If radius is provided and not null, we can filter the cars by radius only if
+        // coordinates (longitude and latitude) of the user are provided and valid.
+        // Therefore:
+        if (
+            longitude == null ||
+            latitude == null ||
+            longitude !in -90.0..90.0 ||
+            latitude !in -90.0..90.0
+        ) {
+            radius = null
+        }
 
         val filteredCars = CarRepository().getFilteredCars(
-            ownerId,
-            // etc.
+            ownerId = if (ownerId != -1) ownerId else null,
+            category = category,
+            minPrice = minPrice,
+            maxPrice = maxPrice,
+            locationData = if (radius != null) LocationData(
+                latitude = latitude!!,
+                longitude = longitude!!,
+                radius = radius
+            ) else null,
         )
 
         return call.respond(

@@ -24,8 +24,12 @@ enum class Transmission {
     }
 }
 
-enum class FuelType {
-    DIESEL, PETROL, GAS, ELECTRIC, HYDROGEN;
+enum class FuelType(val category: Category) {
+    DIESEL(Category.ICE),
+    PETROL(Category.ICE),
+    GAS(Category.ICE),
+    ELECTRIC(Category.BEV),
+    HYDROGEN(Category.FCEV);
 
     companion object {
         val fuelTypes by lazy { FuelType.entries.map { it.name } }

@@ -9,8 +9,8 @@ import org.jetbrains.exposed.dao.*
 
 object Locations : IntIdTable() {
     val car = reference("car_id", Cars)
-    val longitude = float("longitude")
-    val latitude = float("latitude")
+    val longitude = double("longitude")
+    val latitude = double("latitude")
 }
 
 class Location(id: EntityID<Int>) : IntEntity(id) {
