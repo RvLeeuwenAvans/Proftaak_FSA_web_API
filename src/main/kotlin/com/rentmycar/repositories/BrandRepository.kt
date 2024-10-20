@@ -2,19 +2,16 @@ package com.rentmycar.repositories
 
 import com.rentmycar.entities.Brand
 import com.rentmycar.entities.Brands
+import com.rentmycar.services.exceptions.NotFoundException
 import org.jetbrains.exposed.sql.transactions.transaction
 
+
 class BrandRepository {
-    fun getBrand(id: Int) = transaction {
-        Brand.find { Brands.id eq id }.singleOrNull()
+
+    fun getBrandById(id: Int): Brand = transaction {
+        Brand.findById(id) ?: throw NotFoundException("Brand with id $id not found")
     }
-    fun getBrand(id: Int?) = transaction {
-        if (id == null) return@transaction null
-        Brand.find { Brands.id eq id }.singleOrNull()
-    }
-    fun getBrand(name: String) = transaction {
-        Brand.find { Brands.name eq name }.singleOrNull()
-    }
+
 
     fun createBrand(name: String): Brand = transaction {
         Brand.new {
@@ -22,25 +19,23 @@ class BrandRepository {
         }
     }
 
-    fun updateBrand(id: Int, name: String): Brand? = transaction {
-        val brand = getBrand(id)
-
-        brand?.apply {
-            this.name = name
-        }
-
-        return@transaction brand
+    fun updateBrand(id: Int, name: String): Brand = transaction {
+        val brand = Brand.findById(id) ?: throw NotFoundException("Brand with id $id not found")
+        brand.name = name
+        brand
     }
 
-    fun deleteBrand(id: Int) = transaction {
-        val brand = getBrand(id)
-        brand?.delete()
+    fun deleteBrand(id: Int): Boolean = transaction {
+        val brand = Brand.findById(id) ?: throw NotFoundException("Brand with id $id not found")
+        brand.delete()
+        true
     }
 
     fun getAllBrands(): List<Brand> = transaction {
         Brand.all().toList()
     }
 
-    fun doesBrandExist(name: String) = getBrand(name) != null
-    fun doesBrandExist(id: Int) = getBrand(id) != null
+    fun doesBrandExistByName(name: String): Boolean = transaction {
+        Brand.find { Brands.name eq name }.singleOrNull() != null
+    }
 }

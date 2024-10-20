@@ -1,22 +1,23 @@
 package com.rentmycar.requests.model
 
+import com.rentmycar.services.exceptions.RequestValidationException
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class UpdateModelRequest (
+data class UpdateModelRequest(
     val id: Int,
-    val name: String? = null,
+    val name: String,
     val brandId: Int,
-    val newBrandId: Int? = null
 ) {
-    fun validate(): List<String> {
+    fun validate() {
         val errors = mutableListOf<String>()
 
         if (id < 0) errors.add("Model ID cannot be negative")
+        if (name.isBlank()) errors.add("Model name cannot be blank")
         if (brandId < 0) errors.add("Brand ID cannot be negative")
-        if (name != null && name.isBlank()) errors.add("Model name cannot be blank")
-        if (newBrandId != null && newBrandId < 0) errors.add("New brand ID cannot be blank")
 
-        return errors
+        if (errors.isNotEmpty()) {
+            throw RequestValidationException(errors)
+        }
     }
 }

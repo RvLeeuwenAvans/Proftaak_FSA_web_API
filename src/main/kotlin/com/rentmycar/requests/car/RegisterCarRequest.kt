@@ -1,9 +1,10 @@
 package com.rentmycar.requests.car
 
+import com.rentmycar.services.exceptions.RequestValidationException
 import com.rentmycar.utils.FuelType.Companion.fuelTypes
 import com.rentmycar.utils.Transmission.Companion.transmissions
 import kotlinx.serialization.Serializable
-import java.util.Calendar
+import java.util.*
 
 @Serializable
 data class RegisterCarRequest(
@@ -15,8 +16,7 @@ data class RegisterCarRequest(
     val transmission: String,
     val price: Double?,
 ) {
-    // Optional: You can add validation logic here
-    fun validate(): List<String> {
+    fun validate() {
         val errors = mutableListOf<String>()
 
         if (licensePlate.isBlank()) errors.add("License plate cannot be blank")
@@ -36,6 +36,8 @@ data class RegisterCarRequest(
 
         if (price != null && price < 0.0) errors.add("Price must be a non-negative number")
 
-        return errors
+        if (errors.isNotEmpty()) {
+            throw RequestValidationException(errors)
+        }
     }
 }

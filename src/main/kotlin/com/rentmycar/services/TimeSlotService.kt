@@ -8,9 +8,6 @@ import com.rentmycar.repositories.TimeSlotRepository
 import com.rentmycar.services.exceptions.NotAllowedException
 import com.rentmycar.services.exceptions.NotFoundException
 import com.rentmycar.services.exceptions.OverlappingTimeSlotException
-import com.rentmycar.services.exceptions.TimeSlotNotFoundException
-import kotlinx.datetime.*
-import com.rentmycar.entities.Notification
 import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
@@ -58,11 +55,7 @@ class TimeSlotService {
         ) throw OverlappingTimeSlotException()
 
         if (isFutureTimeSlot(timeSlotDTO)) throw NotAllowedException("cannot edit an active or past timeslot")
-        if (!CarService().isCarOwner(
-                user,
-                timeSlotDTO.carId
-            )
-        ) throw NotAllowedException("user is not the timeslot's owner")
+        CarService().ensureCarOwner(user, timeSlotDTO.carId)
 
         timeSlotRepository.updateTimeSlot(timeSlot, updatedTimeSlotRange)
     }
@@ -70,11 +63,7 @@ class TimeSlotService {
     fun deleteTimeSlot(id: Int, user: User) {
         val timeSlot = getTimeSlot(id)
         if (isFutureTimeSlot(timeSlot.toDTO())) throw throw NotAllowedException("cannot delete an active or past timeslot")
-        if (!CarService().isCarOwner(
-                user,
-                timeSlot.toDTO().carId
-            )
-        ) throw NotAllowedException("user is not the timeslot's owner")
+        CarService().ensureCarOwner(user, timeSlot.toDTO().carId)
 
         timeSlotRepository.deleteTimeSlot(timeSlot)
     }
@@ -82,38 +71,5 @@ class TimeSlotService {
     private fun isFutureTimeSlot(timeSlot: TimeslotDTO): Boolean {
         val currentTime = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
         return timeSlot.availableFrom <= currentTime
-    }
-}
-class TimeSlotNotificationService(private val notificationRepository: InMemoryNotificationRepository) {
-
-    fun updateTimeSlot(timeSlotId: Long, userId: Long, newStartTime: java.time.LocalDateTime, newEndTime: java.time.LocalDateTime) {
-        // Update timeslot logic...
-
-        // Create notification
-        val notification = Notification(
-            id = generateNotificationId(),
-            userId = userId,
-            message = "Your timeslot has been updated.",
-            timestamp = java.time.LocalDateTime.now()
-        )
-        notificationRepository.createNotification(notification)
-    }
-
-    fun deleteTimeSlot(timeSlotId: Long, userId: Long) {
-        // Delete timeslot logic...
-
-        // Create notification
-        val notification = Notification(
-            id = generateNotificationId(),
-            userId = userId,
-            message = "Your timeslot has been deleted.",
-            timestamp = java.time.LocalDateTime.now()
-        )
-        notificationRepository.createNotification(notification)
-    }
-
-    private fun generateNotificationId(): Long {
-        // Implement a method to generate unique notification IDs
-        return System.currentTimeMillis() // Example implementation
     }
 }

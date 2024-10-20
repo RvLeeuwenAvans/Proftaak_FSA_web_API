@@ -16,6 +16,8 @@ class ImageRepository {
     }
 
     fun getByCar(carId: Int): List<Image> = transaction {
-        Image.find({Images.car eq carId}).toList()
+        Image.find { Images.car eq carId }.toList()
     }
+
+    fun delete(image: Image) = transaction { image.delete() }
 }

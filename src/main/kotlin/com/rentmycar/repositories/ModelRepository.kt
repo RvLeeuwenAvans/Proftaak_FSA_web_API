@@ -1,15 +1,15 @@
 package com.rentmycar.repositories
 
 
-
 import com.rentmycar.entities.Brand
 import com.rentmycar.entities.Model
 import com.rentmycar.entities.Models
+import io.ktor.server.plugins.*
 import org.jetbrains.exposed.sql.transactions.transaction
 
 class ModelRepository {
-    fun getModel(modelId: Int): Model? = transaction {
-        Model.findById(modelId)
+    fun getModel(modelId: Int): Model = transaction {
+        Model.findById(modelId) ?: throw NotFoundException("Model with id $id not found")
     }
 
     fun getAllModels(): List<Model> = transaction {
@@ -20,15 +20,6 @@ class ModelRepository {
         Model.find { Models.brand eq brandId }.toList()
     }
 
-    fun doesBrandContainModel(name: String, brandId: Int): Boolean = transaction {
-        val modelsByBrand = getModelsByBrand(brandId)
-        (modelsByBrand.map { it.name }.contains(name))
-    }
-    fun doesBrandContainModel(modelId: Int, brandId: Int): Boolean = transaction {
-        val modelsByBrand = getModelsByBrand(brandId)
-        (modelsByBrand.map { it.id.value }.contains(modelId))
-    }
-
     fun createModel(name: String, brand: Brand): Model = transaction {
         Model.new {
             this.name = name
@@ -36,21 +27,17 @@ class ModelRepository {
         }
     }
 
-    fun updateModel(id: Int, name: String? = null, brand: Brand? = null): Model? = transaction {
+    fun updateModel(id: Int, name: String, brand: Brand): Model = transaction {
         val model = getModel(id)
 
-        model?.apply {
-            name?.let { this.name = it }
-            brand?.let { this.brand = it }
+        model.apply {
+            name.let { this.name = it }
+            brand.let { this.brand = it }
         }
-
-        return@transaction model
     }
 
     fun deleteModel(id: Int) = transaction {
         val model = getModel(id)
-        model?.delete()
+        model.delete()
     }
-
-    fun doesModelExist(id: Int) = getModel(id) != null
 }

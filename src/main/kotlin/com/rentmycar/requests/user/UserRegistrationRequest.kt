@@ -1,5 +1,6 @@
 package com.rentmycar.requests.user
 
+import com.rentmycar.services.exceptions.RequestValidationException
 import com.rentmycar.utils.UserRole
 import kotlinx.serialization.Serializable
 
@@ -15,7 +16,7 @@ data class UserRegistrationRequest(
     fun generateRole(): UserRole =
         if (this.email.endsWith("@student.avans.nl")) UserRole.ADMIN else UserRole.DEFAULT
 
-    fun validate(): List<String> {
+    fun validate() {
         val errors = mutableListOf<String>()
 
         if (firstName.isBlank()) errors.add("First name cannot be empty")
@@ -24,6 +25,8 @@ data class UserRegistrationRequest(
         if (!email.contains("@")) errors.add("Email must be valid")
         if (password.length < 6) errors.add("Password must be at least 6 characters long")
 
-        return errors
+        if (errors.isNotEmpty()) {
+            throw RequestValidationException(errors)
+        }
     }
 }
