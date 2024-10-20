@@ -11,9 +11,10 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 
 class BrandController {
+    private val brandService = BrandService()
 
     suspend fun getAllBrands(call: ApplicationCall) {
-        val brands = BrandService().getAll()
+        val brands = brandService.getAll()
 
         return call.respond(
             HttpStatusCode.OK,
@@ -25,9 +26,9 @@ class BrandController {
         val request = call.receive<CreateBrandRequest>()
 
         request.validate()
-        BrandService().validateExists(request.name)
+        brandService.validateExists(request.name)
 
-        BrandService().create(request.name)
+        brandService.create(request.name)
         return call.respond(HttpStatusCode.OK, "Brand created successfully.")
     }
 
@@ -35,9 +36,9 @@ class BrandController {
         val request = call.receive<UpdateBrandRequest>()
 
         request.validate()
-        BrandService().validateExists(request.name)
+        brandService.validateExists(request.name)
 
-        BrandService().update(request.id, request.name)
+        brandService.update(request.id, request.name)
 
         return call.respond(HttpStatusCode.OK, "Brand updated successfully.")
     }
@@ -45,7 +46,7 @@ class BrandController {
     suspend fun deleteBrand(call: ApplicationCall) {
         val brandId = sanitizeId(call.parameters["id"])
 
-        BrandService().delete(brandId)
+        brandService.delete(brandId)
 
         return call.respond(HttpStatusCode.OK, "Brand deleted successfully.")
     }
