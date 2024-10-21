@@ -14,6 +14,8 @@ fun Route.carRoutes() {
             put("/update") { carController.updateCar(call) }
             get("/filtered") { carController.getFilteredCars(call) }
             get("/directions") {carController.getDirectionsToCar(call) }
+            get("/tco") {carController.getTotalCostOfOwnsership(call) }
+            get("/ppk") {carController.getPricePerKilometer(call) }
             delete("/delete/{id}") { carController.deleteCar(call) }
         }
     }

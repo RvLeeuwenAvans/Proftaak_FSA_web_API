@@ -9,7 +9,6 @@ import java.util.*
 @Serializable
 data class UpdateCarRequest(
     val carId: Int,
-    // TODO: implement other car properties if needed.
     val year: Int? = null,
     val color: String? = null,
     val transmission: String? = null,

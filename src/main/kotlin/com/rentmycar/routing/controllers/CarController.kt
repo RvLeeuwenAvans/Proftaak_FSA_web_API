@@ -15,6 +15,7 @@ import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
+import io.ktor.server.routing.*
 
 
 class CarController {
@@ -42,6 +43,14 @@ class CarController {
         carService.update(user, updateRequest)
 
         call.respond(HttpStatusCode.OK, "Car updated successfully")
+    }
+
+    suspend fun getTotalCostOfOwnsership(call: RoutingCall) {
+        carService.getTotalCostOfOwnership(user, )
+    }
+
+    suspend fun getPricePerKilometer(call: RoutingCall) {
+        carService.getTotalCostOfOwnership(user, )
     }
 
     suspend fun getFilteredCars(call: ApplicationCall) {

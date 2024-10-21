@@ -8,13 +8,7 @@ enum class UserRole {
     }
 }
 
-enum class Category {
-    ICE, BEV, FCEV;
-
-    companion object {
-        val categories by lazy { Category.entries.map { it.name } }
-    }
-}
+enum class Category { ICE, BEV, FCEV }
 
 enum class Transmission {
     AUTOMATIC, MANUAL;
@@ -24,12 +18,12 @@ enum class Transmission {
     }
 }
 
-enum class FuelType(val category: Category) {
-    DIESEL(Category.ICE),
-    PETROL(Category.ICE),
-    GAS(Category.ICE),
-    ELECTRIC(Category.BEV),
-    HYDROGEN(Category.FCEV);
+enum class FuelType(val category: Category, val pricePerUnit: Int) {
+    DIESEL(Category.ICE, 12),
+    PETROL(Category.ICE, 10),
+    GAS(Category.ICE, 9),
+    ELECTRIC(Category.BEV, 8),
+    HYDROGEN(Category.FCEV, 20);
 
     companion object {
         val fuelTypes by lazy { FuelType.entries.map { it.name } }

@@ -25,22 +25,23 @@ class CarRepository {
         owner: User,
         licensePlate: String,
         model: Model,
-        fuel: String,
+        fuel: FuelType,
         year: Int,
         color: String,
-        transmission: String,
-        price: Double? = 0.0
+        transmission: Transmission,
+        price: Double,
+        category: Category
     ): Car = transaction {
         Car.new {
             this.owner = owner
             this.licensePlate = licensePlate
             this.model = model
-            this.fuel = FuelType.valueOf(fuel.uppercase())
+            this.fuel = fuel
             this.year = year
             this.color = color
-            this.transmission = Transmission.valueOf(transmission.uppercase())
-            this.price = price ?: 0.0
-            this.category = FuelType.valueOf(fuel.uppercase()).category
+            this.transmission = transmission
+            this.price = price
+            this.category = category
         }
     }
 
@@ -48,18 +49,20 @@ class CarRepository {
         id: Int,
         year: Int? = null,
         color: String? = null,
-        transmission: String? = null,
+        transmission: Transmission? = null,
         price: Double? = null,
-        fuel: String? = null,
+        fuel: FuelType? = null,
+        category: Category? = null
     ): Car = transaction {
         val car = getCarById(id)
 
         car.apply {
             year?.let { this.year = it }
             color?.let { this.color = it }
-            transmission?.let { this.transmission = Transmission.valueOf(it) }
+            transmission?.let { this.transmission = it }
             price?.let { this.price = it }
-            fuel?.let { this.fuel = FuelType.valueOf(it) }
+            fuel?.let { this.fuel = it }
+            category?.let { this.category = it }
         }
     }
 
