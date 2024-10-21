@@ -18,5 +18,4 @@ class BrandService {
     }
 
     fun getAll(): List<Brand> = brandRepository.getAllBrands()
-
 }

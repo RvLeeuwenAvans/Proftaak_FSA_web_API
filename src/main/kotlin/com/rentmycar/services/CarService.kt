@@ -4,16 +4,15 @@ import com.rentmycar.entities.Car
 import com.rentmycar.entities.Model
 import com.rentmycar.entities.User
 import com.rentmycar.repositories.CarRepository
-import com.rentmycar.requests.car.RegisterCarRequest
-import com.rentmycar.requests.car.UpdateCarRequest
+import com.rentmycar.routing.controllers.requests.car.RegisterCarRequest
+import com.rentmycar.routing.controllers.requests.car.UpdateCarRequest
 import com.rentmycar.services.exceptions.AlreadyExistsException
 import com.rentmycar.services.exceptions.NotAllowedException
-import com.rentmycar.services.exceptions.NotFoundException
 
 class CarService {
     private val carRepository = CarRepository()
 
-    fun getCar(id: Int) = carRepository.getCarById(id) ?: throw NotFoundException("Car with id: $id not found")
+    fun getCar(id: Int) = carRepository.getCarById(id)
 
     fun delete(user: User, carId: Int) {
         ensureCarOwner(user, carId)
@@ -60,6 +59,4 @@ class CarService {
             updateRequest.fuel
         )
     }
-
-
 }
