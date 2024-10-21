@@ -25,7 +25,8 @@ class CarService {
     }
 
     fun ensureCarOwner(user: User, carId: Int) {
-        if (user != getCar(carId).owner) throw NotAllowedException("User does not own car with id: $carId")
+        if (user.id.value != carRepository.getCarOwner(carId).id.value)
+            throw NotAllowedException("User does not own car with id: $carId")
     }
 
     private fun ensureLicensePlateIsUnique(licensePlate: String) {

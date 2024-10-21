@@ -6,9 +6,10 @@ import org.jetbrains.exposed.dao.id.EntityID
 
 import org.jetbrains.exposed.dao.id.IntIdTable
 import org.jetbrains.exposed.dao.*
+import org.jetbrains.exposed.sql.ReferenceOption
 
 object Locations : IntIdTable() {
-    val car = reference("car_id", Cars)
+    val car = reference("car_id", Cars, ReferenceOption.CASCADE)
     val longitude = double("longitude")
     val latitude = double("latitude")
 }
