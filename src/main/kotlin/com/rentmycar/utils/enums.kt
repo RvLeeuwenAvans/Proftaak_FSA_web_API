@@ -1,7 +1,7 @@
 package com.rentmycar.utils
 
 enum class UserRole {
-    DEFAULT, ADMIN;
+    DEFAULT, ADMIN, USER;
 
     companion object {
         val userRoles by lazy { UserRole.entries.map { it.name } }

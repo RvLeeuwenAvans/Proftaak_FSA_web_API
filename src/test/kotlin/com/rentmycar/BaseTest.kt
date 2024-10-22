@@ -14,7 +14,7 @@ abstract class BaseTest {
     @BeforeTest
     fun setup() {
         testApplication {
-            environment { config = ApplicationConfig("application-test.conf") }
+            environment { config = ApplicationConfig("application.conf") }
             application {
                 configureDatabases()
             }
@@ -23,7 +23,7 @@ abstract class BaseTest {
 
     fun <R> withTestApplication(test: suspend ApplicationTestBuilder.() -> R) {
         testApplication {
-            environment { config = ApplicationConfig("application-test.conf") }
+            environment { config = ApplicationConfig("application.conf") }
             test()
         }
     }

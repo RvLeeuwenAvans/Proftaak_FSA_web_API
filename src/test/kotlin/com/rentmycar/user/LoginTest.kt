@@ -1,22 +1,23 @@
 package com.rentmycar.user
 
 import com.rentmycar.BaseTest
-import com.rentmycar.authentication.PasswordHasher
-import com.rentmycar.entities.User
 import com.rentmycar.requests.user.UserLoginRequest
 import io.ktor.client.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
-import junit.framework.TestCase.assertEquals
 import kotlinx.serialization.json.Json
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import org.jetbrains.exposed.sql.transactions.transaction
-import kotlin.test.BeforeTest
-import kotlin.test.Test
+import com.rentmycar.entities.User
+import com.rentmycar.authentication.PasswordHasher
+import com.rentmycar.utils.UserRole
 
-class LoginTest : BaseTest() {
+class LoginIntegrationTest : BaseTest() {
 
-    @BeforeTest
+    @BeforeEach
     fun setupUser() {
         val hashedPassword = PasswordHasher.hashPassword("password123")
         transaction {
@@ -26,6 +27,7 @@ class LoginTest : BaseTest() {
                 username = "johndoe"
                 email = "johndoe@example.com"
                 password = hashedPassword
+                role = UserRole.USER // Use UserRole enum
             }
         }
     }

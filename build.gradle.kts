@@ -5,6 +5,7 @@ val h2_version: String by project
 val postgres_version: String by project
 
 plugins {
+
     kotlin("jvm") version "2.0.20"
     id("io.ktor.plugin") version "3.0.0-rc-1"
     id("org.jetbrains.kotlin.plugin.serialization") version "2.0.20"
@@ -44,11 +45,19 @@ dependencies {
     implementation("ch.qos.logback:logback-classic:$logback_version")
     implementation("org.jetbrains.exposed:exposed-jdbc:$exposed_version")
     implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.1")
+    implementation(kotlin("stdlib"))
+
 
     testImplementation("io.mockk:mockk:1.12.0")
+    testImplementation("org.mockito:mockito-core:4.0.0")
+    testImplementation("org.mockito:mockito-inline:4.0.0")
     testImplementation("io.ktor:ktor-server-test-host-jvm")
-    testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
+    testImplementation("org.jetbrains.kotlin:kotlin-test-junit5:2.0.20")
     testImplementation("io.ktor:ktor-server-tests:2.0.0")
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.1")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.8.1")
+
+}
+tasks.test {
+    useJUnitPlatform()
 }

@@ -12,10 +12,12 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import kotlinx.datetime.LocalDateTime
-
+import com.rentmycar.services.PhysicsService
 class TimeSlotController {
-    private val timeSlotService = TimeSlotService()
 
+
+    private val timeSlotService = TimeSlotService()
+    private val physicsService = PhysicsService()
     suspend fun createTimeSlot(call: ApplicationCall) {
         try {
             val user = call.user()
@@ -138,5 +140,22 @@ class TimeSlotController {
                 e.message ?: "Internal Server Error"
             )
         }
+    }
+        suspend fun calculateAcceleration(call: ApplicationCall) {
+        val ax = call.parameters["ax"]?.toDoubleOrNull() ?: return call.respond(HttpStatusCode.BadRequest, "Invalid ax")
+        val ay = call.parameters["ay"]?.toDoubleOrNull() ?: return call.respond(HttpStatusCode.BadRequest, "Invalid ay")
+        val az = call.parameters["az"]?.toDoubleOrNull() ?: return call.respond(HttpStatusCode.BadRequest, "Invalid az")
+
+        val magnitude = physicsService.calculateAccelerationMagnitude(ax, ay, az)
+        call.respond(HttpStatusCode.OK, "Acceleration Magnitude: $magnitude")
+    }
+
+    suspend fun calculateVelocity(call: ApplicationCall) {
+        val initialVelocity = call.parameters["initialVelocity"]?.toDoubleOrNull() ?: return call.respond(HttpStatusCode.BadRequest, "Invalid initialVelocity")
+        val acceleration = call.parameters["acceleration"]?.toDoubleOrNull() ?: return call.respond(HttpStatusCode.BadRequest, "Invalid acceleration")
+        val deltaTime = call.parameters["deltaTime"]?.toDoubleOrNull() ?: return call.respond(HttpStatusCode.BadRequest, "Invalid deltaTime")
+
+        val velocity = physicsService.calculateVelocity(initialVelocity, acceleration, deltaTime)
+        call.respond(HttpStatusCode.OK, "Velocity: $velocity")
     }
 }
