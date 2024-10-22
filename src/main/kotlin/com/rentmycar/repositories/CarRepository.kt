@@ -2,6 +2,7 @@ package com.rentmycar.repositories
 
 import com.rentmycar.entities.Car
 import com.rentmycar.entities.Cars
+import com.rentmycar.entities.Location
 import com.rentmycar.entities.Model
 import com.rentmycar.entities.User
 import com.rentmycar.utils.Category
@@ -19,6 +20,11 @@ class CarRepository {
 
     fun getCarById(carId: Int): Car = transaction {
         Car.find { Cars.id eq carId }.singleOrNull() ?: throw NotFoundException("Car with id $carId not found")
+    }
+
+    fun getCarOwner(carId: Int): User = transaction {
+        val car = getCarById(carId)
+        return@transaction car.owner
     }
 
     fun registerCar(
@@ -97,9 +103,14 @@ class CarRepository {
             conditions
         }.toList().filter { car ->
             // Filter by radius.
-            // TODO: test this part as soon as https://proftaakfsa1.atlassian.net/browse/KAN-77 is delivered (for testing convenience).
             if (locationData == null) return@filter true
-            val carLocation = LocationRepository().getByCar(car.id.value)
+
+            var carLocation: Location
+            try {
+                carLocation = LocationRepository().getByCar(car.id.value)
+            } catch (e: Exception) {
+                return@filter false
+            }
 
             val distance = haversine(
                 locationData.latitude,
@@ -107,6 +118,7 @@ class CarRepository {
                 carLocation.latitude,
                 carLocation.longitude
             )
+
             return@filter distance <= locationData.radius.toDouble()
         }
     }
