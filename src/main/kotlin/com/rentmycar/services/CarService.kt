@@ -89,7 +89,7 @@ abstract class CarBO(private val carDAO: CarDAO, private val carRepository: CarR
         fun instatiateBusinessObject(user: User, carId: Int): CarBO {
             val carDAO = CarRepository().getCarById(carId)
 
-            if (user != carDAO.owner) throw NotAllowedException("User does not own car with id: $carId")
+            if (user != carDAO.owner) throw NotAllowedException("$user does not own car with id: $carId")
 
             return when (carDAO.toDTO().fuel) {
                 FuelType.DIESEL, FuelType.PETROL, FuelType.GAS -> InternalCombustionEngine(carDAO)
