@@ -1,6 +1,6 @@
 package com.rentmycar
 
-import com.rentmycar.services.PhysicsService
+import com.rentmycar.controllers.PhysicsService
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 

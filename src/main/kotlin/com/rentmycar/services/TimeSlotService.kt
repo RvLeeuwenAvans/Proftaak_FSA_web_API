@@ -8,10 +8,6 @@ import com.rentmycar.repositories.TimeSlotRepository
 import com.rentmycar.services.exceptions.NotAllowedException
 import com.rentmycar.services.exceptions.NotFoundException
 import com.rentmycar.services.exceptions.OverlappingTimeSlotException
-import kotlin.math.sqrt
-import kotlinx.datetime.*
-import com.rentmycar.entities.Notification
-import com.rentmycar.repositories.InMemoryNotificationRepository
 import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
@@ -75,63 +71,5 @@ class TimeSlotService {
     private fun isFutureTimeSlot(timeSlot: TimeslotDTO): Boolean {
         val currentTime = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
         return timeSlot.availableFrom <= currentTime
-    }
-}
-class TimeSlotNotificationService(private val notificationRepository: InMemoryNotificationRepository) {
-
-    fun updateTimeSlot(timeSlotId: Long, userId: Long, newStartTime: java.time.LocalDateTime, newEndTime: java.time.LocalDateTime) {
-
-
-
-        val notification = Notification(
-            id = generateNotificationId(),
-            userId = userId,
-            message = "Your timeslot has been updated.",
-            timestamp = java.time.LocalDateTime.now()
-        )
-        notificationRepository.createNotification(notification)
-    }
-
-    fun deleteTimeSlot(timeSlotId: Long, userId: Long) {
-        // Delete timeslot logic...
-
-
-        val notification = Notification(
-            id = generateNotificationId(),
-            userId = userId,
-            message = "Your timeslot has been deleted.",
-            timestamp = java.time.LocalDateTime.now()
-        )
-        notificationRepository.createNotification(notification)
-    }
-
-    private fun generateNotificationId(): Long {
-
-        return System.currentTimeMillis()
-    }
-}
-
-
-
-class PhysicsService {
-
-    // Function to calculate the magnitude of acceleration
-    fun calculateAccelerationMagnitude(ax: Double, ay: Double, az: Double): Double {
-        return sqrt(ax * ax + ay * ay + az * az)
-    }
-
-    // Function to calculate the velocity over time
-    fun calculateVelocity(initialVelocity: Double, acceleration: Double, deltaTime: Double): Double {
-        return initialVelocity + acceleration * deltaTime
-    }
-
-    // Function to check if the object is accelerating
-    fun isAccelerating(acceleration: Double): Boolean {
-        return acceleration > 0
-    }
-
-    // Function to check if the object is decelerating
-    fun isDecelerating(acceleration: Double): Boolean {
-        return acceleration < 0
     }
 }

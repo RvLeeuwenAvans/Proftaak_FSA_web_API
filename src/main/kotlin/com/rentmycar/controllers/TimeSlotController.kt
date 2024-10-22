@@ -14,14 +14,13 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import kotlinx.datetime.LocalDateTime
 import java.security.InvalidParameterException
-
-import com.rentmycar.services.PhysicsService
+import com.rentmycar.controllers.PhysicsService
 class TimeSlotController {
     private val timeSlotService = TimeSlotService()
     private val physicsService = PhysicsService()
+
     suspend fun createTimeSlot(call: ApplicationCall) {
         val user = call.user()
-
         val createTimeSlotRequest = call.receive<CreateTimeSlotRequest>()
         createTimeSlotRequest.validate()
 
