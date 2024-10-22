@@ -1,6 +1,7 @@
 package com.rentmycar.entities
 
 import com.rentmycar.responses.CarDTO
+import com.rentmycar.utils.Category
 import com.rentmycar.utils.FuelType
 import com.rentmycar.utils.Transmission
 import org.jetbrains.exposed.dao.id.IntIdTable
@@ -20,6 +21,7 @@ object Cars : IntIdTable() {
     val price = double("price")
     val transmission = enumerationByName("transmission", 50, Transmission::class)
     val fuel = enumerationByName("fuel", 50, FuelType::class)
+    val category = enumerationByName("category", 50, Category::class)
 }
 
 // Car entity class which defines the relationships and fields
@@ -34,6 +36,7 @@ class Car(id: EntityID<Int>) : IntEntity(id) {
     var price by Cars.price
     var transmission by Cars.transmission                                  // Transmission type
     var fuel by Cars.fuel
+    var category by Cars.category
 
     // Expose the owner's ID directly
     val ownerId by Cars.user
@@ -49,7 +52,8 @@ fun Car.toDTO(): CarDTO = transaction {
         year = this@toDTO.year,
         color = this@toDTO.color,
         transmission = this@toDTO.transmission,
-        price = this@toDTO.price
+        price = this@toDTO.price,
+        category = this@toDTO.category,
     )
 }
 

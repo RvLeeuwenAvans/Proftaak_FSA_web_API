@@ -18,7 +18,7 @@ class ReservationService {
         reservationRepository.createReservation(user, timeSlot)
     }
 
-    fun getReservation(id: Int): Reservation =
+    private fun getReservation(id: Int): Reservation =
         reservationRepository.getReservation(id) ?: throw NotFoundException("Reservation with id: $id not found")
 
     fun getReservation(timeSlot: Timeslot): Reservation {

@@ -34,18 +34,18 @@ class UserRepository {
         }
     }
 
-    fun updateUser(user: User, data: UserUpdateRequest) = transaction {
-        data.firstName?.let { user.firstName = it }
-        data.lastName?.let { user.lastName = it }
-        data.username?.let { user.username = it }
-        data.email?.let { user.email = it }
-        data.password?.let { user.password = PasswordHasher.hashPassword(it) }
-        data.role?.let { user.role = UserRole.valueOf(it) }
+    fun updateUser(user: User, data: UserUpdateRequest): User = transaction {
+        user.apply {
+            data.firstName?.let { user.firstName = it }
+            data.lastName?.let { user.lastName = it }
+            data.username?.let { user.username = it }
+            data.email?.let { user.email = it }
+            data.password?.let { user.password = PasswordHasher.hashPassword(it) }
+            data.role?.let { user.role = UserRole.valueOf(it) }
+        }
     }
 
-    fun deleteUser(user: User) = transaction {
-        User[user.id].delete()
-    }
+    fun deleteUser(user: User) = transaction { user.delete() }
 
     fun doesUserExistByEmail(email: String) = getUserByEmail(email) != null
 

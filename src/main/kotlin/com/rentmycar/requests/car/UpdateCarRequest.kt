@@ -1,9 +1,10 @@
 package com.rentmycar.requests.car
 
+import com.rentmycar.services.exceptions.RequestValidationException
 import com.rentmycar.utils.FuelType.Companion.fuelTypes
 import com.rentmycar.utils.Transmission.Companion.transmissions
 import kotlinx.serialization.Serializable
-import java.util.Calendar
+import java.util.*
 
 @Serializable
 data class UpdateCarRequest(
@@ -15,7 +16,7 @@ data class UpdateCarRequest(
     val fuel: String? = null,
     val price: Double? = null,
 ) {
-    fun validate(): List<String> {
+    fun validate() {
         val errors = mutableListOf<String>()
 
         if (carId < 0) errors.add("Car ID is invalid")
@@ -33,6 +34,8 @@ data class UpdateCarRequest(
 
         if (price != null && price < 0.0) errors.add("Price must be a non-negative number")
 
-        return errors
+        if (errors.isNotEmpty()) {
+            throw RequestValidationException(errors)
+        }
     }
 }

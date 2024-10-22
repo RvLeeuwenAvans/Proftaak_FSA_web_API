@@ -59,11 +59,7 @@ class TimeSlotService {
         ) throw OverlappingTimeSlotException()
 
         if (isFutureTimeSlot(timeSlotDTO)) throw NotAllowedException("cannot edit an active or past timeslot")
-        if (!CarService().isCarOwner(
-                user,
-                timeSlotDTO.carId
-            )
-        ) throw NotAllowedException("user is not the timeslot's owner")
+        CarService().ensureCarOwner(user, timeSlotDTO.carId)
 
         timeSlotRepository.updateTimeSlot(timeSlot, updatedTimeSlotRange)
     }
@@ -71,11 +67,7 @@ class TimeSlotService {
     fun deleteTimeSlot(id: Int, user: User) {
         val timeSlot = getTimeSlot(id)
         if (isFutureTimeSlot(timeSlot.toDTO())) throw throw NotAllowedException("cannot delete an active or past timeslot")
-        if (!CarService().isCarOwner(
-                user,
-                timeSlot.toDTO().carId
-            )
-        ) throw NotAllowedException("user is not the timeslot's owner")
+        CarService().ensureCarOwner(user, timeSlot.toDTO().carId)
 
         timeSlotRepository.deleteTimeSlot(timeSlot)
     }

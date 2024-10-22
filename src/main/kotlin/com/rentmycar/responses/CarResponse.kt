@@ -1,5 +1,6 @@
 package com.rentmycar.responses
 
+import com.rentmycar.utils.Category
 import com.rentmycar.utils.FuelType
 import com.rentmycar.utils.Transmission
 import kotlinx.serialization.Serializable
@@ -15,4 +16,5 @@ data class CarDTO (
     val color: String,
     val transmission: Transmission,
     val price: Double,
+    val category: Category,
 )

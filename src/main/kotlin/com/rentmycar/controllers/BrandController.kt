@@ -1,29 +1,20 @@
 package com.rentmycar.controllers
 
 import com.rentmycar.entities.toDTO
-import com.rentmycar.repositories.BrandRepository
 import com.rentmycar.requests.brand.CreateBrandRequest
 import com.rentmycar.requests.brand.UpdateBrandRequest
+import com.rentmycar.services.BrandService
 import com.rentmycar.utils.sanitizeId
 import io.ktor.http.*
-import io.ktor.server.response.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
+import io.ktor.server.response.*
 
 class BrandController {
-    private val brandRepository = BrandRepository()
-
-    private fun validateBrand(errors: List<String>, name: String): String? {
-        if (errors.isNotEmpty()) return "Invalid data: ${errors.joinToString(", ")}."
-
-        if (brandRepository.doesBrandExist(name))
-            return "Brand with name \"${name}\" already exists."
-
-        return null
-    }
+    private val brandService = BrandService()
 
     suspend fun getAllBrands(call: ApplicationCall) {
-        val brands = brandRepository.getAllBrands()
+        val brands = brandService.getAll()
 
         return call.respond(
             HttpStatusCode.OK,
@@ -33,30 +24,21 @@ class BrandController {
 
     suspend fun createBrand(call: ApplicationCall) {
         val request = call.receive<CreateBrandRequest>()
-        val errors = request.validate()
 
-        val validationResult = validateBrand(errors, request.name)
-        if (validationResult != null) return call.respond(
-            HttpStatusCode.BadRequest,
-            validationResult
-        )
+        request.validate()
+        brandService.validateExists(request.name)
 
-        brandRepository.createBrand(name = request.name)
-
+        brandService.create(request.name)
         return call.respond(HttpStatusCode.OK, "Brand created successfully.")
     }
 
     suspend fun updateBrand(call: ApplicationCall) {
         val request = call.receive<UpdateBrandRequest>()
-        val errors = request.validate()
 
-        val validationResult = validateBrand(errors, request.name)
-        if (validationResult != null) return call.respond(
-            HttpStatusCode.BadRequest,
-            validationResult
-        )
+        request.validate()
+        brandService.validateExists(request.name)
 
-        brandRepository.updateBrand(name = request.name, id = request.id)
+        brandService.update(request.id, request.name)
 
         return call.respond(HttpStatusCode.OK, "Brand updated successfully.")
     }
@@ -64,17 +46,8 @@ class BrandController {
     suspend fun deleteBrand(call: ApplicationCall) {
         val brandId = sanitizeId(call.parameters["id"])
 
-        if (brandId == -1) return call.respond(
-            HttpStatusCode.BadRequest,
-            "Brand ID is invalid."
-        )
+        brandService.delete(brandId)
 
-        if (!brandRepository.doesBrandExist(brandId)) return call.respond(
-            HttpStatusCode.NotFound,
-            "Brand with ID \"$brandId\" does not exist."
-        )
-
-        brandRepository.deleteBrand(brandId)
         return call.respond(HttpStatusCode.OK, "Brand deleted successfully.")
     }
 }

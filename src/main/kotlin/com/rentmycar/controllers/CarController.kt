@@ -1,13 +1,15 @@
 package com.rentmycar.controllers
 
-import com.rentmycar.entities.Car
 import com.rentmycar.entities.toDTO
 import com.rentmycar.plugins.user
 import com.rentmycar.repositories.CarRepository
-import com.rentmycar.repositories.ModelRepository
-import com.rentmycar.repositories.TimeSlotRepository
+import com.rentmycar.repositories.LocationRepository
+import com.rentmycar.requests.car.DirectionsToCarRequest
 import com.rentmycar.requests.car.RegisterCarRequest
 import com.rentmycar.requests.car.UpdateCarRequest
+import com.rentmycar.services.CarService
+import com.rentmycar.services.ModelService
+import com.rentmycar.utils.LocationData
 import com.rentmycar.utils.sanitizeId
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -16,114 +18,64 @@ import io.ktor.server.response.*
 
 
 class CarController {
+    private val carService = CarService()
+    private val modelService = ModelService()
 
-    private val carRepository = CarRepository()
-    private val modelRepository = ModelRepository()  // Assuming you have a ModelRepository
-    private val timeslotRepository = TimeSlotRepository()
-
-    /**
-     * Check whether the user is the owner of the car.
-     */
-    private fun isCarOwner(carId: Int, userId: Int) {
-        val foundCar = carRepository.getCarById(carId) ?: throw Error("Car not found.")
-
-        if (foundCar.ownerId.value != userId)
-            throw Error("Only owner of the car can update the car.")
-    }
-    private fun isCarOwner(car: Car, userId: Int) {
-        if (car.ownerId.value != userId) throw error("Only owner of the car can update the car.")
-    }
-
-    // Register a new car
     suspend fun registerCar(call: ApplicationCall) {
         val user = call.user()
 
         val registrationRequest = call.receive<RegisterCarRequest>()
-        val validationErrors = registrationRequest.validate()
+        registrationRequest.validate()
 
-        // Validate the request data
-        if (validationErrors.isNotEmpty()) return call.respond(
-            HttpStatusCode.BadRequest,
-            "Invalid registration data: ${validationErrors.joinToString(", ")}"
-        )
-
-        // Check if the license plate already exists
-        if (carRepository.doesLicensePlateExist(registrationRequest.licensePlate)) return call.respond(
-            HttpStatusCode.Conflict,
-            "License plate is already registered"
-        )
-
-        // Fetch model and fuel by their ids (assuming repositories exist)
-        val model = modelRepository.getModel(registrationRequest.modelId)
-            ?: return call.respond(HttpStatusCode.NotFound, "Model not found")
-
-        // register the car
-        carRepository.registerCar(
-            owner = user,
-            licensePlate = registrationRequest.licensePlate,
-            model = model,
-            fuel = registrationRequest.fuel,
-            year = registrationRequest.year,
-            color = registrationRequest.color,
-            transmission = registrationRequest.transmission,
-            price = registrationRequest.price,
-        )
+        val model = modelService.get(registrationRequest.modelId)
+        carService.register(user, model, registrationRequest)
 
         call.respond(HttpStatusCode.OK, "Car registered successfully")
     }
 
-    /**
-     * Update the car.
-     */
+
     suspend fun updateCar(call: ApplicationCall) {
         val user = call.user()
-        val request = call.receive<UpdateCarRequest>()
-        val validationErrors = request.validate()
+        val updateRequest = call.receive<UpdateCarRequest>()
 
-        // Validate request.
-        if (validationErrors.isNotEmpty()) return call.respond(
-            HttpStatusCode.BadRequest,
-            "invalid registration data: ${validationErrors.joinToString(", ")}."
-        )
-
-        // Make sure the user is the owner of the car.
-        try {
-            isCarOwner(request.carId, user.id.value)
-        } catch (e: Error) {
-            return call.respond(
-                HttpStatusCode.BadRequest,
-                e.message.toString()
-            )
-        }
-
-        // Update the car.
-        carRepository.updateCar(
-            id = request.carId,
-            year = request.year,
-            color = request.color,
-            transmission = request.transmission,
-            fuel = request.fuel,
-            price = request.price,
-        )
+        updateRequest.validate()
+        carService.update(user, updateRequest)
 
         call.respond(HttpStatusCode.OK, "Car updated successfully")
     }
 
-    // TODO: part of the epic link: https://proftaakfsa1.atlassian.net/browse/kan-28
-    /**
-     * Get filtered cars based on some criteria.
-     */
     suspend fun getFilteredCars(call: ApplicationCall) {
-        var ownerId = sanitizeId(call.request.queryParameters["ownerId"])
+        val ownerId = sanitizeId(call.request.queryParameters["ownerId"])
+        val category = call.request.queryParameters["category"]
+        val minPrice = call.request.queryParameters["minPrice"]?.toIntOrNull()
+        val maxPrice = call.request.queryParameters["maxPrice"]?.toIntOrNull()
 
-        if (ownerId == -1) return call.respond(
-            HttpStatusCode.BadRequest,
-            "Owner ID is invalid."
-        )
+        val longitude = call.request.queryParameters["longitude"]?.toDoubleOrNull()
+        val latitude = call.request.queryParameters["latitude"]?.toDoubleOrNull()
+        var radius = call.request.queryParameters["radius"]?.toIntOrNull()
 
-        val filteredCars = carRepository.getFilteredCars(
-            ownerId,
-            // etc.
+        // If radius is provided and not null, we can filter the cars by radius only if
+        // coordinates (longitude and latitude) of the user are provided and valid.
+        // Therefore:
+        if (
+            longitude == null ||
+            latitude == null ||
+            longitude !in -90.0..90.0 ||
+            latitude !in -90.0..90.0
+        ) {
+            radius = null
+        }
+
+        val filteredCars = CarRepository().getFilteredCars(
+            ownerId = if (ownerId != -1) ownerId else null,
+            category = category,
+            minPrice = minPrice,
+            maxPrice = maxPrice,
+            locationData = if (radius != null) LocationData(
+                latitude = latitude!!,
+                longitude = longitude!!,
+                radius = radius
+            ) else null,
         )
 
         return call.respond(
@@ -132,41 +84,22 @@ class CarController {
         )
     }
 
-    /**
-     * Delete the car.
-     */
+    suspend fun getDirectionsToCar(call: ApplicationCall) {
+        val request = call.receive<DirectionsToCarRequest>()
+        request.validate()
+
+        val location = LocationRepository().getByCar(request.carId)
+        return call.respond(
+            "https://www.google.com/maps/dir/?api=1&origin=${request.latitude},${request.longitude}&destination=${location.latitude},${location.longitude}&travelmode=walking"
+        )
+    }
+
     suspend fun deleteCar(call: ApplicationCall) {
         val user = call.user()
         val carId = sanitizeId(call.parameters["id"])
 
-        // Validate the request.
-        if (carId == -1) return call.respond(
-            HttpStatusCode.BadRequest,
-            "Car ID is invalid."
-        )
+        carService.delete(user, carId)
 
-        // Make sure car exists.
-        val foundCar = carRepository.getCarById(carId)
-        if (foundCar == null) return call.respond(HttpStatusCode.NotFound, "Car not found."
-        )
-
-        // Make sure user is the owner of the car.
-        try {
-            isCarOwner(foundCar, user.id.value)
-        } catch (e: Error) {
-            return call.respond(
-                HttpStatusCode.BadRequest,
-                e.message.toString()
-            )
-        }
-
-        // Make sure there are no timeslots linked to the car.
-        if (timeslotRepository.getTimeSlots(foundCar).isNotEmpty()) return call.respond(
-            HttpStatusCode.BadRequest,
-            "Car cannot be deleted while it has linked timeslots."
-        )
-
-        carRepository.deleteCar(carId)
         return call.respond(
             HttpStatusCode.OK,
             "Car deleted successfully."

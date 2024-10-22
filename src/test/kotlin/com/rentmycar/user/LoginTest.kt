@@ -1,23 +1,24 @@
 package com.rentmycar.user
 
 import com.rentmycar.BaseTest
+import com.rentmycar.authentication.PasswordHasher
+import com.rentmycar.entities.User
 import com.rentmycar.requests.user.UserLoginRequest
+import com.rentmycar.utils.UserRole
 import io.ktor.client.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
+import junit.framework.TestCase.assertEquals
 import kotlinx.serialization.json.Json
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Test
 import org.jetbrains.exposed.sql.transactions.transaction
-import com.rentmycar.entities.User
-import com.rentmycar.authentication.PasswordHasher
-import com.rentmycar.utils.UserRole
+import kotlin.test.BeforeTest
+import kotlin.test.Test
+import kotlin.test.assertContains
 
-class LoginIntegrationTest : BaseTest() {
+class LoginTest : BaseTest() {
 
-    @BeforeEach
+    @BeforeTest
     fun setupUser() {
         val hashedPassword = PasswordHasher.hashPassword("password123")
         transaction {
@@ -27,7 +28,7 @@ class LoginIntegrationTest : BaseTest() {
                 username = "johndoe"
                 email = "johndoe@example.com"
                 password = hashedPassword
-                role = UserRole.USER // Use UserRole enum
+                role = UserRole.DEFAULT
             }
         }
     }
@@ -55,14 +56,14 @@ class LoginIntegrationTest : BaseTest() {
     fun testLoginFailsForInvalidCredentials() = withTestApplication {
         val response = loginUser(client, validLoginRequest.copy(password = "wrongpassword"))
         assertEquals(HttpStatusCode.Unauthorized, response.status)
-        assertEquals("Invalid credentials", response.bodyAsText())
+        assertEquals("{\"error\":\"Password is not correct\"}", response.bodyAsText())
     }
 
     @Test
     fun testLoginFailsForUnregisteredEmail() = withTestApplication {
         val response = loginUser(client, validLoginRequest.copy(email = "unknown@example.com"))
-        assertEquals(HttpStatusCode.Unauthorized, response.status)
-        assertEquals("Invalid credentials", response.bodyAsText())
+        assertEquals(HttpStatusCode.NotFound, response.status)
+        assertContains("{\"error\":\"User with email unknown@example.com not found\"}", response.bodyAsText())
     }
 
     @Test
@@ -75,7 +76,7 @@ class LoginIntegrationTest : BaseTest() {
         val response = loginUser(client, invalidLoginRequest)
         assertEquals(HttpStatusCode.BadRequest, response.status)
         assertEquals(
-            "Invalid login data: Email must be valid, Password cannot be empty",
+            "{\"errors\":[\"Email must be valid\",\"Password cannot be empty\"]}",
             response.bodyAsText()
         )
     }
