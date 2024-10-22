@@ -3,6 +3,7 @@ package com.rentmycar.controllers
 import com.rentmycar.dtos.requests.timeslot.CreateTimeSlotRequest
 import com.rentmycar.dtos.requests.timeslot.TimeSlotUpdateRequest
 import com.rentmycar.entities.toDTO
+import com.rentmycar.plugins.user
 import com.rentmycar.services.CarService
 import com.rentmycar.services.TimeSlotService
 import com.rentmycar.utils.sanitizeId
@@ -22,7 +23,7 @@ class TimeSlotController {
         createTimeSlotRequest.validate()
 
         val timeSlotRange = createTimeSlotRequest.availableFrom.rangeUntil(createTimeSlotRequest.availableUntil)
-        timeSlotService.createTimeSlot(createTimeSlotRequest.carId, timeSlotRange)
+        timeSlotService.createTimeSlot(call.user(), createTimeSlotRequest.carId, timeSlotRange)
 
         call.respond(HttpStatusCode.OK, "Timeslot created successfully")
     }
@@ -32,6 +33,7 @@ class TimeSlotController {
         timeSlotUpdateRequest.validate()
 
         timeSlotService.updateTimeSlot(
+            call.user(),
             timeSlotUpdateRequest.timeSlotId,
             timeSlotUpdateRequest.availableFrom,
             timeSlotUpdateRequest.availableUntil
@@ -68,7 +70,7 @@ class TimeSlotController {
     suspend fun removeTimeSlot(call: ApplicationCall) {
 
         val timeslotId = sanitizeId(call.parameters["id"])
-        timeSlotService.deleteTimeSlot(timeslotId)
+        timeSlotService.deleteTimeSlot(call.user(), timeslotId)
 
         call.respond(HttpStatusCode.OK, "Timeslot deleted")
     }

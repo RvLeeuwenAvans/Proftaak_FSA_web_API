@@ -2,6 +2,7 @@ package com.rentmycar.controllers
 
 import com.rentmycar.dtos.requests.location.LocationRequest
 import com.rentmycar.entities.toDTO
+import com.rentmycar.plugins.user
 import com.rentmycar.services.LocationService
 import com.rentmycar.utils.sanitizeId
 import io.ktor.http.*
@@ -23,7 +24,7 @@ class LocationController {
         val request = call.receive<LocationRequest>()
         request.validate()
 
-        locationService.addLocation(request)
+        locationService.addLocation(call.user(), request)
         call.respond(HttpStatusCode.OK, "Location added successfully.")
     }
 
@@ -31,7 +32,7 @@ class LocationController {
         val request = call.receive<LocationRequest>()
         request.validate()
 
-        locationService.updateLocation(request)
+        locationService.updateLocation(call.user(), request)
         call.respond(HttpStatusCode.OK, "Location updated successfully.")
     }
 }
