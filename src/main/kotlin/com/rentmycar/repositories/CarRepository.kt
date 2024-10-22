@@ -117,9 +117,4 @@ class CarRepository {
     fun getCarByLicensePlate(licensePlate: String): Car? = transaction {
         Car.find { Cars.licensePlate eq licensePlate }.singleOrNull()
     }
-
-    fun getUserCarById(carId: Int, userId: EntityID<Int>): Car = transaction {
-        Car.find { (Cars.id eq carId) and (Cars.user eq userId) }.singleOrNull()
-            ?: throw NotFoundException("Car with id $carId not found")
-    }
 }

@@ -1,16 +1,18 @@
 package com.rentmycar.services
 
+import com.rentmycar.dtos.requests.car.RegisterCarRequest
+import com.rentmycar.dtos.requests.car.UpdateCarRequest
+import com.rentmycar.entities.Car
 import com.rentmycar.entities.Model
 import com.rentmycar.entities.User
 import com.rentmycar.entities.toDTO
-import com.rentmycar.entities.Car as CarDAO
 import com.rentmycar.repositories.CarRepository
-import com.rentmycar.dtos.requests.car.RegisterCarRequest
-import com.rentmycar.dtos.requests.car.UpdateCarRequest
 import com.rentmycar.services.exceptions.AlreadyExistsException
 import com.rentmycar.services.exceptions.NotAllowedException
 import com.rentmycar.utils.FuelType
+import com.rentmycar.utils.LocationData
 import com.rentmycar.utils.Transmission
+import com.rentmycar.entities.Car as CarDAO
 
 private const val AVERAGE_KILOMETERS_PER_YEAR = 15000
 
@@ -34,6 +36,41 @@ class CarService {
         ).id.value
 
         return getBusinessObject(user, carId)
+    }
+
+
+    fun getCars(
+        longitude: Double? = null,
+        latitude: Double? = null,
+        radius: Int? = null,
+        ownerId: Int? = null,
+        category: String? = null,
+        minPrice: Int? = null,
+        maxPrice: Int? = null
+    ): List<Car> {
+        var locationData: LocationData? = null
+        // If radius is provided and not null, we can filter the cars by radius only if
+        // coordinates (longitude and latitude) of the user are provided and valid.
+        locationData = radius?.let locationData@{ _radius ->
+            longitude?.let { _longitude -> if (_longitude in -90.0..90.0) return@locationData null }?.let {
+                latitude?.let { _latitude -> if (_latitude in -90.0..90.0) return@locationData null }?.let {
+                    LocationData(
+                        latitude,
+                        longitude,
+                        _radius
+                    )
+                }
+            }
+        }
+
+        val filteredCars = CarRepository().getFilteredCars(
+            ownerId = ownerId,
+            category = category,
+            minPrice = minPrice,
+            maxPrice = maxPrice,
+            locationData = locationData,
+        )
+        return filteredCars
     }
 
     private fun ensureLicensePlateIsUnique(licensePlate: String) {

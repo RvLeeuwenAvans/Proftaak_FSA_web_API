@@ -11,7 +11,7 @@ fun Route.carRoutes() {
     authenticate {
         route("/car") {
             post("/register") { carController.registerCar(call) }
-            get("/{id}") { carController.getFilteredCars(call) }
+            get("/{id}") { carController.getCar(call) }
             get("/all/filtered") { carController.getFilteredCars(call) }
             get("/directions") { carController.getDirectionsToCar(call) }
             put("/update") { carController.updateCar(call) }

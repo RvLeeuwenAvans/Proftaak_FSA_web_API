@@ -7,6 +7,7 @@ import com.rentmycar.repositories.LocationRepository
 import com.rentmycar.dtos.requests.car.DirectionsToCarRequest
 import com.rentmycar.dtos.requests.car.RegisterCarRequest
 import com.rentmycar.dtos.requests.car.UpdateCarRequest
+import com.rentmycar.entities.Car
 import com.rentmycar.services.CarService
 import com.rentmycar.services.ModelService
 import com.rentmycar.utils.LocationData
@@ -81,31 +82,9 @@ class CarController {
 
         val longitude = call.request.queryParameters["longitude"]?.toDoubleOrNull()
         val latitude = call.request.queryParameters["latitude"]?.toDoubleOrNull()
-        var radius = call.request.queryParameters["radius"]?.toIntOrNull()
+        val radius = call.request.queryParameters["radius"]?.toIntOrNull()
 
-        // If radius is provided and not null, we can filter the cars by radius only if
-        // coordinates (longitude and latitude) of the user are provided and valid.
-        // Therefore:
-        if (
-            longitude == null ||
-            latitude == null ||
-            longitude !in -90.0..90.0 ||
-            latitude !in -90.0..90.0
-        ) {
-            radius = null
-        }
-
-        val filteredCars = CarRepository().getFilteredCars(
-            ownerId = if (ownerId != -1) ownerId else null,
-            category = category,
-            minPrice = minPrice,
-            maxPrice = maxPrice,
-            locationData = if (radius != null) LocationData(
-                latitude = latitude!!,
-                longitude = longitude!!,
-                radius = radius
-            ) else null,
-        )
+        val filteredCars = carService.getCars(longitude, latitude, radius, ownerId, category, minPrice, maxPrice)
 
         return call.respond(
             HttpStatusCode.OK,
