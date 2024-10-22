@@ -1,20 +1,18 @@
-package com.rentmycar.controllers.requests.model
+package com.rentmycar.dtos.requests.brand
 
 import com.rentmycar.services.exceptions.RequestValidationException
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class UpdateModelRequest(
-    val id: Int,
+data class UpdateBrandRequest(
     val name: String,
-    val brandId: Int,
+    val id: Int,
 ) {
     fun validate() {
         val errors = mutableListOf<String>()
 
-        if (id < 0) errors.add("Model ID cannot be negative")
-        if (name.isBlank()) errors.add("Model name cannot be blank")
-        if (brandId < 0) errors.add("Brand ID cannot be negative")
+        if (name.isBlank()) errors.add("Brand name cannot be blank")
+        if (id < 0) errors.add("Brand ID cannot be negative")
 
         if (errors.isNotEmpty()) {
             throw RequestValidationException(errors)

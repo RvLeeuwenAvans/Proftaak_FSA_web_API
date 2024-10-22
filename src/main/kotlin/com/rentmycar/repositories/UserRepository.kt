@@ -3,8 +3,8 @@ package com.rentmycar.repositories
 import com.rentmycar.authentication.PasswordHasher
 import com.rentmycar.entities.User
 import com.rentmycar.entities.Users
-import com.rentmycar.controllers.requests.user.UserRegistrationRequest
-import com.rentmycar.controllers.requests.user.UserUpdateRequest
+import com.rentmycar.dtos.requests.user.UserRegistrationRequest
+import com.rentmycar.dtos.requests.user.UserUpdateRequest
 import com.rentmycar.utils.UserRole
 import io.ktor.server.plugins.*
 import org.jetbrains.exposed.sql.transactions.transaction

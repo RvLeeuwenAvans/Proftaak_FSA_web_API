@@ -1,4 +1,4 @@
-package com.rentmycar.controllers.requests.brand
+package com.rentmycar.dtos.requests.brand
 
 import com.rentmycar.services.exceptions.RequestValidationException
 import kotlinx.serialization.Serializable

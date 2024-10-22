@@ -4,9 +4,9 @@ import com.rentmycar.entities.toDTO
 import com.rentmycar.plugins.user
 import com.rentmycar.repositories.CarRepository
 import com.rentmycar.repositories.LocationRepository
-import com.rentmycar.controllers.requests.car.DirectionsToCarRequest
-import com.rentmycar.controllers.requests.car.RegisterCarRequest
-import com.rentmycar.controllers.requests.car.UpdateCarRequest
+import com.rentmycar.dtos.requests.car.DirectionsToCarRequest
+import com.rentmycar.dtos.requests.car.RegisterCarRequest
+import com.rentmycar.dtos.requests.car.UpdateCarRequest
 import com.rentmycar.services.CarService
 import com.rentmycar.services.ModelService
 import com.rentmycar.utils.LocationData

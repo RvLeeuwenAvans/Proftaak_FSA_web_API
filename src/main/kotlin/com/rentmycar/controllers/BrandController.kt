@@ -1,8 +1,8 @@
 package com.rentmycar.controllers
 
 import com.rentmycar.entities.toDTO
-import com.rentmycar.controllers.requests.brand.CreateBrandRequest
-import com.rentmycar.controllers.requests.brand.UpdateBrandRequest
+import com.rentmycar.dtos.requests.brand.CreateBrandRequest
+import com.rentmycar.dtos.requests.brand.UpdateBrandRequest
 import com.rentmycar.services.BrandService
 import com.rentmycar.utils.sanitizeId
 import io.ktor.http.*

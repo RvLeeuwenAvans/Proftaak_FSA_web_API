@@ -1,6 +1,6 @@
 package com.rentmycar.entities
 
-import com.rentmycar.controllers.responses.CarDTO
+import com.rentmycar.dtos.CarDTO
 import com.rentmycar.utils.Category
 import com.rentmycar.utils.FuelType
 import com.rentmycar.utils.Transmission

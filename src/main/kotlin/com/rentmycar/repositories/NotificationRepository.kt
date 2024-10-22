@@ -1,15 +1,15 @@
 package com.rentmycar.repositories
 
-import com.rentmycar.entities.Notification
+import com.rentmycar.dtos.NotificationDTO
 
 class InMemoryNotificationRepository {
-    private val notifications = mutableListOf<Notification>()
+    private val notifications = mutableListOf<NotificationDTO>()
 
-    fun createNotification(notification: Notification) {
+    fun createNotification(notification: NotificationDTO) {
         notifications.add(notification)
     }
 
-    fun getNotificationsByUserId(userId: Long): List<Notification> {
+    fun getNotificationsByUserId(userId: Long): List<NotificationDTO> {
         return notifications.filter { it.userId == userId }
     }
 

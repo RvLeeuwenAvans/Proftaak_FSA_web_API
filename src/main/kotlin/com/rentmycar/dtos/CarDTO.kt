@@ -1,4 +1,4 @@
-package com.rentmycar.controllers.responses
+package com.rentmycar.dtos
 
 import com.rentmycar.utils.Category
 import com.rentmycar.utils.FuelType

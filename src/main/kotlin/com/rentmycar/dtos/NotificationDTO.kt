@@ -1,8 +1,8 @@
-package com.rentmycar.entities
+package com.rentmycar.dtos
 
 import java.time.LocalDateTime
 
-data class Notification(
+data class NotificationDTO(
     val id: Long,
     val userId: Long,
     val message: String,

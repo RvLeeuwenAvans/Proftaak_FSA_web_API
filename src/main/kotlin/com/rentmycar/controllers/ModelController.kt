@@ -1,8 +1,8 @@
 package com.rentmycar.controllers
 
 import com.rentmycar.entities.toDTO
-import com.rentmycar.controllers.requests.model.CreateModelRequest
-import com.rentmycar.controllers.requests.model.UpdateModelRequest
+import com.rentmycar.dtos.requests.model.CreateModelRequest
+import com.rentmycar.dtos.requests.model.UpdateModelRequest
 import com.rentmycar.services.ModelService
 import com.rentmycar.utils.sanitizeId
 import io.ktor.http.*

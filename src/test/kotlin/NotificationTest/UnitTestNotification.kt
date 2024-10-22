@@ -4,7 +4,7 @@ import com.rentmycar.services.TimeSlotNotificationService
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-class TimeSlotNotificationServiceUnitTest {
+class TimeSlotNotificationDTOServiceUnitTest {
 
     private val notificationRepository = InMemoryNotificationRepository()
     private val timeSlotNotificationService = TimeSlotNotificationService(notificationRepository)

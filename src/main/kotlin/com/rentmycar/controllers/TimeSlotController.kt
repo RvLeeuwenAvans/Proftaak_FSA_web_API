@@ -2,8 +2,8 @@ package com.rentmycar.controllers
 
 import com.rentmycar.entities.toDTO
 import com.rentmycar.plugins.user
-import com.rentmycar.controllers.requests.timeslot.CreateTimeSlotRequest
-import com.rentmycar.controllers.requests.timeslot.TimeSlotUpdateRequest
+import com.rentmycar.dtos.requests.timeslot.CreateTimeSlotRequest
+import com.rentmycar.dtos.requests.timeslot.TimeSlotUpdateRequest
 import com.rentmycar.services.CarService
 import com.rentmycar.services.TimeSlotService
 import com.rentmycar.utils.sanitizeId

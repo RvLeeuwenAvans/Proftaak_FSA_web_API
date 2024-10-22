@@ -1,4 +1,4 @@
-package com.rentmycar.controllers.responses
+package com.rentmycar.dtos
 
 import kotlinx.serialization.Serializable
 

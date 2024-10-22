@@ -5,8 +5,8 @@ import com.rentmycar.entities.User
 import com.rentmycar.entities.toDTO
 import com.rentmycar.entities.Car as CarDAO
 import com.rentmycar.repositories.CarRepository
-import com.rentmycar.controllers.requests.car.RegisterCarRequest
-import com.rentmycar.controllers.requests.car.UpdateCarRequest
+import com.rentmycar.dtos.requests.car.RegisterCarRequest
+import com.rentmycar.dtos.requests.car.UpdateCarRequest
 import com.rentmycar.services.exceptions.AlreadyExistsException
 import com.rentmycar.services.exceptions.NotAllowedException
 import com.rentmycar.utils.FuelType

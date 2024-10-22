@@ -1,6 +1,6 @@
 package com.rentmycar.entities
 
-import kotlinx.serialization.Serializable
+import com.rentmycar.dtos.ReservationDTO
 import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
@@ -18,13 +18,6 @@ class Reservation(id: EntityID<Int>) : IntEntity(id) {
     var reservor by User referencedOn Reservations.user
     var timeslot by Timeslot referencedOn Reservations.timeslot
 }
-
-@Serializable
-data class ReservationDTO(
-    val id: Int,
-    val reservorId: Int,
-    val timeslotId: Int
-)
 
 fun Reservation.toDTO(): ReservationDTO = transaction {
     ReservationDTO(

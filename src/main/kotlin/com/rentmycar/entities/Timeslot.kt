@@ -1,8 +1,7 @@
 package com.rentmycar.entities
 
-import kotlinx.datetime.LocalDateTime
+import com.rentmycar.dtos.TimeslotDTO
 import kotlinx.datetime.toKotlinLocalDateTime
-import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.dao.id.IntIdTable
 import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass
@@ -24,14 +23,6 @@ class Timeslot(id: EntityID<Int>) : IntEntity(id) {
     var availableFrom by Timeslots.availableFrom
     var availableUntil by Timeslots.availableUntil
 }
-
-@Serializable
-data class TimeslotDTO(
-    val id: Int,
-    val carId: Int,
-    val availableFrom: LocalDateTime,
-    val availableUntil: LocalDateTime,
-)
 
 fun Timeslot.toDTO(): TimeslotDTO = transaction {
     TimeslotDTO(

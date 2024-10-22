@@ -1,7 +1,7 @@
 package com.rentmycar.services
 
 import com.rentmycar.entities.Car
-import com.rentmycar.entities.TimeslotDTO
+import com.rentmycar.dtos.TimeslotDTO
 import com.rentmycar.entities.User
 import com.rentmycar.entities.toDTO
 import com.rentmycar.repositories.TimeSlotRepository
@@ -37,14 +37,14 @@ class TimeSlotService {
     fun updateTimeSlot(
         timeSlotId: Int,
         user: User,
-        _updatedStartDateTime: LocalDateTime? = null,
-        _updatedEndDateTime: LocalDateTime? = null,
+        startDateTime: LocalDateTime? = null,
+        endDateTime: LocalDateTime? = null,
     ) {
         val timeSlot = getTimeSlot(timeSlotId)
         val timeSlotDTO = timeSlot.toDTO()
 
-        val updatedStartDateTime = _updatedStartDateTime ?: timeSlotDTO.availableFrom
-        val updatedEndDateTime = _updatedEndDateTime ?: timeSlotDTO.availableUntil
+        val updatedStartDateTime = startDateTime ?: timeSlotDTO.availableFrom
+        val updatedEndDateTime = endDateTime ?: timeSlotDTO.availableUntil
 
         val updatedTimeSlotRange = updatedStartDateTime.rangeUntil(updatedEndDateTime)
         val car = CarService.getBusinessObject(user, timeSlotDTO.carId).getCar()
