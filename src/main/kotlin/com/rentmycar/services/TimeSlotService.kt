@@ -17,9 +17,9 @@ class TimeSlotService {
     private val timeSlotRepository = TimeSlotRepository()
 
     fun createTimeSlot(carId: Int, user: User, timeSlotRange: OpenEndRange<LocalDateTime>) {
-        val car = CarService().getCar(carId)
+        val car = CarService.getBusinessObject(user, carId)
 
-        if (user.id.value != car.ownerId.value) throw NotAllowedException("user is not the car's owner")
+        if (user.id.value != car.ensureCarOwner()) throw NotAllowedException("user is not the car's owner")
         if (timeSlotRepository.getOverlappingTimeSlots(car, timeSlotRange)
                 .isNotEmpty()
         ) throw OverlappingTimeSlotException()
@@ -55,7 +55,7 @@ class TimeSlotService {
         ) throw OverlappingTimeSlotException()
 
         if (isFutureTimeSlot(timeSlotDTO)) throw NotAllowedException("cannot edit an active or past timeslot")
-        CarService().ensureCarOwner(user, timeSlotDTO.carId)
+        CarService.ensureCarOwner(user, timeSlotDTO.carId)
 
         timeSlotRepository.updateTimeSlot(timeSlot, updatedTimeSlotRange)
     }

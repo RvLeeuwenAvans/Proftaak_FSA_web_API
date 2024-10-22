@@ -17,7 +17,6 @@ import java.util.*
 
 class ImageController {
     private val imageService = ImageService()
-    private val carService = CarService()
 
     suspend fun getImages(call: ApplicationCall) {
         val carId = sanitizeId(call.parameters["id"])
@@ -30,9 +29,9 @@ class ImageController {
         val user = call.user()
         val carId = sanitizeId(call.parameters["id"])
 
-        carService.ensureCarOwner(user, carId)
+
         imageService.delete(carId)
-        val car = carService.getCar(carId)
+        val car = CarService.getBusinessObject(user, carId).getCar()
 
         UploadService.uploadImages(call.receiveMultipart(), car)
 
