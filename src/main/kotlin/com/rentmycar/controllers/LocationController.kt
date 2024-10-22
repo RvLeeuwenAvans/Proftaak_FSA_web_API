@@ -1,5 +1,6 @@
 package com.rentmycar.controllers
 
+import com.rentmycar.plugins.user
 import com.rentmycar.requests.location.LocationRequest
 import com.rentmycar.services.LocationService
 import io.ktor.http.*
@@ -12,17 +13,19 @@ class LocationController {
 
     suspend fun addLocation(call: ApplicationCall) {
         val request = call.receive<LocationRequest>()
+        val user = call.user()
         request.validate()
 
-        locationService.addLocation(request)
+        locationService.addLocation(request, user)
         call.respond(HttpStatusCode.OK, "Location added successfully.")
     }
 
     suspend fun updateLocation(call: ApplicationCall) {
         val request = call.receive<LocationRequest>()
+        val user = call.user()
         request.validate()
 
-        locationService.updateLocation(request)
+        locationService.updateLocation(request, user)
         call.respond(HttpStatusCode.OK, "Location updated successfully.")
     }
 }

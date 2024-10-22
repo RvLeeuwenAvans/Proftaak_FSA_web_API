@@ -2,6 +2,7 @@ package com.rentmycar.plugins
 
 
 import com.rentmycar.services.exceptions.AlreadyExistsException
+import com.rentmycar.services.exceptions.NotAllowedException
 import com.rentmycar.services.exceptions.NotFoundException
 import com.rentmycar.services.exceptions.RequestValidationException
 import io.ktor.http.*
@@ -17,6 +18,10 @@ fun Application.configureErrorHandling() {
         }
         exception<RequestValidationException> { call, cause ->
             call.respond(HttpStatusCode.BadRequest, mapOf("errors" to cause.errors))
+        }
+
+        exception<NotAllowedException> { call, cause ->
+            call.respond(HttpStatusCode.Forbidden, mapOf("error" to cause.message))
         }
 
         exception<AuthenticationException> { call, cause ->

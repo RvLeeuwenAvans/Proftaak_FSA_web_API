@@ -10,11 +10,11 @@ import com.rentmycar.utils.FuelType
 import com.rentmycar.utils.LocationData
 import com.rentmycar.utils.Transmission
 import com.rentmycar.utils.haversine
-import io.ktor.server.plugins.*
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.sql.Op
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.transactions.transaction
+import com.rentmycar.services.exceptions.NotFoundException
 
 class CarRepository {
 
@@ -63,9 +63,9 @@ class CarRepository {
         car.apply {
             year?.let { this.year = it }
             color?.let { this.color = it }
-            transmission?.let { this.transmission = Transmission.valueOf(it) }
+            transmission?.let { this.transmission = Transmission.valueOf(it.uppercase()) }
             price?.let { this.price = it }
-            fuel?.let { this.fuel = FuelType.valueOf(it) }
+            fuel?.let { this.fuel = FuelType.valueOf(it.uppercase()) }
         }
     }
 
