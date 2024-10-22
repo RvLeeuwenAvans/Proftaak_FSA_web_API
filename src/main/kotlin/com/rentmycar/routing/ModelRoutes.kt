@@ -1,6 +1,6 @@
 package com.rentmycar.routing
 
-import com.rentmycar.routing.controllers.ModelController
+import com.rentmycar.controllers.ModelController
 import io.ktor.server.auth.*
 import io.ktor.server.routing.*
 

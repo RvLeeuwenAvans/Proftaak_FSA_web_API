@@ -1,6 +1,6 @@
 package com.rentmycar.entities
 
-import com.rentmycar.routing.controllers.responses.BrandDTO
+import com.rentmycar.controllers.responses.BrandDTO
 import org.jetbrains.exposed.dao.id.IntIdTable
 import org.jetbrains.exposed.dao.*
 import org.jetbrains.exposed.dao.id.EntityID

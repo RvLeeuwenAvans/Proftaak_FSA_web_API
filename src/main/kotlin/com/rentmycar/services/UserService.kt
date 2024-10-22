@@ -2,8 +2,8 @@ package com.rentmycar.services
 
 import com.rentmycar.entities.User
 import com.rentmycar.repositories.UserRepository
-import com.rentmycar.routing.controllers.requests.user.UserRegistrationRequest
-import com.rentmycar.routing.controllers.requests.user.UserUpdateRequest
+import com.rentmycar.controllers.requests.user.UserRegistrationRequest
+import com.rentmycar.controllers.requests.user.UserUpdateRequest
 import com.rentmycar.services.exceptions.AlreadyExistsException
 import com.rentmycar.services.exceptions.NotFoundException
 import com.rentmycar.utils.UserRole
