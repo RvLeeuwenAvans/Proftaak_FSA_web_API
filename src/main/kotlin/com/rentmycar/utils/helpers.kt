@@ -2,16 +2,18 @@ package com.rentmycar.utils
 
 import kotlin.math.*
 
-fun isNumeric(str: String): Boolean = str.all { char -> char.isDigit() }
+fun String.isNumeric(): Boolean = this.all { char -> char.isDigit() }
 
 fun sanitizeId(id: String? = null): Int =
-    if (id == null || !isNumeric(id)) -1 else id.toInt()
+    if (id == null || !id.isNumeric()) -1 else id.toInt()
 
 data class LocationData(val latitude: Double, val longitude: Double, val radius: Int)
 
 /**
  * Calculates the distance between 2 coordinates given longitude and latitude of both.
  * Will return the result in meters.
+ *
+ * source: https://en.wikipedia.org/wiki/Haversine_formula
  */
 fun haversine(
     startLatitude: Double,

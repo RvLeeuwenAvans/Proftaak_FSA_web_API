@@ -1,13 +1,12 @@
 package com.rentmycar.utils
 
-enum class UserRole {
-    DEFAULT, ADMIN;
+enum class UserRole { DEFAULT, ADMIN; }
 
-    companion object {
-        val userRoles by lazy { UserRole.entries.map { it.name } }
-    }
-}
-
+/**
+ * ICE: Internal combustion engine
+ * BEV: battery electric vehicle
+ * FCEV: Fuel cell electric vehicle
+ */
 enum class Category { ICE, BEV, FCEV }
 
 enum class Transmission {
@@ -18,7 +17,12 @@ enum class Transmission {
     }
 }
 
-enum class FuelType(val category: Category, val pricePerUnit: Int) {
+enum class FuelType(
+    val category: Category,
+    // ideally the price per unit is retrieved live via external tracking API; for the sake of scope & ease
+    // Each fuel has a predefined associated price per unit (kw/h, litre, etc.)
+    val pricePerUnit: Int
+) {
     DIESEL(Category.ICE, 12),
     PETROL(Category.ICE, 10),
     GAS(Category.ICE, 9),
