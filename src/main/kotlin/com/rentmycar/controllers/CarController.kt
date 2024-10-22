@@ -2,15 +2,12 @@ package com.rentmycar.controllers
 
 import com.rentmycar.entities.toDTO
 import com.rentmycar.plugins.user
-import com.rentmycar.repositories.CarRepository
 import com.rentmycar.repositories.LocationRepository
 import com.rentmycar.dtos.requests.car.DirectionsToCarRequest
 import com.rentmycar.dtos.requests.car.RegisterCarRequest
 import com.rentmycar.dtos.requests.car.UpdateCarRequest
-import com.rentmycar.entities.Car
 import com.rentmycar.services.CarService
 import com.rentmycar.services.ModelService
-import com.rentmycar.utils.LocationData
 import com.rentmycar.utils.sanitizeId
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -42,17 +39,16 @@ class CarController {
 
         updateRequest.validate()
 
-        val carBusinessObject = CarService.getBusinessObject(user, updateRequest.carId)
+        val carBusinessObject = CarService.getBusinessObject(updateRequest.carId)
         carBusinessObject.update(user, updateRequest)
 
         call.respond(HttpStatusCode.OK, "Car updated successfully")
     }
 
     suspend fun getCar(call: RoutingCall) {
-        val user = call.user()
         val carId = sanitizeId(call.parameters["id"])
 
-        val carBusinessObject = CarService.getBusinessObject(user, carId).getCar()
+        val carBusinessObject = CarService.getBusinessObject(carId).getCar()
 
         call.respond(HttpStatusCode.OK, carBusinessObject.toDTO())
     }
@@ -61,8 +57,8 @@ class CarController {
         val carId = sanitizeId(call.parameters["id"])
         val user = call.user()
 
-        val carBusinessObject = CarService.getBusinessObject(user, carId)
-        call.respond(HttpStatusCode.OK, carBusinessObject.calculateTotalOwnershipCosts())
+        val carBusinessObject = CarService.getBusinessObject(carId)
+        call.respond(HttpStatusCode.OK, carBusinessObject.calculateTotalOwnershipCosts(user))
     }
 
     suspend fun getPricePerKilometer(call: RoutingCall) {
@@ -70,8 +66,8 @@ class CarController {
         val kilometers = sanitizeId(call.parameters["kilometers"])
         val user = call.user()
 
-        val carBusinessObject = CarService.getBusinessObject(user, carId)
-        call.respond(HttpStatusCode.OK, carBusinessObject.calculatePricePerKilometer(kilometers))
+        val carBusinessObject = CarService.getBusinessObject(carId)
+        call.respond(HttpStatusCode.OK, carBusinessObject.calculatePricePerKilometer(user, kilometers))
     }
 
     suspend fun getFilteredCars(call: ApplicationCall) {
@@ -105,7 +101,7 @@ class CarController {
     suspend fun deleteCar(call: ApplicationCall) {
         val user = call.user()
         val carId = sanitizeId(call.parameters["id"])
-        CarService.getBusinessObject(user, carId).delete()
+        CarService.getBusinessObject(carId).delete(user)
 
         return call.respond(
             HttpStatusCode.OK,

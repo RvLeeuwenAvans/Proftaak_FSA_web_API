@@ -2,7 +2,6 @@ package com.rentmycar.services
 
 import com.rentmycar.entities.Car
 import com.rentmycar.dtos.TimeslotDTO
-import com.rentmycar.entities.User
 import com.rentmycar.entities.toDTO
 import com.rentmycar.repositories.TimeSlotRepository
 import com.rentmycar.services.exceptions.NotAllowedException
@@ -16,8 +15,8 @@ import kotlinx.datetime.toLocalDateTime
 class TimeSlotService {
     private val timeSlotRepository = TimeSlotRepository()
 
-    fun createTimeSlot(carId: Int, user: User, timeSlotRange: OpenEndRange<LocalDateTime>) {
-        val car = CarService.getBusinessObject(user, carId).getCar()
+    fun createTimeSlot(carId: Int, timeSlotRange: OpenEndRange<LocalDateTime>) {
+        val car = CarService.getBusinessObject(carId).getCar()
 
         if (timeSlotRepository.getOverlappingTimeSlots(car, timeSlotRange)
                 .isNotEmpty()
@@ -36,7 +35,6 @@ class TimeSlotService {
 
     fun updateTimeSlot(
         timeSlotId: Int,
-        user: User,
         startDateTime: LocalDateTime? = null,
         endDateTime: LocalDateTime? = null,
     ) {
@@ -47,7 +45,7 @@ class TimeSlotService {
         val updatedEndDateTime = endDateTime ?: timeSlotDTO.availableUntil
 
         val updatedTimeSlotRange = updatedStartDateTime.rangeUntil(updatedEndDateTime)
-        val car = CarService.getBusinessObject(user, timeSlotDTO.carId).getCar()
+        val car = CarService.getBusinessObject(timeSlotDTO.carId).getCar()
 
         if (timeSlotRepository.getOverlappingTimeSlots(car, updatedTimeSlotRange)
                 .any { it.id.value != timeSlotDTO.id }
@@ -58,10 +56,10 @@ class TimeSlotService {
         timeSlotRepository.updateTimeSlot(timeSlot, updatedTimeSlotRange)
     }
 
-    fun deleteTimeSlot(id: Int, user: User) {
+    fun deleteTimeSlot(id: Int) {
         val timeSlot = getTimeSlot(id)
         if (isFutureTimeSlot(timeSlot.toDTO())) throw throw NotAllowedException("cannot delete an active or past timeslot")
-        CarService.getBusinessObject(user, timeSlot.toDTO().carId)
+        CarService.getBusinessObject(timeSlot.toDTO().carId)
 
         timeSlotRepository.deleteTimeSlot(timeSlot)
     }

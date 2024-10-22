@@ -1,16 +1,8 @@
 package com.rentmycar.repositories
 
-import com.rentmycar.entities.Car
-import com.rentmycar.entities.Cars
-import com.rentmycar.entities.Model
-import com.rentmycar.entities.User
-import com.rentmycar.utils.Category
-import com.rentmycar.utils.FuelType
-import com.rentmycar.utils.LocationData
-import com.rentmycar.utils.Transmission
-import com.rentmycar.utils.haversine
+import com.rentmycar.entities.*
+import com.rentmycar.utils.*
 import io.ktor.server.plugins.*
-import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.sql.Op
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -19,6 +11,11 @@ class CarRepository {
 
     fun getCarById(carId: Int): Car = transaction {
         Car.find { Cars.id eq carId }.singleOrNull() ?: throw NotFoundException("Car with id $carId not found")
+    }
+
+    fun getCarOwner(carId: Int): User = transaction {
+        val car = getCarById(carId)
+        return@transaction car.owner
     }
 
     fun registerCar(
@@ -100,9 +97,14 @@ class CarRepository {
             conditions
         }.toList().filter { car ->
             // Filter by radius.
-            // TODO: test this part as soon as https://proftaakfsa1.atlassian.net/browse/KAN-77 is delivered (for testing convenience).
             if (locationData == null) return@filter true
-            val carLocation = LocationRepository().getByCar(car.id.value)
+
+            val carLocation: Location
+            try {
+                carLocation = LocationRepository().getByCar(car.id.value)
+            } catch (e: Exception) {
+                return@filter false
+            }
 
             val distance = haversine(
                 locationData.latitude,
@@ -110,6 +112,7 @@ class CarRepository {
                 carLocation.latitude,
                 carLocation.longitude
             )
+
             return@filter distance <= locationData.radius.toDouble()
         }
     }

@@ -6,11 +6,12 @@ import com.rentmycar.utils.Transmission
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class CarDTO (
+data class CarDTO(
     val id: Int,
     val ownerId: Int,
-    val licensePlate: String,
+    val locationId: Int,
     val model: String,
+    val licensePlate: String,
     val fuel: FuelType,
     val year: Int,
     val color: String,

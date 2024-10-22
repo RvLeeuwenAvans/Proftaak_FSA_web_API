@@ -35,7 +35,7 @@ class CarService {
             fuelType.category
         ).id.value
 
-        return getBusinessObject(user, carId)
+        return getBusinessObject(carId)
     }
 
 
@@ -48,12 +48,11 @@ class CarService {
         minPrice: Int? = null,
         maxPrice: Int? = null
     ): List<Car> {
-        var locationData: LocationData? = null
         // If radius is provided and not null, we can filter the cars by radius only if
         // coordinates (longitude and latitude) of the user are provided and valid.
-        locationData = radius?.let locationData@{ _radius ->
-            longitude?.let { _longitude -> if (_longitude in -90.0..90.0) return@locationData null }?.let {
-                latitude?.let { _latitude -> if (_latitude in -90.0..90.0) return@locationData null }?.let {
+        val locationData: LocationData? = radius?.let locationData@{ _radius ->
+            longitude?.let { if (it in -90.0..90.0) return@locationData null }?.let {
+                latitude?.let {  if (it in -90.0..90.0) return@locationData null }?.let {
                     LocationData(
                         latitude,
                         longitude,
@@ -81,8 +80,8 @@ class CarService {
     }
 
     companion object {
-        fun getBusinessObject(user: User, carId: Int): CarBO {
-            return CarBO.instantiateBusinessObject(user, carId)
+        fun getBusinessObject(carId: Int): CarBO {
+            return CarBO.instantiateBusinessObject(carId)
         }
     }
 }
@@ -97,7 +96,9 @@ abstract class CarBO(private val carDAO: CarDAO, private val carRepository: CarR
 
     fun getCar() = carDAO
 
-    fun delete() {
+    fun delete(user: User) {
+        ensureUserIsCarOwner(user)
+
         val timeslots = TimeSlotService().getTimeSlots(carDAO)
         if (timeslots.isNotEmpty()) {
             throw NotAllowedException("Car can not be deleted when it has linked timeslots")
@@ -106,6 +107,8 @@ abstract class CarBO(private val carDAO: CarDAO, private val carRepository: CarR
     }
 
     fun update(user: User, updateRequest: UpdateCarRequest): CarBO {
+        ensureUserIsCarOwner(user)
+
         val fuelType = updateRequest.fuel?.let { FuelType.valueOf(it.uppercase()) }
 
         carRepository.updateCar(
@@ -118,20 +121,24 @@ abstract class CarBO(private val carDAO: CarDAO, private val carRepository: CarR
             fuelType?.let { fuelType.category }
         )
 
-        return instantiateBusinessObject(user, carId)
+        return instantiateBusinessObject(carId)
     }
 
-    fun calculateTotalOwnershipCosts(): Double {
-        return calculatePricePerKilometer() * AVERAGE_KILOMETERS_PER_YEAR
+    fun calculateTotalOwnershipCosts(user: User): Double {
+        ensureUserIsCarOwner(user)
+        return calculatePricePerKilometer(user) * AVERAGE_KILOMETERS_PER_YEAR
     }
 
-    abstract fun calculatePricePerKilometer(kilometers: Int = 1): Double
+    protected fun ensureUserIsCarOwner(user: User) {
+        if (user.id.value != CarRepository().getCarOwner(carId).id.value)
+            throw NotAllowedException("$user does not own car with id: $carId")
+    }
+
+    abstract fun calculatePricePerKilometer(user: User, kilometers: Int = 1): Double
 
     companion object {
-        fun instantiateBusinessObject(user: User, carId: Int): CarBO {
+        fun instantiateBusinessObject(carId: Int): CarBO {
             val carDAO = CarRepository().getCarById(carId)
-
-            if (user != carDAO.owner) throw NotAllowedException("$user does not own car with id: $carId")
 
             return when (carDAO.toDTO().fuel) {
                 FuelType.DIESEL, FuelType.PETROL, FuelType.GAS -> CarTypes.InternalCombustionEngine(carDAO)
@@ -151,21 +158,27 @@ abstract class CarBO(private val carDAO: CarDAO, private val carRepository: CarR
          */
         private object CarTypes {
             class BatteryElectricVehicle(car: CarDAO) : CarBO(car, CarRepository()) {
-                override fun calculatePricePerKilometer(kilometers: Int): Double =
+                override fun calculatePricePerKilometer(user: User, kilometers: Int): Double {
+                    ensureUserIsCarOwner(user)
                     // the BEV has a fuel efficiency of 0.3 = 30%, so the formula can be read as: (fuel price * 0.3)
-                    getCar().toDTO().fuel.pricePerUnit * (1.0 + (1.0 % 0.3))
+                    return getCar().toDTO().fuel.pricePerUnit * (1.0 + (1.0 % 0.3))
+                }
             }
 
             class InternalCombustionEngine(car: CarDAO) : CarBO(car, CarRepository()) {
-                override fun calculatePricePerKilometer(kilometers: Int): Double =
+                override fun calculatePricePerKilometer(user: User, kilometers: Int): Double {
+                    ensureUserIsCarOwner(user)
                     // the BEV has a fuel efficiency of 0.4 = 30%, so the formula can be read as: (fuel price * 0.4)
-                    getCar().toDTO().fuel.pricePerUnit * (1.0 + (1.0 % 0.4))
+                    return getCar().toDTO().fuel.pricePerUnit * (1.0 + (1.0 % 0.4))
+                }
             }
 
             class FuelCellElectricVehicle(car: CarDAO) : CarBO(car, CarRepository()) {
-                override fun calculatePricePerKilometer(kilometers: Int): Double =
+                override fun calculatePricePerKilometer(user: User, kilometers: Int): Double {
+                    ensureUserIsCarOwner(user)
                     // the BEV has a fuel efficiency of 1.5 = 150%, so the formula can be read as: (fuel price * 1.5)
-                    getCar().toDTO().fuel.pricePerUnit * (1.0 + (1.0 % 1.5))
+                    return getCar().toDTO().fuel.pricePerUnit * (1.0 + (1.0 % 1.5))
+                }
             }
         }
     }

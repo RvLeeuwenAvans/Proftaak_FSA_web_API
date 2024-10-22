@@ -1,7 +1,6 @@
 package com.rentmycar.controllers
 
 import com.rentmycar.entities.Car
-import com.rentmycar.plugins.user
 import com.rentmycar.services.CarService
 import com.rentmycar.services.ImageService
 import com.rentmycar.utils.sanitizeId
@@ -26,12 +25,11 @@ class ImageController {
     }
 
     suspend fun uploadImage(call: ApplicationCall) {
-        val user = call.user()
         val carId = sanitizeId(call.parameters["id"])
 
 
         imageService.delete(carId)
-        val car = CarService.getBusinessObject(user, carId).getCar()
+        val car = CarService.getBusinessObject(carId).getCar()
 
         UploadService.uploadImages(call.receiveMultipart(), car)
 
