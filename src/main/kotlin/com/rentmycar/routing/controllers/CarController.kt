@@ -47,7 +47,16 @@ class CarController {
         call.respond(HttpStatusCode.OK, "Car updated successfully")
     }
 
-    suspend fun getTotalCostOfOwnsership(call: RoutingCall) {
+    suspend fun getCar(call: RoutingCall) {
+        val user = call.user()
+        val carId = sanitizeId(call.parameters["id"])
+
+        val carBusinessObject = CarService.getBusinessObject(user, carId).getCar()
+
+        call.respond(HttpStatusCode.OK, carBusinessObject.toDTO())
+    }
+
+    suspend fun getTotalCostOfOwnership(call: RoutingCall) {
         val carId = sanitizeId(call.parameters["id"])
         val user = call.user()
 
@@ -117,7 +126,6 @@ class CarController {
     suspend fun deleteCar(call: ApplicationCall) {
         val user = call.user()
         val carId = sanitizeId(call.parameters["id"])
-
         CarService.getBusinessObject(user, carId).delete()
 
         return call.respond(

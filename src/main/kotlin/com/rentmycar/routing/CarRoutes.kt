@@ -11,12 +11,16 @@ fun Route.carRoutes() {
     authenticate {
         route("/car") {
             post("/register") { carController.registerCar(call) }
+            get("/{id}") { carController.getFilteredCars(call) }
+            get("/all/filtered") { carController.getFilteredCars(call) }
+            get("/directions") { carController.getDirectionsToCar(call) }
             put("/update") { carController.updateCar(call) }
-            get("/filtered") { carController.getFilteredCars(call) }
-            get("/directions") {carController.getDirectionsToCar(call) }
-            get("/tco") {carController.getTotalCostOfOwnsership(call) }
-            get("/ppk") {carController.getPricePerKilometer(call) }
-            delete("/delete/{id}") { carController.deleteCar(call) }
+            delete("/{id}") { carController.deleteCar(call) }
+
+            route("/{id}/") {
+                get("cost/annual") { carController.getTotalCostOfOwnership(call) }
+                get("cost/kilometer/{kilometers}") { carController.getPricePerKilometer(call) }
+            }
         }
     }
 }
