@@ -16,6 +16,9 @@ class UserService {
         return userRepository.createUser(registrationRequest, role)
     }
 
+    fun getById(id: Int): User =
+        userRepository.getUserById(id)
+
     fun getByEmail(email: String): User =
         userRepository.getUserByEmail(email) ?: throw NotFoundException("User with email $email not found")
 
@@ -24,7 +27,7 @@ class UserService {
 
     private fun checkAlreadyExist(username: String, email: String) {
         when {
-            userRepository.doesUserExistByUsername(username) ->"User with username $username already exists"
+            userRepository.doesUserExistByUsername(username) -> "User with username $username already exists"
             userRepository.doesUserExistByEmail(email) -> "User with email $email already exists"
             else -> return
         }.let { throw AlreadyExistsException(it) }

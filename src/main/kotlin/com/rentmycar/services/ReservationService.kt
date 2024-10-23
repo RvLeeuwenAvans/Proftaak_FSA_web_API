@@ -18,9 +18,6 @@ class ReservationService {
         reservationRepository.createReservation(user, timeSlot)
     }
 
-    private fun getReservation(id: Int): Reservation =
-        reservationRepository.getReservation(id) ?: throw NotFoundException("Reservation with id: $id not found")
-
     fun getReservation(timeSlot: Timeslot): Reservation {
         return reservationRepository.getReservation(timeSlot)
             ?: throw NotFoundException("No Reservation found for timeSlot: ${timeSlot.toDTO().id}")
@@ -35,6 +32,9 @@ class ReservationService {
 
         reservationRepository.deleteReservation(reservation)
     }
+
+    private fun getReservation(id: Int): Reservation =
+        reservationRepository.getReservation(id) ?: throw NotFoundException("Reservation with id: $id not found")
 
     private fun isReservationOwner(user: User, reservation: Reservation): Boolean =
         user.id.value == reservation.toDTO().reservorId

@@ -13,5 +13,6 @@ fun Application.configureRouting() {
         timeSlotRoutes()
         reservationRoutes()
         imageRoutes()
+        notificationRoutes()
     }
 }

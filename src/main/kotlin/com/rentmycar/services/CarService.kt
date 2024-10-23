@@ -158,8 +158,7 @@ abstract class CarBO(private val carDAO: CarDAO, private val carRepository: CarR
          *
          * The formula remains the same for each type:
          *      (fuel price * (1.0 + (difference between 100% fuel efficiency and engine efficiency)))
-         *
-         *      a higher fuel efficiency means, a lower price per kilometer and vice versa.
+         *      ~ a higher fuel efficiency means, a lower price per kilometer and vice versa.
          */
         private object CarTypes {
             class BatteryElectricVehicle(car: CarDAO) : CarBO(car, CarRepository()) {

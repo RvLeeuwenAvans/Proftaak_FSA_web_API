@@ -23,7 +23,6 @@ object Cars : IntIdTable() {
     val transmission = enumerationByName("transmission", 50, Transmission::class)
     val fuel = enumerationByName("fuel", 50, FuelType::class)
     val category = enumerationByName("category", 50, Category::class)
-
 }
 
 // Car entity class which defines the relationships and fields
@@ -40,15 +39,12 @@ class Car(id: EntityID<Int>) : IntEntity(id) {
     var transmission by Cars.transmission                                  // Transmission type
     var fuel by Cars.fuel
     var category by Cars.category
-
-    // Expose the owner's ID directly
-    val ownerId by Cars.user
 }
 
 fun Car.toDTO(): CarDTO = transaction {
     CarDTO(
         id = this@toDTO.id.value,
-        ownerId = this@toDTO.ownerId.value,
+        ownerId = this@toDTO.owner.id.value,
         locationId = this@toDTO.location?.id?.value,
         licensePlate = this@toDTO.licensePlate,
         model = this@toDTO.model.name,
