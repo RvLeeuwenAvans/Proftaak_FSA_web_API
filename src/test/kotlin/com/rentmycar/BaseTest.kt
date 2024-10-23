@@ -1,6 +1,7 @@
 package com.rentmycar
 
 import com.rentmycar.entities.Cars
+import com.rentmycar.entities.Notifications
 import com.rentmycar.entities.Users
 import com.rentmycar.plugins.configureDatabases
 import io.ktor.server.config.*
@@ -34,6 +35,7 @@ abstract class BaseTest {
         transaction {
             Users.deleteAll()
             Cars.deleteAll()
+            Notifications.deleteAll()
         }
     }
 }
