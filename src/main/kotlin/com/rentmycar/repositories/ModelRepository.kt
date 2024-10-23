@@ -36,8 +36,5 @@ class ModelRepository {
         }
     }
 
-    fun deleteModel(id: Int) = transaction {
-        val model = getModel(id)
-        model.delete()
-    }
+    fun deleteModel(id: Int) = transaction { getModel(id).delete() }
 }

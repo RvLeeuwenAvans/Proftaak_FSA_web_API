@@ -9,8 +9,9 @@ fun Route.notificationRoutes() {
     val notificationController = NotificationController()
 
     authenticate {
-        route("/notifications") {
-            get { notificationController.getNotificationsByUserId(call) }
+        route("/notification") {
+            get("/all") { notificationController.getUserNotifications(call) }
+            get("/{id}") { notificationController.getNotification(call) }
             delete("/{id}") { notificationController.deleteNotification(call) }
         }
     }

@@ -6,12 +6,10 @@ import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.transactions.transaction
 
 class ReservationRepository {
-    fun createReservation(reservor: User, timeslot: Timeslot): Reservation {
-        return transaction {
-            Reservation.new {
-                this.reservor = reservor
-                this.timeslot = timeslot
-            }
+    fun createReservation(reservor: User, timeslot: Timeslot): Reservation = transaction {
+        Reservation.new {
+            this.reservor = reservor
+            this.timeslot = timeslot
         }
     }
 

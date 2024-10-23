@@ -27,6 +27,7 @@ fun Application.configureDatabases() {
         SchemaUtils.create(Locations)     // Locations table
         SchemaUtils.create(Images)        // Images table
         SchemaUtils.create(Reservations)  // Reservations table
+        SchemaUtils.create(Notifications) // Notifications table
 
         // Seed tables with default values for testing purposes.
         seedBrandsAndModels()

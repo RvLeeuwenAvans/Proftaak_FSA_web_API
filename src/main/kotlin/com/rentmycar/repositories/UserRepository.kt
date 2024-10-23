@@ -14,7 +14,7 @@ class UserRepository {
         User.find { Users.email eq email }.singleOrNull()
     }
 
-    internal fun getUserById(id: Int): User = transaction {
+    fun getUserById(id: Int): User = transaction {
         User.find { Users.id eq id }.singleOrNull() ?: throw NotFoundException("User with id $id not found")
     }
 

@@ -68,7 +68,6 @@ class TimeSlotController {
     }
 
     suspend fun removeTimeSlot(call: ApplicationCall) {
-
         val timeslotId = sanitizeId(call.parameters["id"])
         timeSlotService.deleteTimeSlot(call.user(), timeslotId)
 

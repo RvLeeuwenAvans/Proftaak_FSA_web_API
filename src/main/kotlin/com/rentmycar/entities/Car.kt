@@ -15,7 +15,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 object Cars : IntIdTable() {
     val user = reference("user_id", Users, ReferenceOption.CASCADE)
     val model = reference("model_id", Models, onDelete = ReferenceOption.NO_ACTION)
-    val location = reference("location_id", Locations, onDelete = ReferenceOption.NO_ACTION)
+    val location = optReference("location_id", Locations, onDelete = ReferenceOption.NO_ACTION)
     val licensePlate = varchar("license_plate", 50).uniqueIndex()
     val year = integer("year")
     val color = varchar("color", 50)
@@ -23,7 +23,6 @@ object Cars : IntIdTable() {
     val transmission = enumerationByName("transmission", 50, Transmission::class)
     val fuel = enumerationByName("fuel", 50, FuelType::class)
     val category = enumerationByName("category", 50, Category::class)
-
 }
 
 // Car entity class which defines the relationships and fields
@@ -32,7 +31,7 @@ class Car(id: EntityID<Int>) : IntEntity(id) {
 
     var owner by User referencedOn Cars.user                               // The owner (user) of the car
     var model by Model referencedOn Cars.model                             // Model of the car
-    var location by Location referencedOn Cars.location
+    var location by Location optionalReferencedOn Cars.location
     var licensePlate by Cars.licensePlate                                  // Car's license plate
     var year by Cars.year                                                  // Manufacturing year
     var color by Cars.color                                                // Color of the car
@@ -40,16 +39,13 @@ class Car(id: EntityID<Int>) : IntEntity(id) {
     var transmission by Cars.transmission                                  // Transmission type
     var fuel by Cars.fuel
     var category by Cars.category
-
-    // Expose the owner's ID directly
-    val ownerId by Cars.user
 }
 
 fun Car.toDTO(): CarDTO = transaction {
     CarDTO(
         id = this@toDTO.id.value,
-        ownerId = this@toDTO.ownerId.value,
-        locationId = this@toDTO.location.id.value,
+        ownerId = this@toDTO.owner.id.value,
+        locationId = this@toDTO.location?.id?.value,
         licensePlate = this@toDTO.licensePlate,
         model = this@toDTO.model.name,
         fuel = this@toDTO.fuel,

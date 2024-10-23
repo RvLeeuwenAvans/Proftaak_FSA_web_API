@@ -2,21 +2,19 @@ package com.rentmycar.services
 
 import com.rentmycar.entities.Car
 import com.rentmycar.dtos.TimeslotDTO
+import com.rentmycar.entities.Timeslot
 import com.rentmycar.entities.User
 import com.rentmycar.entities.toDTO
 import com.rentmycar.repositories.TimeSlotRepository
 import com.rentmycar.services.exceptions.NotAllowedException
 import com.rentmycar.services.exceptions.NotFoundException
 import com.rentmycar.services.exceptions.OverlappingTimeSlotException
-import kotlinx.datetime.Clock
-import kotlinx.datetime.LocalDateTime
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
+import kotlinx.datetime.*
 
 class TimeSlotService {
     private val timeSlotRepository = TimeSlotRepository()
 
-    fun createTimeSlot(user: User, carId: Int, timeSlotRange: OpenEndRange<LocalDateTime>) {
+    fun createTimeSlot(user: User, carId: Int, timeSlotRange: OpenEndRange<LocalDateTime>): Timeslot {
         CarService.ensureUserIsCarOwner(user, carId)
 
         val car = CarService.getBusinessObject(carId).getCar()
@@ -25,7 +23,7 @@ class TimeSlotService {
                 .isNotEmpty()
         ) throw OverlappingTimeSlotException()
 
-        timeSlotRepository.createTimeSlot(car, timeSlotRange)
+        return timeSlotRepository.createTimeSlot(car, timeSlotRange)
     }
 
     fun getTimeSlot(id: Int) =
@@ -60,15 +58,17 @@ class TimeSlotService {
         if (isFutureTimeSlot(timeSlotDTO)) throw NotAllowedException("cannot edit an active or past timeslot")
 
         timeSlotRepository.updateTimeSlot(timeSlot, updatedTimeSlotRange)
+        NotificationService().createTimeSlotUpdatedNotification(timeSlotId, timeSlotDTO, updatedTimeSlotRange)
     }
 
-    fun deleteTimeSlot(user: User, id: Int) {
-        val timeSlot = getTimeSlot(id)
+    fun deleteTimeSlot(user: User, timeSlotId: Int) {
+        val timeSlot = getTimeSlot(timeSlotId)
         if (isFutureTimeSlot(timeSlot.toDTO())) throw throw NotAllowedException("cannot delete an active or past timeslot")
 
         CarService.ensureUserIsCarOwner(user, timeSlot.toDTO().carId)
-        CarService.getBusinessObject(timeSlot.toDTO().carId)
+        val car = CarService.getBusinessObject(timeSlot.toDTO().carId).getCar()
 
+        NotificationService().createTimeSlotDeletedNotification(timeSlotId, car)
         timeSlotRepository.deleteTimeSlot(timeSlot)
     }
 
