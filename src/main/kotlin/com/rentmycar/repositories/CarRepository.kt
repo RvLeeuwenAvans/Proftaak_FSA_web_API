@@ -1,8 +1,8 @@
 package com.rentmycar.repositories
 
 import com.rentmycar.entities.*
+import com.rentmycar.services.exceptions.NotFoundException
 import com.rentmycar.utils.*
-import io.ktor.server.plugins.*
 import org.jetbrains.exposed.sql.Op
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.transactions.transaction
