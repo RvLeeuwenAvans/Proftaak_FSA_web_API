@@ -9,6 +9,7 @@ import com.rentmycar.entities.toDTO
 import com.rentmycar.repositories.CarRepository
 import com.rentmycar.services.exceptions.AlreadyExistsException
 import com.rentmycar.services.exceptions.NotAllowedException
+import com.rentmycar.utils.Category.Companion.categories
 import com.rentmycar.utils.FuelType
 import com.rentmycar.utils.LocationData
 import com.rentmycar.utils.Transmission
@@ -27,13 +28,13 @@ class CarService {
     fun register(user: User, model: Model, registrationRequest: RegisterCarRequest): CarBO {
         ensureLicensePlateIsUnique(registrationRequest.licensePlate)
 
-        val fuelType = registrationRequest.transmission.let { FuelType.valueOf(it.uppercase()) }
+        val fuelType = registrationRequest.fuel.let { FuelType.valueOf(it.uppercase()) }
 
         val carId = carRepository.registerCar(
             user,
             registrationRequest.licensePlate,
             model,
-            registrationRequest.fuel.let { FuelType.valueOf(it.uppercase()) },
+            fuelType,
             registrationRequest.year,
             registrationRequest.color,
             registrationRequest.transmission.let { Transmission.valueOf(it.uppercase()) },
@@ -54,27 +55,25 @@ class CarService {
         minPrice: Int? = null,
         maxPrice: Int? = null
     ): List<Car> {
+        var _radius = radius
         // If radius is provided and not null, we can filter the cars by radius only if
         // coordinates (longitude and latitude) of the user are provided and valid.
-        val locationData: LocationData? = radius?.let locationData@{ _radius ->
-            longitude?.let { if (it in -90.0..90.0) return@locationData null }?.let {
-                latitude?.let { if (it in -90.0..90.0) return@locationData null }?.let {
-                    LocationData(
-                        latitude,
-                        longitude,
-                        _radius
-                    )
-                }
-            }
-        }
+        // Therefore:
+        if (longitude == null || latitude == null || longitude !in -90.0..90.0 || latitude !in -90.0..90.0)
+            _radius = null
 
         val filteredCars = CarRepository().getFilteredCars(
-            ownerId = ownerId,
-            category = category,
+            ownerId = if (ownerId != -1) ownerId else null,
+            category = if (categories.contains(category?.uppercase())) category else null,
             minPrice = minPrice,
             maxPrice = maxPrice,
-            locationData = locationData,
+            locationData = if (_radius != null) LocationData(
+                latitude = latitude!!,
+                longitude = longitude!!,
+                radius = _radius
+            ) else null,
         )
+
         return filteredCars
     }
 
@@ -88,7 +87,7 @@ class CarService {
     companion object {
         fun ensureUserIsCarOwner(user: User, carId: Int) {
             if (user.id.value != CarRepository().getCarOwner(carId).id.value)
-                throw NotAllowedException("$user does not own car with id: $carId")
+                throw NotAllowedException("User does not own car with id: $carId")
         }
 
         fun getBusinessObject(carId: Int): CarBO {

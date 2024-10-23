@@ -7,7 +7,13 @@ enum class UserRole { DEFAULT, ADMIN; }
  * BEV: battery electric vehicle
  * FCEV: Fuel cell electric vehicle
  */
-enum class Category { ICE, BEV, FCEV }
+enum class Category {
+    ICE, BEV, FCEV;
+
+    companion object {
+        val categories by lazy { Category.entries.map { it.name } }
+    }
+}
 
 enum class Transmission {
     AUTOMATIC, MANUAL;

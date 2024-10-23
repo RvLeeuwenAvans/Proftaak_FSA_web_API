@@ -2,8 +2,8 @@ package com.rentmycar.user
 
 import com.rentmycar.BaseTest
 import com.rentmycar.authentication.PasswordHasher
+import com.rentmycar.dtos.requests.user.UserLoginRequest
 import com.rentmycar.entities.User
-import com.rentmycar.requests.user.UserLoginRequest
 import com.rentmycar.utils.UserRole
 import io.ktor.client.*
 import io.ktor.client.request.*

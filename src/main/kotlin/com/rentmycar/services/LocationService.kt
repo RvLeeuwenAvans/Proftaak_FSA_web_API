@@ -1,9 +1,8 @@
 package com.rentmycar.services
 
-import com.rentmycar.entities.toDTO
-import com.rentmycar.repositories.LocationRepository
 import com.rentmycar.dtos.requests.location.LocationRequest
 import com.rentmycar.entities.User
+import com.rentmycar.repositories.LocationRepository
 
 class LocationService {
     private val locationRepository = LocationRepository()
@@ -20,9 +19,8 @@ class LocationService {
     fun updateLocation(user: User, request: LocationRequest) {
         CarService.ensureUserIsCarOwner(user, request.carId)
 
-        val car = CarService.getBusinessObject(request.carId).getCar()
         locationRepository.updateLocation(
-            carId = car.toDTO().id,
+            carId = request.carId,
             longitude = request.longitude,
             latitude = request.latitude
         )

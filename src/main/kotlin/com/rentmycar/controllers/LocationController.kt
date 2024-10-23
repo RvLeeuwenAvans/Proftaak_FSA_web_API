@@ -22,17 +22,19 @@ class LocationController {
 
     suspend fun addLocation(call: ApplicationCall) {
         val request = call.receive<LocationRequest>()
+        val user = call.user()
         request.validate()
 
-        locationService.addLocation(call.user(), request)
+        locationService.addLocation(user, request)
         call.respond(HttpStatusCode.OK, "Location added successfully.")
     }
 
     suspend fun updateLocation(call: ApplicationCall) {
         val request = call.receive<LocationRequest>()
+        val user = call.user()
         request.validate()
 
-        locationService.updateLocation(call.user(), request)
+        locationService.updateLocation(user, request)
         call.respond(HttpStatusCode.OK, "Location updated successfully.")
     }
 }
