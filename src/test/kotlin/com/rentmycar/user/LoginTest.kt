@@ -16,7 +16,7 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertContains
 
-class LoginIntegrationTest : BaseTest() {
+class LoginTest : BaseTest() {
 
     @BeforeTest
     fun setupUser() {

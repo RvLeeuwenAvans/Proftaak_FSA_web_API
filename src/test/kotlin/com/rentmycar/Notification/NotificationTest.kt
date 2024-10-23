@@ -15,7 +15,7 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-class NotificationIntegrationTest : BaseTest() {
+class NotificationTest : BaseTest() {
 
     private val notificationRepository = NotificationRepository()
     private val timeSlotNotificationService = TimeSlotService()

@@ -10,7 +10,7 @@ import junit.framework.TestCase.assertEquals
 import kotlinx.serialization.json.Json
 import kotlin.test.Test
 
-class RegistrationIntegrationTest : BaseTest() {
+class RegistrationTest : BaseTest() {
 
     private val validRegistrationRequest = UserRegistrationRequest(
         firstName = "John",
