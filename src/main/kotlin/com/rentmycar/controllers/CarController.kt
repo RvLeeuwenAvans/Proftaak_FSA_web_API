@@ -9,6 +9,7 @@ import com.rentmycar.requests.car.RegisterCarRequest
 import com.rentmycar.requests.car.UpdateCarRequest
 import com.rentmycar.services.CarService
 import com.rentmycar.services.ModelService
+import com.rentmycar.utils.Category.Companion.categories
 import com.rentmycar.utils.LocationData
 import com.rentmycar.utils.sanitizeId
 import io.ktor.http.*
@@ -46,13 +47,17 @@ class CarController {
 
     suspend fun getFilteredCars(call: ApplicationCall) {
         val ownerId = sanitizeId(call.request.queryParameters["ownerId"])
-        val category = call.request.queryParameters["category"]
+        var category = call.request.queryParameters["category"]
         val minPrice = call.request.queryParameters["minPrice"]?.toIntOrNull()
         val maxPrice = call.request.queryParameters["maxPrice"]?.toIntOrNull()
 
         val longitude = call.request.queryParameters["longitude"]?.toDoubleOrNull()
         val latitude = call.request.queryParameters["latitude"]?.toDoubleOrNull()
         var radius = call.request.queryParameters["radius"]?.toIntOrNull()
+
+        if (!categories.contains(category?.uppercase())) {
+            category = null
+        }
 
         // If radius is provided and not null, we can filter the cars by radius only if
         // coordinates (longitude and latitude) of the user are provided and valid.

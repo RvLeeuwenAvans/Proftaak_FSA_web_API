@@ -1,5 +1,6 @@
 package com.rentmycar
 
+import com.rentmycar.entities.Cars
 import com.rentmycar.entities.Users
 import com.rentmycar.plugins.configureDatabases
 import io.ktor.server.config.*
@@ -32,6 +33,7 @@ abstract class BaseTest {
     fun tearDown() {
         transaction {
             Users.deleteAll()
+            Cars.deleteAll()
         }
     }
 }
