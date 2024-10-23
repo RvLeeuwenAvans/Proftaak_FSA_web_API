@@ -1,4 +1,4 @@
-package com.rentmycar.responses
+package com.rentmycar.dtos
 
 import com.rentmycar.utils.Category
 import com.rentmycar.utils.FuelType
@@ -6,11 +6,12 @@ import com.rentmycar.utils.Transmission
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class CarDTO (
+data class CarDTO(
     val id: Int,
     val ownerId: Int,
-    val licensePlate: String,
+    val locationId: Int? = null,
     val model: String,
+    val licensePlate: String,
     val fuel: FuelType,
     val year: Int,
     val color: String,

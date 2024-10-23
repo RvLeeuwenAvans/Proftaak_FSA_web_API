@@ -4,9 +4,9 @@ import com.auth0.jwt.JWT
 import com.rentmycar.authentication.JWTConfig
 import com.rentmycar.authentication.PasswordHasher
 import com.rentmycar.plugins.user
-import com.rentmycar.requests.user.UserLoginRequest
-import com.rentmycar.requests.user.UserRegistrationRequest
-import com.rentmycar.requests.user.UserUpdateRequest
+import com.rentmycar.dtos.requests.user.UserLoginRequest
+import com.rentmycar.dtos.requests.user.UserRegistrationRequest
+import com.rentmycar.dtos.requests.user.UserUpdateRequest
 import com.rentmycar.services.UserService
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -22,7 +22,6 @@ class UserController(private val config: JWTConfig) {
         val registrationRequest = call.receive<UserRegistrationRequest>()
         registrationRequest.validate()
 
-        userService.checkAlreadyExist(registrationRequest.username, registrationRequest.email);
         userService.create(registrationRequest, registrationRequest.generateRole())
 
         call.respond(HttpStatusCode.OK, "User registered successfully")

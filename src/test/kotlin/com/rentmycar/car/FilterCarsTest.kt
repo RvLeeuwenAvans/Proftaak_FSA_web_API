@@ -1,20 +1,15 @@
 package com.rentmycar.car
 
-import com.rentmycar.requests.location.LocationRequest
-import com.rentmycar.requests.user.UserRegistrationRequest
-import com.rentmycar.responses.CarDTO
+import com.rentmycar.dtos.CarDTO
+import com.rentmycar.dtos.requests.location.LocationRequest
+import com.rentmycar.dtos.requests.user.UserRegistrationRequest
 import com.rentmycar.utils.Category
 import com.rentmycar.utils.FuelType
 import com.rentmycar.utils.Transmission
-import io.ktor.client.HttpClient
-import io.ktor.client.request.accept
-import io.ktor.client.request.get
-import io.ktor.client.request.headers
-import io.ktor.client.statement.bodyAsText
-import io.ktor.http.ContentType
-import io.ktor.http.HttpHeaders
-import io.ktor.http.HttpStatusCode
-import io.ktor.http.contentType
+import io.ktor.client.*
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
+import io.ktor.http.*
 import kotlinx.serialization.json.Json
 import kotlin.random.Random
 import kotlin.test.Test
@@ -52,7 +47,7 @@ class FilterCarsTest: CarTestBase(
     ): FilterResponse {
         val token = getToken(client)
 
-        val response = client.get("/car/filtered$filters") {
+        val response = client.get("/car/all/filtered$filters") {
             contentType(ContentType.Application.Json)
             accept(ContentType.Application.Json)
             headers {

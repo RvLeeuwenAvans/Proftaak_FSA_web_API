@@ -1,27 +1,21 @@
 package com.rentmycar.car
 
+import com.rentmycar.dtos.requests.car.UpdateCarRequest
+import com.rentmycar.dtos.requests.user.UserRegistrationRequest
 import com.rentmycar.entities.Cars
-import com.rentmycar.requests.car.UpdateCarRequest
-import com.rentmycar.requests.user.UserRegistrationRequest
 import com.rentmycar.utils.Category
 import com.rentmycar.utils.FuelType
 import com.rentmycar.utils.Transmission
-import io.ktor.client.HttpClient
-import io.ktor.client.request.headers
-import io.ktor.client.request.put
-import io.ktor.client.request.setBody
-import io.ktor.client.statement.HttpResponse
-import io.ktor.client.statement.bodyAsText
-import io.ktor.http.ContentType
-import io.ktor.http.HttpHeaders
-import io.ktor.http.HttpStatusCode
-import io.ktor.http.contentType
+import io.ktor.client.*
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
+import io.ktor.http.*
 import junit.framework.TestCase.assertEquals
 import kotlinx.serialization.json.Json
 import org.jetbrains.exposed.sql.deleteAll
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.junit.Test
-import java.util.Calendar
+import java.util.*
 import kotlin.random.Random
 import kotlin.test.AfterTest
 

@@ -1,4 +1,4 @@
-package com.rentmycar.requests.user
+package com.rentmycar.dtos.requests.user
 
 import kotlinx.serialization.Serializable
 

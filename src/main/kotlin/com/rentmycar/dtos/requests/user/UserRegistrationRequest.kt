@@ -1,4 +1,4 @@
-package com.rentmycar.requests.user
+package com.rentmycar.dtos.requests.user
 
 import com.rentmycar.services.exceptions.RequestValidationException
 import com.rentmycar.utils.UserRole

@@ -1,4 +1,4 @@
-package com.rentmycar.requests.car
+package com.rentmycar.dtos.requests.car
 
 import com.rentmycar.services.exceptions.RequestValidationException
 import com.rentmycar.utils.FuelType.Companion.fuelTypes
@@ -14,7 +14,7 @@ data class RegisterCarRequest(
     val year: Int,
     val color: String,
     val transmission: String,
-    val price: Double?,
+    val price: Double,
 ) {
     fun validate() {
         val errors = mutableListOf<String>()
@@ -34,7 +34,7 @@ data class RegisterCarRequest(
         if (!transmissions.contains(transmission.uppercase()))
             errors.add("Transmission is invalid")
 
-        if (price != null && price < 0.0) errors.add("Price must be a non-negative number")
+        if (price < 0.0) errors.add("Price must be a non-negative number")
 
         if (errors.isNotEmpty()) {
             throw RequestValidationException(errors)

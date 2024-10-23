@@ -1,9 +1,9 @@
 package com.rentmycar.controllers
 
+import com.rentmycar.dtos.requests.timeslot.CreateTimeSlotRequest
+import com.rentmycar.dtos.requests.timeslot.TimeSlotUpdateRequest
 import com.rentmycar.entities.toDTO
 import com.rentmycar.plugins.user
-import com.rentmycar.requests.timeslot.CreateTimeSlotRequest
-import com.rentmycar.requests.timeslot.TimeSlotUpdateRequest
 import com.rentmycar.services.CarService
 import com.rentmycar.services.TimeSlotService
 import com.rentmycar.utils.sanitizeId
@@ -19,25 +19,22 @@ class TimeSlotController {
     private val timeSlotService = TimeSlotService()
 
     suspend fun createTimeSlot(call: ApplicationCall) {
-        val user = call.user()
-
         val createTimeSlotRequest = call.receive<CreateTimeSlotRequest>()
         createTimeSlotRequest.validate()
 
         val timeSlotRange = createTimeSlotRequest.availableFrom.rangeUntil(createTimeSlotRequest.availableUntil)
-        timeSlotService.createTimeSlot(createTimeSlotRequest.carId, user, timeSlotRange)
+        timeSlotService.createTimeSlot(call.user(), createTimeSlotRequest.carId, timeSlotRange)
 
         call.respond(HttpStatusCode.OK, "Timeslot created successfully")
     }
 
     suspend fun updateTimeSlot(call: ApplicationCall) {
-        val user = call.user()
         val timeSlotUpdateRequest = call.receive<TimeSlotUpdateRequest>()
         timeSlotUpdateRequest.validate()
 
         timeSlotService.updateTimeSlot(
+            call.user(),
             timeSlotUpdateRequest.timeSlotId,
-            user,
             timeSlotUpdateRequest.availableFrom,
             timeSlotUpdateRequest.availableUntil
         )
@@ -64,17 +61,16 @@ class TimeSlotController {
     suspend fun getTimeslotsByCarId(call: RoutingCall) {
         val carId = sanitizeId(call.parameters["carId"])
 
-        val car = CarService().getCar(carId)
-        val timeslots = timeSlotService.getTimeSlots(car)
+        val car = CarService.getBusinessObject(carId)
+        val timeslots = timeSlotService.getTimeSlots(car.getCar())
 
         call.respond(HttpStatusCode.OK, timeslots.map { it.toDTO() })
     }
 
     suspend fun removeTimeSlot(call: ApplicationCall) {
-        val user = call.user()
 
         val timeslotId = sanitizeId(call.parameters["id"])
-        timeSlotService.deleteTimeSlot(timeslotId, user)
+        timeSlotService.deleteTimeSlot(call.user(), timeslotId)
 
         call.respond(HttpStatusCode.OK, "Timeslot deleted")
     }

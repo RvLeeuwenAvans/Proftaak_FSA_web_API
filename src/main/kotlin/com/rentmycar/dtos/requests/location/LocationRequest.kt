@@ -1,4 +1,4 @@
-package com.rentmycar.requests.location
+package com.rentmycar.dtos.requests.location
 
 import com.rentmycar.services.exceptions.RequestValidationException
 import kotlinx.serialization.Serializable

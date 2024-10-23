@@ -1,18 +1,16 @@
-package com.rentmycar.requests.brand
+package com.rentmycar.dtos.requests.reservation
 
 import com.rentmycar.services.exceptions.RequestValidationException
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class UpdateBrandRequest(
-    val name: String,
-    val id: Int,
+data class CreateReservationRequest(
+    val timeslotId: Int
 ) {
     fun validate() {
         val errors = mutableListOf<String>()
 
-        if (name.isBlank()) errors.add("Brand name cannot be blank")
-        if (id < 0) errors.add("Brand ID cannot be negative")
+        if (timeslotId == 0) errors.add("No timeslot Id given")
 
         if (errors.isNotEmpty()) {
             throw RequestValidationException(errors)

@@ -2,25 +2,22 @@ package com.rentmycar.car
 
 import com.rentmycar.BaseTest
 import com.rentmycar.authentication.PasswordHasher
+import com.rentmycar.dtos.requests.location.LocationRequest
+import com.rentmycar.dtos.requests.timeslot.CreateTimeSlotRequest
+import com.rentmycar.dtos.requests.user.UserLoginRequest
+import com.rentmycar.dtos.requests.user.UserRegistrationRequest
 import com.rentmycar.entities.Cars
 import com.rentmycar.entities.Locations
 import com.rentmycar.entities.Timeslots
 import com.rentmycar.entities.Users
-import com.rentmycar.requests.car.RegisterCarRequest
-import com.rentmycar.requests.location.LocationRequest
-import com.rentmycar.requests.timeslot.CreateTimeSlotRequest
-import com.rentmycar.requests.user.UserLoginRequest
-import com.rentmycar.requests.user.UserRegistrationRequest
 import com.rentmycar.utils.Category
 import com.rentmycar.utils.FuelType
 import com.rentmycar.utils.Transmission
 import com.rentmycar.utils.UserRole
-import io.ktor.client.HttpClient
-import io.ktor.client.request.post
-import io.ktor.client.request.setBody
-import io.ktor.client.statement.bodyAsText
-import io.ktor.http.ContentType
-import io.ktor.http.contentType
+import io.ktor.client.*
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
+import io.ktor.http.*
 import kotlinx.datetime.toJavaLocalDateTime
 import kotlinx.serialization.json.Json
 import org.jetbrains.exposed.sql.deleteAll
@@ -97,7 +94,8 @@ open class CarTestBase(
     protected suspend fun getToken(client: HttpClient, email: String = "testuser4444@gmail.com"): String {
         val response = client.post("/user/login") {
             contentType(ContentType.Application.Json)
-            setBody(Json.encodeToString(UserLoginRequest.serializer(), UserLoginRequest(
+            setBody(Json.encodeToString(
+                UserLoginRequest.serializer(), UserLoginRequest(
                 email = email,
                 password = "fakepwd"
             )))

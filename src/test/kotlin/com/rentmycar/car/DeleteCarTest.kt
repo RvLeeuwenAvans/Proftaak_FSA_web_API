@@ -1,20 +1,15 @@
 package com.rentmycar.car
 
-import com.rentmycar.requests.location.LocationRequest
-import com.rentmycar.requests.timeslot.CreateTimeSlotRequest
-import com.rentmycar.requests.user.UserRegistrationRequest
+import com.rentmycar.dtos.requests.location.LocationRequest
+import com.rentmycar.dtos.requests.timeslot.CreateTimeSlotRequest
+import com.rentmycar.dtos.requests.user.UserRegistrationRequest
 import com.rentmycar.utils.Category
 import com.rentmycar.utils.FuelType
 import com.rentmycar.utils.Transmission
-import io.ktor.client.HttpClient
-import io.ktor.client.request.delete
-import io.ktor.client.request.headers
-import io.ktor.client.statement.HttpResponse
-import io.ktor.client.statement.bodyAsText
-import io.ktor.http.ContentType
-import io.ktor.http.HttpHeaders
-import io.ktor.http.HttpStatusCode
-import io.ktor.http.contentType
+import io.ktor.client.*
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
+import io.ktor.http.*
 import kotlinx.datetime.toLocalDateTime
 import kotlin.random.Random
 import kotlin.test.Test
@@ -56,7 +51,7 @@ class DeleteCarTest: CarTestBase(
     ): HttpResponse {
         val token = getToken(client, email)
 
-        return client.delete("/car/delete/$id") {
+        return client.delete("/car/$id") {
             contentType(ContentType.Application.Json)
             headers {
                 append(HttpHeaders.Authorization, "Bearer $token")

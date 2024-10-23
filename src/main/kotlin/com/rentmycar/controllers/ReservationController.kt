@@ -2,7 +2,7 @@ package com.rentmycar.controllers
 
 import com.rentmycar.entities.toDTO
 import com.rentmycar.plugins.user
-import com.rentmycar.requests.reservation.CreateReservationRequest
+import com.rentmycar.dtos.requests.reservation.CreateReservationRequest
 import com.rentmycar.services.ReservationService
 import com.rentmycar.services.TimeSlotService
 import com.rentmycar.utils.sanitizeId

@@ -1,21 +1,19 @@
 package com.rentmycar.controllers
 
+import com.rentmycar.dtos.requests.car.DirectionsToCarRequest
+import com.rentmycar.dtos.requests.car.RegisterCarRequest
+import com.rentmycar.dtos.requests.car.UpdateCarRequest
 import com.rentmycar.entities.toDTO
 import com.rentmycar.plugins.user
-import com.rentmycar.repositories.CarRepository
 import com.rentmycar.repositories.LocationRepository
-import com.rentmycar.requests.car.DirectionsToCarRequest
-import com.rentmycar.requests.car.RegisterCarRequest
-import com.rentmycar.requests.car.UpdateCarRequest
 import com.rentmycar.services.CarService
 import com.rentmycar.services.ModelService
-import com.rentmycar.utils.Category.Companion.categories
-import com.rentmycar.utils.LocationData
 import com.rentmycar.utils.sanitizeId
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
+import io.ktor.server.routing.*
 
 
 class CarController {
@@ -29,59 +27,60 @@ class CarController {
         registrationRequest.validate()
 
         val model = modelService.get(registrationRequest.modelId)
+
         carService.register(user, model, registrationRequest)
 
         call.respond(HttpStatusCode.OK, "Car registered successfully")
     }
-
 
     suspend fun updateCar(call: ApplicationCall) {
         val user = call.user()
         val updateRequest = call.receive<UpdateCarRequest>()
 
         updateRequest.validate()
-        carService.update(user, updateRequest)
+
+        val carBusinessObject = CarService.getBusinessObject(updateRequest.carId)
+        carBusinessObject.update(user, updateRequest)
 
         call.respond(HttpStatusCode.OK, "Car updated successfully")
     }
 
+    suspend fun getCar(call: RoutingCall) {
+        val carId = sanitizeId(call.parameters["id"])
+
+        val carBusinessObject = CarService.getBusinessObject(carId).getCar()
+
+        call.respond(HttpStatusCode.OK, carBusinessObject.toDTO())
+    }
+
+    suspend fun getTotalCostOfOwnership(call: RoutingCall) {
+        val carId = sanitizeId(call.parameters["id"])
+        val user = call.user()
+
+        val carBusinessObject = CarService.getBusinessObject(carId)
+        call.respond(HttpStatusCode.OK, carBusinessObject.calculateTotalOwnershipCosts(user))
+    }
+
+    suspend fun getPricePerKilometer(call: RoutingCall) {
+        val carId = sanitizeId(call.parameters["id"])
+        val kilometers = sanitizeId(call.parameters["kilometers"])
+        val user = call.user()
+
+        val carBusinessObject = CarService.getBusinessObject(carId)
+        call.respond(HttpStatusCode.OK, carBusinessObject.calculatePricePerKilometer(user, kilometers))
+    }
+
     suspend fun getFilteredCars(call: ApplicationCall) {
         val ownerId = sanitizeId(call.request.queryParameters["ownerId"])
-        var category = call.request.queryParameters["category"]
+        val category = call.request.queryParameters["category"]
         val minPrice = call.request.queryParameters["minPrice"]?.toIntOrNull()
         val maxPrice = call.request.queryParameters["maxPrice"]?.toIntOrNull()
 
         val longitude = call.request.queryParameters["longitude"]?.toDoubleOrNull()
         val latitude = call.request.queryParameters["latitude"]?.toDoubleOrNull()
-        var radius = call.request.queryParameters["radius"]?.toIntOrNull()
+        val radius = call.request.queryParameters["radius"]?.toIntOrNull()
 
-        if (!categories.contains(category?.uppercase())) {
-            category = null
-        }
-
-        // If radius is provided and not null, we can filter the cars by radius only if
-        // coordinates (longitude and latitude) of the user are provided and valid.
-        // Therefore:
-        if (
-            longitude == null ||
-            latitude == null ||
-            longitude !in -90.0..90.0 ||
-            latitude !in -90.0..90.0
-        ) {
-            radius = null
-        }
-
-        val filteredCars = CarRepository().getFilteredCars(
-            ownerId = if (ownerId != -1) ownerId else null,
-            category = category,
-            minPrice = minPrice,
-            maxPrice = maxPrice,
-            locationData = if (radius != null) LocationData(
-                latitude = latitude!!,
-                longitude = longitude!!,
-                radius = radius
-            ) else null,
-        )
+        val filteredCars = carService.getCars(longitude, latitude, radius, ownerId, category, minPrice, maxPrice)
 
         return call.respond(
             HttpStatusCode.OK,
@@ -102,8 +101,7 @@ class CarController {
     suspend fun deleteCar(call: ApplicationCall) {
         val user = call.user()
         val carId = sanitizeId(call.parameters["id"])
-
-        carService.delete(user, carId)
+        CarService.getBusinessObject(carId).delete(user)
 
         return call.respond(
             HttpStatusCode.OK,

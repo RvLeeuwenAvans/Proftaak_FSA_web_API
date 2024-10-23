@@ -1,7 +1,8 @@
 package com.rentmycar.services
 
-import com.rentmycar.entities.Notification
+import com.rentmycar.dtos.NotificationDTO
 import com.rentmycar.repositories.InMemoryNotificationRepository
+import java.time.LocalDateTime
 
 
 class TimeSlotNotificationService(private val notificationRepository: InMemoryNotificationRepository) {
@@ -15,11 +16,11 @@ class TimeSlotNotificationService(private val notificationRepository: InMemoryNo
         // Update timeslot logic...
 
         // Create notification
-        val notification = Notification(
+        val notification = NotificationDTO(
             id = generateNotificationId(),
             userId = userId,
             message = "Your timeslot has been updated.",
-            timestamp = java.time.LocalDateTime.now()
+            timestamp = LocalDateTime.now()
         )
         notificationRepository.createNotification(notification)
     }
@@ -28,11 +29,11 @@ class TimeSlotNotificationService(private val notificationRepository: InMemoryNo
         // Delete timeslot logic...
 
         // Create notification
-        val notification = Notification(
+        val notification = NotificationDTO(
             id = generateNotificationId(),
             userId = userId,
             message = "Your timeslot has been deleted.",
-            timestamp = java.time.LocalDateTime.now()
+            timestamp = LocalDateTime.now()
         )
         notificationRepository.createNotification(notification)
     }

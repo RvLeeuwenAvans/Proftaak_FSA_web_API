@@ -1,4 +1,4 @@
-package com.rentmycar.requests.car
+package com.rentmycar.dtos.requests.car
 
 import com.rentmycar.services.exceptions.RequestValidationException
 import com.rentmycar.utils.FuelType.Companion.fuelTypes

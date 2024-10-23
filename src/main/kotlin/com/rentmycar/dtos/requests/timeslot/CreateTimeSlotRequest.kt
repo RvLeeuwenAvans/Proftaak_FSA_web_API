@@ -1,4 +1,4 @@
-package com.rentmycar.requests.timeslot
+package com.rentmycar.dtos.requests.timeslot
 
 import com.rentmycar.services.exceptions.RequestValidationException
 import kotlinx.datetime.Clock

@@ -1,16 +1,14 @@
 package com.rentmycar.car
 
-import com.rentmycar.requests.car.RegisterCarRequest
-import com.rentmycar.requests.user.UserRegistrationRequest
-import io.ktor.client.HttpClient
-import io.ktor.client.request.headers
-import io.ktor.client.request.post
-import io.ktor.client.request.setBody
+import com.rentmycar.dtos.requests.car.RegisterCarRequest
+import com.rentmycar.dtos.requests.user.UserRegistrationRequest
+import io.ktor.client.*
+import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import junit.framework.TestCase.assertEquals
 import kotlinx.serialization.json.Json
-import java.util.Calendar
+import java.util.*
 import kotlin.test.Test
 
 val usersSeedDataRegister = mutableListOf<UserRegistrationRequest>(

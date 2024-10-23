@@ -17,7 +17,6 @@ import java.util.*
 
 class ImageController {
     private val imageService = ImageService()
-    private val carService = CarService()
 
     suspend fun getImages(call: ApplicationCall) {
         val carId = sanitizeId(call.parameters["id"])
@@ -27,38 +26,38 @@ class ImageController {
     }
 
     suspend fun uploadImage(call: ApplicationCall) {
-        val user = call.user()
         val carId = sanitizeId(call.parameters["id"])
 
-        carService.ensureCarOwner(user, carId)
         imageService.delete(carId)
-        val car = carService.getCar(carId)
 
-        uploadImages(call.receiveMultipart(), car)
+        CarService.ensureUserIsCarOwner(call.user(), carId)
+        val car = CarService.getBusinessObject(carId).getCar()
+
+        UploadService.uploadImages(call.receiveMultipart(), car)
 
         call.respond(HttpStatusCode.OK)
     }
 
-    private suspend fun uploadImages(multiPartData: MultiPartData, car: Car) {
-        multiPartData.forEachPart { part ->
-            when (part) {
-                is PartData.FileItem -> {
-                    uploadImage(part, car)
+    private object UploadService {
+        suspend fun uploadImages(multiPartData: MultiPartData, car: Car) {
+            multiPartData.forEachPart { part ->
+                when {
+                    part is PartData.FileItem -> {
+                        uploadImage(part, car)
+                    }
                 }
-
-                else -> {}
+                part.dispose()
             }
-            part.dispose()
+        }
+
+        suspend fun uploadImage(part: PartData.FileItem, car: Car) {
+            val fileName = UUID.randomUUID().toString()
+            val fileExtension = part.originalFileName?.substringAfterLast('.', "")
+            val path = "$fileName.$fileExtension"
+            val fileBytes = part.provider().readRemaining().readByteArray()
+            File("uploads/$path").writeBytes(fileBytes)
+            ImageService().create(path, car)
         }
     }
-
-    private suspend fun uploadImage(part: PartData.FileItem, car: Car) {
-        val fileName = UUID.randomUUID().toString()
-        val fileExtension = part.originalFileName?.substringAfterLast('.', "")
-        val path = "$fileName.$fileExtension"
-        val fileBytes = part.provider().readRemaining().readByteArray()
-        File("uploads/$path").writeBytes(fileBytes)
-        imageService.create(path, car)
-    }
-
 }
+

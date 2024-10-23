@@ -1,20 +1,11 @@
 package com.rentmycar.repositories
 
-import com.rentmycar.entities.Car
-import com.rentmycar.entities.Cars
-import com.rentmycar.entities.Location
-import com.rentmycar.entities.Model
-import com.rentmycar.entities.User
-import com.rentmycar.utils.Category
-import com.rentmycar.utils.FuelType
-import com.rentmycar.utils.LocationData
-import com.rentmycar.utils.Transmission
-import com.rentmycar.utils.haversine
-import org.jetbrains.exposed.dao.id.EntityID
+import com.rentmycar.entities.*
+import com.rentmycar.services.exceptions.NotFoundException
+import com.rentmycar.utils.*
 import org.jetbrains.exposed.sql.Op
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.transactions.transaction
-import com.rentmycar.services.exceptions.NotFoundException
 
 class CarRepository {
 
@@ -31,22 +22,23 @@ class CarRepository {
         owner: User,
         licensePlate: String,
         model: Model,
-        fuel: String,
+        fuel: FuelType,
         year: Int,
         color: String,
-        transmission: String,
-        price: Double? = 0.0
+        transmission: Transmission,
+        price: Double,
+        category: Category
     ): Car = transaction {
         Car.new {
             this.owner = owner
             this.licensePlate = licensePlate
             this.model = model
-            this.fuel = FuelType.valueOf(fuel.uppercase())
+            this.fuel = fuel
             this.year = year
             this.color = color
-            this.transmission = Transmission.valueOf(transmission.uppercase())
-            this.price = price ?: 0.0
-            this.category = FuelType.valueOf(fuel.uppercase()).category
+            this.transmission = transmission
+            this.price = price
+            this.category = category
         }
     }
 
@@ -54,18 +46,20 @@ class CarRepository {
         id: Int,
         year: Int? = null,
         color: String? = null,
-        transmission: String? = null,
+        transmission: Transmission? = null,
         price: Double? = null,
-        fuel: String? = null,
+        fuel: FuelType? = null,
+        category: Category? = null
     ): Car = transaction {
         val car = getCarById(id)
 
         car.apply {
             year?.let { this.year = it }
             color?.let { this.color = it }
-            transmission?.let { this.transmission = Transmission.valueOf(it.uppercase()) }
+            transmission?.let { this.transmission = it }
             price?.let { this.price = it }
-            fuel?.let { this.fuel = FuelType.valueOf(it.uppercase()) }
+            fuel?.let { this.fuel = it }
+            category?.let { this.category = it }
         }
     }
 
@@ -105,7 +99,7 @@ class CarRepository {
             // Filter by radius.
             if (locationData == null) return@filter true
 
-            var carLocation: Location
+            val carLocation: Location
             try {
                 carLocation = LocationRepository().getByCar(car.id.value)
             } catch (e: Exception) {
@@ -125,10 +119,5 @@ class CarRepository {
 
     fun getCarByLicensePlate(licensePlate: String): Car? = transaction {
         Car.find { Cars.licensePlate eq licensePlate }.singleOrNull()
-    }
-
-    fun getUserCarById(carId: Int, userId: EntityID<Int>): Car = transaction {
-        Car.find { (Cars.id eq carId) and (Cars.user eq userId) }.singleOrNull()
-            ?: throw NotFoundException("Car with id $carId not found")
     }
 }
