@@ -17,7 +17,6 @@ import java.security.InvalidParameterException
 
 class TimeSlotController {
     private val timeSlotService = TimeSlotService()
-
     suspend fun createTimeSlot(call: ApplicationCall) {
         val createTimeSlotRequest = call.receive<CreateTimeSlotRequest>()
         createTimeSlotRequest.validate()
@@ -73,4 +72,6 @@ class TimeSlotController {
 
         call.respond(HttpStatusCode.OK, "Timeslot deleted")
     }
+
+
 }

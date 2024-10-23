@@ -77,3 +77,4 @@ class TimeSlotService {
         return timeSlot.availableFrom <= currentTime
     }
 }
+
