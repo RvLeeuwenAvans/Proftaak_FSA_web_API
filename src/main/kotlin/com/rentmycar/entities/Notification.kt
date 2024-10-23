@@ -13,7 +13,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 object Notifications : IntIdTable() {
     val user = reference("user_id", Users, ReferenceOption.CASCADE)
     val subject = varchar("subject", 255)
-    val message = varchar("message", 255)
+    val message = text("message")
     val creationTimestamp = timestamp("created_at")
 }
 
