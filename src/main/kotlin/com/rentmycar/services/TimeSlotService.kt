@@ -12,6 +12,7 @@ import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
+import kotlin.math.sqrt
 
 class TimeSlotService {
     private val timeSlotRepository = TimeSlotRepository()
@@ -71,5 +72,28 @@ class TimeSlotService {
     private fun isFutureTimeSlot(timeSlot: TimeslotDTO): Boolean {
         val currentTime = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
         return timeSlot.availableFrom <= currentTime
+    }
+}
+
+class PhysicsService {
+
+    // Function to calculate the magnitude of acceleration
+    fun calculateAccelerationMagnitude(ax: Double, ay: Double, az: Double): Double {
+        return sqrt(ax * ax + ay * ay + az * az)
+    }
+
+    // Function to calculate the velocity over time
+    fun calculateVelocity(initialVelocity: Double, acceleration: Double, deltaTime: Double): Double {
+        return initialVelocity + acceleration * deltaTime
+    }
+
+    // Function to check if the object is accelerating
+    fun isAccelerating(acceleration: Double): Boolean {
+        return acceleration > 0
+    }
+
+    // Function to check if the object is decelerating
+    fun isDecelerating(acceleration: Double): Boolean {
+        return acceleration < 0
     }
 }
