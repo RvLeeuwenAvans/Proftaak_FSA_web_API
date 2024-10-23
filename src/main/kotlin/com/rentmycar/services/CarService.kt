@@ -14,7 +14,12 @@ import com.rentmycar.utils.LocationData
 import com.rentmycar.utils.Transmission
 import com.rentmycar.entities.Car as CarDAO
 
-private const val AVERAGE_KILOMETERS_PER_YEAR = 15000
+/**
+ * used to calculate the TCO of a car.
+ *
+ * source: https://www.cbs.nl/nl-nl/visualisaties/verkeer-en-vervoer/verkeer/verkeersprestaties-personenautos
+ */
+private const val AVERAGE_KILOMETERS_PER_YEAR = 12000
 
 class CarService {
     private val carRepository = CarRepository()
