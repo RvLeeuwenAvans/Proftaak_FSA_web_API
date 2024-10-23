@@ -12,6 +12,7 @@ import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
+import kotlin.math.sqrt
 
 class TimeSlotService {
     private val timeSlotRepository = TimeSlotRepository()
@@ -77,3 +78,4 @@ class TimeSlotService {
         return timeSlot.availableFrom <= currentTime
     }
 }
+
