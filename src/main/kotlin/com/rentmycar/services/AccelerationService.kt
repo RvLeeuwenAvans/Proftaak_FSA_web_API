@@ -27,7 +27,7 @@ class AccelerationService {
         return sqrt(ax * ax + ay * ay + az * az)
     }
 
-    fun getScore(ax: Double, ay: Double, az: Double): Int {
+    fun getScore(ax: Float, ay: Float, az: Float): Int {
         var score = 100
 
         // Detect sharp turns.
