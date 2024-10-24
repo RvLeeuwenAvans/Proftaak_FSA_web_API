@@ -7,6 +7,7 @@ import com.rentmycar.plugins.user
 import com.rentmycar.dtos.requests.user.UserLoginRequest
 import com.rentmycar.dtos.requests.user.UserRegistrationRequest
 import com.rentmycar.dtos.requests.user.UserUpdateRequest
+import com.rentmycar.entities.toDTO
 import com.rentmycar.services.UserService
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -62,5 +63,11 @@ class UserController(private val config: JWTConfig) {
         userService.delete(user)
 
         call.respond(HttpStatusCode.OK, "User deleted successfully")
+    }
+
+    suspend fun getMe(call: ApplicationCall) {
+        val user = call.user()
+
+        call.respond(HttpStatusCode.OK, user.toDTO())
     }
 }

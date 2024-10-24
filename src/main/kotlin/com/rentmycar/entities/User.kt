@@ -1,10 +1,12 @@
 package com.rentmycar.entities
 
+import com.rentmycar.dtos.UserDTO
 import com.rentmycar.utils.UserRole
 import org.jetbrains.exposed.dao.id.IntIdTable
 import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
+import org.jetbrains.exposed.sql.transactions.transaction
 
 object Users : IntIdTable() {
     val firstName = varchar("first_name", 50)
@@ -26,4 +28,16 @@ class User(id: EntityID<Int>) : IntEntity(id) {
     var password by Users.password
     var role by Users.role
     var score by Users.score
+}
+
+fun User.toDTO(): UserDTO = transaction {
+    UserDTO(
+        id = this@toDTO.id.value,
+        firstName = this@toDTO.firstName,
+        lastName = this@toDTO.lastName,
+        username = this@toDTO.username,
+        email = this@toDTO.email,
+        role = this@toDTO.role,
+        score = this@toDTO.score,
+    )
 }

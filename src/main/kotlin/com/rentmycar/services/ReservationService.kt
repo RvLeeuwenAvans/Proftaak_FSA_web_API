@@ -26,6 +26,9 @@ class ReservationService {
 
     fun getReservations(user: User): List<Reservation> = reservationRepository.getReservations(user)
 
+    fun getFinishedReservationsHistory(user: User): List<Reservation> =
+        reservationRepository.getFinishedReservationsHistory(user)
+
     fun deleteReservation(user: User, id: Int) {
         val reservation = getReservation(id)
         if (!isReservationOwner(user, reservation))

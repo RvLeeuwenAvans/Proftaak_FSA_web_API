@@ -42,6 +42,14 @@ class ReservationController {
         call.respond(HttpStatusCode.OK, reservations.map { it.toDTO() })
     }
 
+    suspend fun getFinishedReservationsHistory(call: ApplicationCall) {
+        val user = call.user()
+
+        val reservations = reservationService.getFinishedReservationsHistory(user)
+
+        call.respond(HttpStatusCode.OK, reservations.map { it.toDTO() })
+    }
+
     suspend fun finishReservation(call: ApplicationCall) {
         val request = call.receive<FinishReservationRequest>()
         request.validate()

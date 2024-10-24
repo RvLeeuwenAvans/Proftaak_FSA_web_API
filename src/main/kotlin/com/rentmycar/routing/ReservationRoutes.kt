@@ -12,6 +12,7 @@ fun Route.reservationRoutes() {
             post("/create") { reservationController.createReservation(call) }
             put("/finish") { reservationController.finishReservation(call) }
             get("/user") { reservationController.getReservationsForUser(call) }
+            get("/finished") { reservationController.getFinishedReservationsHistory(call) }
             get("/timeslot/{id}") { reservationController.getReservationForTimeSlot(call) }
             delete("/{id}") { reservationController.removeReservation(call) }
         }
