@@ -41,7 +41,6 @@ class UserRepository {
             data.username?.let { user.username = it }
             data.email?.let { user.email = it }
             data.password?.let { user.password = PasswordHasher.hashPassword(it) }
-            data.role?.let { user.role = UserRole.valueOf(it) }
         }
     }
 

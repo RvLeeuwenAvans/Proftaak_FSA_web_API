@@ -51,6 +51,8 @@ class UserController(private val config: JWTConfig) {
         val updateRequest = call.receive<UserUpdateRequest>()
         val user = call.user()
 
+        updateRequest.validate()
+
         userService.update(user, updateRequest)
 
         call.respond(HttpStatusCode.OK, "User updated successfully")

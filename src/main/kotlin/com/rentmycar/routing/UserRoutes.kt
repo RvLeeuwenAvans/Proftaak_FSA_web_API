@@ -14,7 +14,7 @@ fun Route.userRoutes() {
         
         authenticate {
             get("/score") { userController.getScore(call) }
-            post("/update") { userController.updateUser(call) }
+            put("/update") { userController.updateUser(call) }
             delete("/delete") { userController.deleteUser(call) }
         }
     }
