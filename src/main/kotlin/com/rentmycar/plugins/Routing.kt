@@ -14,5 +14,6 @@ fun Application.configureRouting() {
         reservationRoutes()
         imageRoutes()
         notificationRoutes()
+        accelerationRoutes()
     }
 }
