@@ -9,7 +9,7 @@ fun Route.accelerationRoutes() {
 
     authenticate {
         route("/acceleration") {
-            get("/magnitude") { accelerationController.calculateAcceleration(call) }
+            get("/") { accelerationController.provideAccelerationData(call) }
             get("/velocity") { accelerationController.calculateVelocity(call) }
         }
     }

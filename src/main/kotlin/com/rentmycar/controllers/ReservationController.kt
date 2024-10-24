@@ -3,7 +3,6 @@ package com.rentmycar.controllers
 import com.rentmycar.entities.toDTO
 import com.rentmycar.plugins.user
 import com.rentmycar.dtos.requests.reservation.CreateReservationRequest
-import com.rentmycar.dtos.requests.reservation.FinishReservationRequest
 import com.rentmycar.services.ReservationService
 import com.rentmycar.services.TimeSlotService
 import com.rentmycar.utils.sanitizeId
@@ -40,24 +39,6 @@ class ReservationController {
         val reservations = reservationService.getReservations(user)
 
         call.respond(HttpStatusCode.OK, reservations.map { it.toDTO() })
-    }
-
-    suspend fun getFinishedReservationsHistory(call: ApplicationCall) {
-        val user = call.user()
-
-        val reservations = reservationService.getFinishedReservationsHistory(user)
-
-        call.respond(HttpStatusCode.OK, reservations.map { it.toDTO() })
-    }
-
-    suspend fun finishReservation(call: ApplicationCall) {
-        val request = call.receive<FinishReservationRequest>()
-        request.validate()
-
-        val user = call.user()
-        reservationService.finishReservation(user, request)
-
-        call.respond(HttpStatusCode.OK, "Reservation finished.")
     }
 
     suspend fun removeReservation(call: ApplicationCall) {

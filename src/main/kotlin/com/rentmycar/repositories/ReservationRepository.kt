@@ -1,9 +1,7 @@
 package com.rentmycar.repositories
 
-import com.rentmycar.dtos.requests.reservation.FinishReservationRequest
 import com.rentmycar.entities.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
-import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.transactions.transaction
 
@@ -25,20 +23,6 @@ class ReservationRepository {
 
     fun getReservations(user: User): List<Reservation> = transaction {
         Reservation.find(Reservations.user eq user.id).toList()
-    }
-
-    fun finishReservation(reservation: Reservation, data: FinishReservationRequest) = transaction {
-        reservation.apply {
-            this.distance = data.distance
-            this.averageAcceleration = data.averageAcceleration
-            this.score = data.getScore()
-        }
-    }
-
-    fun getFinishedReservationsHistory(user: User): List<Reservation> = transaction {
-        Reservation.find {
-            (Reservations.user eq user.id).and(Reservations.score.isNotNull())
-        }.toList()
     }
 
     fun deleteReservation(reservation: Reservation) = transaction {

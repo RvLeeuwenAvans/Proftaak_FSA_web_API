@@ -50,29 +50,6 @@ class NotificationService {
         )
     }
 
-    fun createUserRewardNotification(user: User, reservation: Reservation) {
-        createNotification(
-            user.id.value,
-            "You are rewarded!",
-            """
-               Our application wants to reward you for the safe driving behavior.
-               
-               Reservation data:
-               
-               Reservation ID: ${reservation.id.value}.
-               Average acceleration: ${reservation.averageAcceleration}.
-               Driven distance: ${reservation.distance}.
-               Reservation score: ${reservation.score}.
-               
-               ---------------------------------
-               
-               Your current average score: ${user.score}.
-               
-               Good job!!!!
-            """.trimIndent()
-        )
-    }
-
     private fun createNotification(userId: Int, title: String, message: String) {
         val user = UserService().getById(userId)
         notificationRepository.createNotification(user, title, message)

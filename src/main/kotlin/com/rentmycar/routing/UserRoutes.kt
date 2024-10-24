@@ -13,7 +13,7 @@ fun Route.userRoutes() {
         post("/login") { userController.loginUser(call) }
         
         authenticate {
-            get("/me") { userController.getMe(call) }
+            get("/score") { userController.getScore(call) }
             post("/update") { userController.updateUser(call) }
             delete("/delete") { userController.deleteUser(call) }
         }
