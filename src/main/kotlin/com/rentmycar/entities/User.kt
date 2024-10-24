@@ -13,6 +13,7 @@ object Users : IntIdTable() {
     val email = varchar("email", 255).uniqueIndex()
     val password = varchar("password", 64)
     val role = enumerationByName("role", 50, UserRole::class)
+    val score = integer("score").default(0)
 }
 
 class User(id: EntityID<Int>) : IntEntity(id) {
@@ -24,4 +25,5 @@ class User(id: EntityID<Int>) : IntEntity(id) {
     var email by Users.email
     var password by Users.password
     var role by Users.role
+    var score by Users.score
 }

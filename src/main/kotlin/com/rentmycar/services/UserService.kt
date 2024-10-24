@@ -24,6 +24,7 @@ class UserService {
 
     fun update(user: User, updateRequest: UserUpdateRequest): User = userRepository.updateUser(user, updateRequest)
     fun delete(user: User) = userRepository.deleteUser(user)
+    fun updateUserScore(user: User, newScore: Int) = userRepository.updateUserScore(user, newScore)
 
     private fun checkAlreadyExist(username: String, email: String) {
         when {

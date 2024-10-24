@@ -1,5 +1,6 @@
 package com.rentmycar.services
 
+import com.rentmycar.dtos.requests.reservation.FinishReservationRequest
 import com.rentmycar.entities.*
 import com.rentmycar.repositories.ReservationRepository
 import com.rentmycar.services.exceptions.AlreadyExistsException
@@ -31,6 +32,25 @@ class ReservationService {
             throw NotAllowedException("user is not the owner of the reservation")
 
         reservationRepository.deleteReservation(reservation)
+    }
+
+    fun finishReservation(user: User, request: FinishReservationRequest) {
+        var reservation = getReservation(request.reservationId)
+        if (!isReservationOwner(user, reservation))
+            throw NotAllowedException("User is not the owner of the reservation.")
+        if (reservation.score != null)
+            throw BadRequestException("The reservation has already been finished.")
+
+        // Finish the reservation (update the data related to the reservation).
+        reservation = reservationRepository.finishReservation(reservation, request)
+
+        // Update user's score based on the finished reservation's data.
+        val updatedUser = UserService().updateUserScore(user, request.getScore())
+
+        // Send notification if user deserves the reward.
+        if (updatedUser.score in 70..100) {
+            NotificationService().createUserRewardNotification(updatedUser, reservation)
+        }
     }
 
     private fun getReservation(id: Int): Reservation =

@@ -11,18 +11,27 @@ import org.jetbrains.exposed.sql.transactions.transaction
 object Reservations : IntIdTable() {
     val user = reference("user_id", Users, ReferenceOption.CASCADE)
     val timeslot = reference("timeslot_id", Timeslots, ReferenceOption.CASCADE).uniqueIndex()
+    val averageAcceleration = double("average_acceleration").nullable()
+    val distance = double("distance").nullable()
+    val score = integer("score").nullable()
 }
 
 class Reservation(id: EntityID<Int>) : IntEntity(id) {
     companion object : IntEntityClass<Reservation>(Reservations)
     var reservor by User referencedOn Reservations.user
     var timeslot by Timeslot referencedOn Reservations.timeslot
+    var averageAcceleration by Reservations.averageAcceleration
+    var distance by Reservations.distance
+    var score by Reservations.score
 }
 
 fun Reservation.toDTO(): ReservationDTO = transaction {
     ReservationDTO(
         id = this@toDTO.id.value,
         reservorId = this@toDTO.reservor.id.value,
-        timeslotId = this@toDTO.timeslot.id.value
+        timeslotId = this@toDTO.timeslot.id.value,
+        averageAcceleration = this@toDTO.averageAcceleration,
+        distance = this@toDTO.distance,
+        score = this@toDTO.score,
     )
 }

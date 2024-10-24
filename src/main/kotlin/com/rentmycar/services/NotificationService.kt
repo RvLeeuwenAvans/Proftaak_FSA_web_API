@@ -3,6 +3,7 @@ package com.rentmycar.services
 
 import com.rentmycar.dtos.TimeslotDTO
 import com.rentmycar.entities.Car
+import com.rentmycar.entities.Reservation
 import com.rentmycar.entities.User
 import com.rentmycar.entities.toDTO
 import com.rentmycar.repositories.NotificationRepository
@@ -46,6 +47,29 @@ class NotificationService {
             reservation.toDTO().reservorId,
             "Time slot removed",
             """"Your reserved time slot for car: ${car.toDTO().licensePlate} is canceled."""
+        )
+    }
+
+    fun createUserRewardNotification(user: User, reservation: Reservation) {
+        createNotification(
+            user.id.value,
+            "You are rewarded!",
+            """
+               Our application wants to reward you for the safe driving behavior.
+               
+               Reservation data:
+               
+               Reservation ID: ${reservation.id.value}.
+               Average acceleration: ${reservation.averageAcceleration}.
+               Driven distance: ${reservation.distance}.
+               Reservation score: ${reservation.score}.
+               
+               ---------------------------------
+               
+               Your current average score: ${user.score}.
+               
+               Good job!!!!
+            """.trimIndent()
         )
     }
 
