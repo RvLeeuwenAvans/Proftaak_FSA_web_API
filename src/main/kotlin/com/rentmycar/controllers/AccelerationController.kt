@@ -1,25 +1,28 @@
 package com.rentmycar.controllers
 
+import com.rentmycar.dtos.requests.acceleration.ProvideAccelerationDataRequest
+import com.rentmycar.plugins.user
 import com.rentmycar.services.AccelerationService
+import com.rentmycar.services.UserService
 import com.rentmycar.services.exceptions.RequestValidationException
 import io.ktor.server.application.*
 import io.ktor.server.response.*
 import io.ktor.http.*
+import io.ktor.server.request.receive
 
 class AccelerationController {
     private val accelerationService = AccelerationService()
 
-    suspend fun calculateAcceleration(call: ApplicationCall) {
-        val errors = mutableListOf<String>()
-        val ax = call.parameters["ax"]?.toDoubleOrNull().also { if (it == null) errors.add("Invalid ax vector") }
-        val ay = call.parameters["ay"]?.toDoubleOrNull().also { if (it == null) errors.add("Invalid ay vector") }
-        val az = call.parameters["az"]?.toDoubleOrNull().also { if (it == null) errors.add("Invalid az vector") }
+    suspend fun provideAccelerationData(call: ApplicationCall) {
+        val request = call.receive<ProvideAccelerationDataRequest>()
+        val user = call.user()
 
-        if (ax == null || ay == null || az == null)
-            throw RequestValidationException(errors)
-
-        val magnitude = accelerationService.calculateAccelerationMagnitude(ax, ay, az)
-        call.respond(HttpStatusCode.OK, "Acceleration Magnitude: $magnitude")
+        UserService().updateUserScore(user, accelerationService.getScore(
+            request.ax,
+            request.ay,
+            request.az
+        ))
+        call.respond(HttpStatusCode.OK, "Acceleration data successfully received.")
     }
 
     suspend fun calculateVelocity(call: ApplicationCall) {

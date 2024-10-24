@@ -63,4 +63,10 @@ class UserController(private val config: JWTConfig) {
 
         call.respond(HttpStatusCode.OK, "User deleted successfully")
     }
+
+    suspend fun getScore(call: ApplicationCall) {
+        val user = call.user()
+
+        call.respond(HttpStatusCode.OK, mapOf("score" to user.score))
+    }
 }

@@ -3,6 +3,7 @@ package com.rentmycar.services
 
 import com.rentmycar.dtos.TimeslotDTO
 import com.rentmycar.entities.Car
+import com.rentmycar.entities.Reservation
 import com.rentmycar.entities.User
 import com.rentmycar.entities.toDTO
 import com.rentmycar.repositories.NotificationRepository

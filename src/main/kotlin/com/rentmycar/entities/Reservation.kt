@@ -23,6 +23,6 @@ fun Reservation.toDTO(): ReservationDTO = transaction {
     ReservationDTO(
         id = this@toDTO.id.value,
         reservorId = this@toDTO.reservor.id.value,
-        timeslotId = this@toDTO.timeslot.id.value
+        timeslotId = this@toDTO.timeslot.id.value,
     )
 }

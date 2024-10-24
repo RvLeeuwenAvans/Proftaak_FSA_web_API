@@ -6,5 +6,5 @@ import kotlinx.serialization.Serializable
 data class ReservationDTO(
     val id: Int,
     val reservorId: Int,
-    val timeslotId: Int
+    val timeslotId: Int,
 )

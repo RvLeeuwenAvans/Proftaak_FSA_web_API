@@ -45,6 +45,12 @@ class UserRepository {
         }
     }
 
+    fun updateUserScore(user: User, newScore: Int) = transaction {
+        user.apply {
+            this.score = (this.score + newScore) / 2
+        }
+    }
+
     fun deleteUser(user: User) = transaction { user.delete() }
 
     fun doesUserExistByEmail(email: String) = getUserByEmail(email) != null
