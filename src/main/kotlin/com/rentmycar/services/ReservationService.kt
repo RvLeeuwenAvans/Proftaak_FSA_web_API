@@ -4,7 +4,7 @@ import com.rentmycar.entities.*
 import com.rentmycar.repositories.ReservationRepository
 import com.rentmycar.services.exceptions.AlreadyExistsException
 import com.rentmycar.services.exceptions.NotAllowedException
-import io.ktor.server.plugins.*
+import com.rentmycar.services.exceptions.NotFoundException
 
 class ReservationService {
     private val reservationRepository = ReservationRepository()

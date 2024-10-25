@@ -3,7 +3,6 @@ package com.rentmycar.services
 
 import com.rentmycar.dtos.TimeslotDTO
 import com.rentmycar.entities.Car
-import com.rentmycar.entities.Reservation
 import com.rentmycar.entities.User
 import com.rentmycar.entities.toDTO
 import com.rentmycar.repositories.NotificationRepository
@@ -27,27 +26,33 @@ class NotificationService {
     ) {
         val timeSlot = TimeSlotService().getTimeSlot(timeslotId)
         val car = CarService.getBusinessObject(timeSlot.toDTO().carId).getCar()
-        val reservation = ReservationService().getReservation(timeSlot)
 
-        createNotification(
-            reservation.toDTO().reservorId,
-            "Time slot updated",
-            """"Your reserved time slot for car: ${car.toDTO().licensePlate} was updated.
+        try {
+            val reservation = ReservationService().getReservation(timeSlot)
+
+            createNotification(
+                reservation.toDTO().reservorId,
+                "Time slot updated",
+                """"Your reserved time slot for car: ${car.toDTO().licensePlate} was updated.
             
             Start available from: ${oldTimeSlot.availableFrom} -> ${updatedTimeslotRange.start}
             available until: ${oldTimeSlot.availableUntil} ->  ${updatedTimeslotRange.endExclusive}""".trimIndent(),
-        )
+            )
+        } catch (_: NotFoundException) { }
     }
 
     fun createTimeSlotDeletedNotification(timeslotId: Int, car: Car) {
         val timeSlot = TimeSlotService().getTimeSlot(timeslotId)
-        val reservation = ReservationService().getReservation(timeSlot)
 
-        createNotification(
-            reservation.toDTO().reservorId,
-            "Time slot removed",
-            """"Your reserved time slot for car: ${car.toDTO().licensePlate} is canceled."""
-        )
+        try {
+            val reservation = ReservationService().getReservation(timeSlot)
+
+            createNotification(
+                reservation.toDTO().reservorId,
+                "Time slot removed",
+                """"Your reserved time slot for car: ${car.toDTO().licensePlate} is canceled."""
+            )
+        } catch (_: NotFoundException) { }
     }
 
     private fun createNotification(userId: Int, title: String, message: String) {

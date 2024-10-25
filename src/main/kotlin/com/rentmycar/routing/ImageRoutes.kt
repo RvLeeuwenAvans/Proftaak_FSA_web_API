@@ -10,7 +10,7 @@ fun Route.imageRoutes() {
     val imageController = ImageController()
 
     authenticate {
-        route("/image/{carId}") {
+        route("/image/car/{id}") {
             get { imageController.getImages(call) }
             post { imageController.uploadImage(call) }
         }
