@@ -34,7 +34,7 @@ class AddLocationTest: CarTestBase(
     ): HttpResponse {
         val token = getToken(client, email)
 
-        return client.post("/car/location/") {
+        return client.post("/car/location") {
             contentType(ContentType.Application.Json)
             setBody(Json.encodeToString(LocationRequest.serializer(), request))
             headers {

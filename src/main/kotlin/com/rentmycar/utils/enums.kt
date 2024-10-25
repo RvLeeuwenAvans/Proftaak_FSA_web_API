@@ -27,13 +27,13 @@ enum class FuelType(
     val category: Category,
     // ideally the price per unit is retrieved live via external tracking API; for the sake of scope & ease
     // Each fuel has a predefined associated price per unit (kw/h, litre, etc.)
-    val pricePerUnit: Int
+    val pricePerUnit: Double
 ) {
-    DIESEL(Category.ICE, 12),
-    PETROL(Category.ICE, 10),
-    GAS(Category.ICE, 9),
-    ELECTRIC(Category.BEV, 8),
-    HYDROGEN(Category.FCEV, 20);
+    DIESEL(Category.ICE, 2.10),
+    PETROL(Category.ICE, 1.90),
+    GAS(Category.ICE, 2.0),
+    ELECTRIC(Category.BEV, 1.0),
+    HYDROGEN(Category.FCEV, 1.50);
 
     companion object {
         val fuelTypes by lazy { FuelType.entries.map { it.name } }

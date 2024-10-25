@@ -39,8 +39,9 @@ class CarController {
 
         updateRequest.validate()
 
+        CarService.ensureUserIsCarOwner(user, updateRequest.carId)
         val carBusinessObject = CarService.getBusinessObject(updateRequest.carId)
-        carBusinessObject.update(user, updateRequest)
+        carBusinessObject.update(updateRequest)
 
         call.respond(HttpStatusCode.OK, "Car updated successfully")
     }
@@ -57,8 +58,9 @@ class CarController {
         val carId = sanitizeId(call.parameters["id"])
         val user = call.user()
 
+        CarService.ensureUserIsCarOwner(user, carId)
         val carBusinessObject = CarService.getBusinessObject(carId)
-        call.respond(HttpStatusCode.OK, carBusinessObject.calculateTotalOwnershipCosts(user))
+        call.respond(HttpStatusCode.OK, carBusinessObject.calculateTotalOwnershipCosts())
     }
 
     suspend fun getPricePerKilometer(call: RoutingCall) {
@@ -66,8 +68,9 @@ class CarController {
         val kilometers = sanitizeId(call.parameters["kilometers"])
         val user = call.user()
 
+        CarService.ensureUserIsCarOwner(user, carId)
         val carBusinessObject = CarService.getBusinessObject(carId)
-        call.respond(HttpStatusCode.OK, carBusinessObject.calculatePricePerKilometer(user, kilometers))
+        call.respond(HttpStatusCode.OK, carBusinessObject.calculatePricePerKilometer(kilometers))
     }
 
     suspend fun getFilteredCars(call: ApplicationCall) {
@@ -101,7 +104,8 @@ class CarController {
     suspend fun deleteCar(call: ApplicationCall) {
         val user = call.user()
         val carId = sanitizeId(call.parameters["id"])
-        CarService.getBusinessObject(carId).delete(user)
+        CarService.ensureUserIsCarOwner(user, carId)
+        CarService.getBusinessObject(carId).delete()
 
         return call.respond(
             HttpStatusCode.OK,
