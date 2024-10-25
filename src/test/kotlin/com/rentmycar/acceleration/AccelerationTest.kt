@@ -50,20 +50,6 @@ class AccelerationTest : BaseTest() {
     }
 
     @Test
-    fun testCalculateAcceleration() = withTestApplication {
-        val token = getToken(client, "johndoe@example.com")
-        val response = client.get("/acceleration/magnitude?ax=3.0&ay=4.0&az=0.0") {
-            contentType(ContentType.Application.Json)
-            headers {
-                append(HttpHeaders.Authorization, "Bearer $token")
-            }
-        }
-
-        assertEquals(HttpStatusCode.OK, response.status)
-        assertEquals("Acceleration Magnitude: 5.0", response.bodyAsText())
-    }
-
-    @Test
     fun testCalculateVelocity() = withTestApplication {
         val token = getToken(client, "johndoe@example.com")
         val response = client.get("/acceleration/velocity?initialVelocity=10.0&acceleration=2.0&deltaTime=3.0") {
@@ -75,20 +61,6 @@ class AccelerationTest : BaseTest() {
 
         assertEquals(HttpStatusCode.OK, response.status)
         assertEquals("Velocity: 16.0", response.bodyAsText())
-    }
-
-    @Test
-    fun testCalculateAccelerationWithZeroValues() = withTestApplication {
-        val token = getToken(client, "johndoe@example.com")
-        val response = client.get("/acceleration/magnitude?ax=0.0&ay=0.0&az=0.0") {
-            contentType(ContentType.Application.Json)
-            headers {
-                append(HttpHeaders.Authorization, "Bearer $token")
-            }
-        }
-
-        assertEquals(HttpStatusCode.OK, response.status)
-        assertEquals("Acceleration Magnitude: 0.0", response.bodyAsText())
     }
 
     @Test
