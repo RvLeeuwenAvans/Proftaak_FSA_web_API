@@ -16,8 +16,8 @@ fun Route.modelRoutes() {
 
     authenticate("admin") {
         route("/model") {
-            post("/") { modelController.createModel(call) }
-            put("/") { modelController.updateModel(call) }
+            post { modelController.createModel(call) }
+            put { modelController.updateModel(call) }
             delete("/{id}") { modelController.deleteModel(call) }
         }
     }

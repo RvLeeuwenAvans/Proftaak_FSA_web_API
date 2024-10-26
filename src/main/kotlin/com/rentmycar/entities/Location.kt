@@ -9,7 +9,7 @@ import org.jetbrains.exposed.sql.ReferenceOption
 import org.jetbrains.exposed.sql.transactions.transaction
 
 object Locations : IntIdTable() {
-    val car = reference("car_id", Cars, ReferenceOption.CASCADE)
+    val car = reference("car_id", Cars, ReferenceOption.CASCADE).uniqueIndex()
     val longitude = double("longitude")
     val latitude = double("latitude")
 }

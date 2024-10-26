@@ -106,9 +106,7 @@ abstract class CarBO(private val carDAO: CarDAO, private val carRepository: CarR
 
     fun getCar() = carDAO
 
-    fun delete(user: User) {
-        CarService.ensureUserIsCarOwner(user, carId)
-
+    fun delete() {
         val timeslots = TimeSlotService().getTimeSlots(carDAO)
         if (timeslots.isNotEmpty()) {
             throw NotAllowedException("Car can not be deleted when it has linked timeslots")
@@ -116,9 +114,7 @@ abstract class CarBO(private val carDAO: CarDAO, private val carRepository: CarR
         carRepository.deleteCar(carId)
     }
 
-    fun update(user: User, updateRequest: UpdateCarRequest): CarBO {
-        CarService.ensureUserIsCarOwner(user, carId)
-
+    fun update(updateRequest: UpdateCarRequest): CarBO {
         val fuelType = updateRequest.fuel?.let { FuelType.valueOf(it.uppercase()) }
 
         carRepository.updateCar(
@@ -134,12 +130,54 @@ abstract class CarBO(private val carDAO: CarDAO, private val carRepository: CarR
         return instantiateBusinessObject(carId)
     }
 
-    fun calculateTotalOwnershipCosts(user: User): Double {
-        CarService.ensureUserIsCarOwner(user, carId)
-        return calculatePricePerKilometer(user) * AVERAGE_KILOMETERS_PER_YEAR
+    fun calculateTotalOwnershipCosts(): Double {
+        return calculatePricePerKilometer() * AVERAGE_KILOMETERS_PER_YEAR
     }
 
-    abstract fun calculatePricePerKilometer(user: User, kilometers: Int = 1): Double
+    /**
+     * @param engineEfficiency
+     *  takes a double value, eg: 1.0 meaning that for every kilometer 1 unit of fuel is expended.
+     *  Can be read as litres per kilometer.
+     *   ~ a higher fuel efficiency means, a lower price per kilometer.
+     *
+     *  @return Double
+     *   the returns a multiplier in the form of a double.
+     */
+    internal fun calculateFuelUsagePerKilometer(engineEfficiency: Double): Double {
+        return 1 / ((engineEfficiency / 1.0) * 1.0)
+    }
+
+    abstract fun calculatePricePerKilometer(kilometers: Int = 1): Double
+
+    /**
+     * each car category has a differing variables for calculating the price per kilometer &
+     * therefor implicitly the total ownership costs.
+     *
+     * The formula remains the same for each type:
+     *      (multiplicand (fuel price) * multiplier (FuelUsagePerKilometer))
+     */
+    private object CarTypes {
+        class BatteryElectricVehicle(car: CarDAO) : CarBO(car, CarRepository()) {
+            override fun calculatePricePerKilometer(kilometers: Int): Double {
+                val fuelPrice = getCar().toDTO().fuel.pricePerUnit
+                return kilometers * (fuelPrice * calculateFuelUsagePerKilometer(20.0))
+            }
+        }
+
+        class InternalCombustionEngine(car: CarDAO) : CarBO(car, CarRepository()) {
+            override fun calculatePricePerKilometer(kilometers: Int): Double {
+                val fuelPrice = getCar().toDTO().fuel.pricePerUnit
+                return kilometers * (fuelPrice * calculateFuelUsagePerKilometer(17.0))
+            }
+        }
+
+        class FuelCellElectricVehicle(car: CarDAO) : CarBO(car, CarRepository()) {
+            override fun calculatePricePerKilometer(kilometers: Int): Double {
+                val fuelPrice = getCar().toDTO().fuel.pricePerUnit
+                return kilometers * (fuelPrice * calculateFuelUsagePerKilometer(12.0))
+            }
+        }
+    }
 
     companion object {
         fun instantiateBusinessObject(carId: Int): CarBO {
@@ -149,40 +187,6 @@ abstract class CarBO(private val carDAO: CarDAO, private val carRepository: CarR
                 FuelType.DIESEL, FuelType.PETROL, FuelType.GAS -> CarTypes.InternalCombustionEngine(carDAO)
                 FuelType.ELECTRIC -> CarTypes.BatteryElectricVehicle(carDAO)
                 FuelType.HYDROGEN -> CarTypes.FuelCellElectricVehicle(carDAO)
-            }
-        }
-
-        /**
-         * each car category has a differing variables for calculating the price per kilometer &
-         * therefor implicitly the total ownership costs.
-         *
-         * The formula remains the same for each type:
-         *      (fuel price * (1.0 + (difference between 100% fuel efficiency and engine efficiency)))
-         *      ~ a higher fuel efficiency means, a lower price per kilometer and vice versa.
-         */
-        private object CarTypes {
-            class BatteryElectricVehicle(car: CarDAO) : CarBO(car, CarRepository()) {
-                override fun calculatePricePerKilometer(user: User, kilometers: Int): Double {
-                    CarService.ensureUserIsCarOwner(user, getCar().toDTO().id)
-                    // the BEV has a fuel efficiency of 0.3 = 30%, so the formula can be read as: (fuel price * 0.3)
-                    return getCar().toDTO().fuel.pricePerUnit * (1.0 + (1.0 % 0.3))
-                }
-            }
-
-            class InternalCombustionEngine(car: CarDAO) : CarBO(car, CarRepository()) {
-                override fun calculatePricePerKilometer(user: User, kilometers: Int): Double {
-                    CarService.ensureUserIsCarOwner(user, getCar().toDTO().id)
-                    // the BEV has a fuel efficiency of 0.4 = 30%, so the formula can be read as: (fuel price * 0.4)
-                    return getCar().toDTO().fuel.pricePerUnit * (1.0 + (1.0 % 0.4))
-                }
-            }
-
-            class FuelCellElectricVehicle(car: CarDAO) : CarBO(car, CarRepository()) {
-                override fun calculatePricePerKilometer(user: User, kilometers: Int): Double {
-                    CarService.ensureUserIsCarOwner(user, getCar().toDTO().id)
-                    // the BEV has a fuel efficiency of 1.5 = 150%, so the formula can be read as: (fuel price * 1.5)
-                    return getCar().toDTO().fuel.pricePerUnit * (1.0 + (1.0 % 1.5))
-                }
             }
         }
     }

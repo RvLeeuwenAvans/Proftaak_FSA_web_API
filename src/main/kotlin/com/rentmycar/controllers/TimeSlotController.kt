@@ -58,7 +58,7 @@ class TimeSlotController {
     }
 
     suspend fun getTimeslotsByCarId(call: RoutingCall) {
-        val carId = sanitizeId(call.parameters["carId"])
+        val carId = sanitizeId(call.parameters["id"])
 
         val car = CarService.getBusinessObject(carId)
         val timeslots = timeSlotService.getTimeSlots(car.getCar())

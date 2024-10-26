@@ -15,7 +15,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 object Cars : IntIdTable() {
     val user = reference("user_id", Users, ReferenceOption.CASCADE)
     val model = reference("model_id", Models, onDelete = ReferenceOption.NO_ACTION)
-    val location = optReference("location_id", Locations, onDelete = ReferenceOption.NO_ACTION)
+    val location = optReference("location_id", Locations, onDelete = ReferenceOption.NO_ACTION).uniqueIndex()
     val licensePlate = varchar("license_plate", 50).uniqueIndex()
     val year = integer("year")
     val color = varchar("color", 50)

@@ -15,8 +15,8 @@ fun Route.brandRoutes() {
 
     authenticate("admin") {
         route("/brand") {
-            post("/") { brandController.createBrand(call) }
-            put("/") { brandController.updateBrand(call) }
+            post { brandController.createBrand(call) }
+            put { brandController.updateBrand(call) }
             delete("/{id}") { brandController.deleteBrand(call) }
         }
     }

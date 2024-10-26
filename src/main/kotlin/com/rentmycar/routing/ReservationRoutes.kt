@@ -8,7 +8,7 @@ fun Route.reservationRoutes() {
     val reservationController = ReservationController()
 
     authenticate {
-        route("/reservations") {
+        route("/reservation") {
             post("/create") { reservationController.createReservation(call) }
             get("/user") { reservationController.getReservationsForUser(call) }
             get("/timeslot/{id}") { reservationController.getReservationForTimeSlot(call) }

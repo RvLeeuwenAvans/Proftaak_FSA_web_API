@@ -15,15 +15,14 @@ fun Route.carRoutes() {
             post("/register") { carController.registerCar(call) }
             get("/{id}") { carController.getCar(call) }
             get("/all/filtered") { carController.getFilteredCars(call) }
-            get("/location") { locationController.getLocation(call) }
+
             get("/directions") { carController.getDirectionsToCar(call) }
             put("/update") { carController.updateCar(call) }
             delete("/{id}") { carController.deleteCar(call) }
 
-            route("/location/") {
-                post { locationController.addLocation(call) }
-                put { locationController.updateLocation(call) }
-            }
+            get("/{id}/location") { locationController.getLocation(call) }
+            post("/location") { locationController.addLocation(call) }
+            put("/location") { locationController.updateLocation(call) }
 
             route("/{id}/") {
                 get("cost/annual") { carController.getTotalCostOfOwnership(call) }

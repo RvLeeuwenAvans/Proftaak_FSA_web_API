@@ -49,7 +49,8 @@ class CarRepository {
         transmission: Transmission? = null,
         price: Double? = null,
         fuel: FuelType? = null,
-        category: Category? = null
+        category: Category? = null,
+        location: Location? = null
     ): Car = transaction {
         val car = getCarById(id)
 
@@ -60,6 +61,7 @@ class CarRepository {
             price?.let { this.price = it }
             fuel?.let { this.fuel = it }
             category?.let { this.category = it }
+            location?.let { this.location = it }
         }
     }
 
