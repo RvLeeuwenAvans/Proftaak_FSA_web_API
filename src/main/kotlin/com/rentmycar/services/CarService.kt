@@ -139,6 +139,7 @@ abstract class CarBO(private val carDAO: CarDAO, private val carRepository: CarR
      *  takes a double value, eg: 1.0 meaning that for every kilometer 1 unit of fuel is expended.
      *  Can be read as litres per kilometer.
      *   ~ a higher fuel efficiency means, a lower price per kilometer.
+     *   ~ ex: an engineEfficiency of 20.0 means 20 kilometers per litre.
      *
      *  @return Double
      *   the returns a multiplier in the form of a double.
