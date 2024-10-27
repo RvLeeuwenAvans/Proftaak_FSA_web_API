@@ -76,7 +76,6 @@ class Seeder {
 
             if (exists == null) {
                 val userID = Users.insertAndGetId {
-                    it[id] = index + 1
                     it[firstName] = user.firstName
                     it[lastName] = user.lastName
                     it[username] = user.username
@@ -102,7 +101,6 @@ class Seeder {
 
             if (carExists == null && randomModelID != -1 && randomUserID != -1) {
                 val carID = Cars.insertAndGetId {
-                    it[id] = index + 1
                     it[user] = randomUserID
                     it[model] = randomModelID
                     it[location] = null
@@ -131,7 +129,6 @@ class Seeder {
 
             if (locationExists == null) {
                 val createdLocationId = Locations.insertAndGetId {
-                    it[id] = index + 1
                     it[car] = carId
                     it[longitude] = location.longitude
                     it[latitude] = location.latitude
@@ -155,7 +152,6 @@ class Seeder {
 
             if (timeslotsAmount < timeslots.size) {
                 val timeslotID = Timeslots.insertAndGetId {
-                    it[id] = index + 1
                     it[car] = if (carExists != null) timeslot.carId else carIDs.random()
                     it[availableFrom] = timeslot.availableFrom.toJavaLocalDateTime()
                     it[availableUntil] = timeslot.availableUntil.toJavaLocalDateTime()
@@ -176,7 +172,6 @@ class Seeder {
 
             if (reservationExists == null) {
                 Reservations.insert {
-                    it[id] = index + 1
                     it[timeslot] =
                         if (timeslotExists != null) reservation.timeslotId else timeslotIDs.random()
                     it[user] = userIDs.random()
