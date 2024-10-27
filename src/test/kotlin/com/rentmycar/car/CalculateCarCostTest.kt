@@ -5,7 +5,7 @@ import io.mockk.mockkClass
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-class CalculateCarCostTest {
+class CalculateCarCostTest: CarTestBase() {
     private val carBO = mockkClass(CarBO::class)
 
     @Test
@@ -20,8 +20,8 @@ class CalculateCarCostTest {
         // with fewer kilometers per litre, we expect the price per kilometer to be higher: 0.10 cents.
         // even though the fuel price remains te same
         val lowerkilometersPerLitre = 10.0
-        val HigherfuelCostPerKilometer =
+        val higherfuelCostPerKilometer =
             fuelCostPerLitre * carBO.calculateFuelUsagePerKilometer(lowerkilometersPerLitre)
-        assertEquals(0.1, HigherfuelCostPerKilometer)
+        assertEquals(0.1, higherfuelCostPerKilometer)
     }
 }
