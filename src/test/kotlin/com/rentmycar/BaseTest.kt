@@ -3,11 +3,10 @@ package com.rentmycar
 import com.rentmycar.authentication.PasswordHasher
 import com.rentmycar.dtos.requests.user.UserLoginRequest
 import com.rentmycar.dtos.requests.user.UserRegistrationRequest
-import com.rentmycar.entities.Cars
-import com.rentmycar.entities.Notifications
-import com.rentmycar.entities.Users
+import com.rentmycar.entities.*
 import com.rentmycar.plugins.configureDatabases
 import com.rentmycar.utils.UserRole
+import com.rentmycar.utils.brands
 import io.ktor.client.HttpClient
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
@@ -19,6 +18,7 @@ import io.ktor.server.testing.*
 import kotlinx.serialization.json.Json
 import org.jetbrains.exposed.sql.deleteAll
 import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.insertAndGetId
 import org.jetbrains.exposed.sql.transactions.transaction
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -37,6 +37,14 @@ abstract class BaseTest(
         }
 
         transaction {
+            val brandId = Brands.insertAndGetId {
+                it[name] = "Tesla"
+            }
+            Models.insert {
+                it[id] = 1
+                it[brand] = brandId
+                it[name] = "Model 1"
+            }
             for ((index, user) in usersSeedData.withIndex()) {
                 Users.insert {
                     it[id] = index + 1
@@ -77,6 +85,8 @@ abstract class BaseTest(
         transaction {
             Users.deleteAll()
             Cars.deleteAll()
+            Brands.deleteAll()
+            Models.deleteAll()
             Notifications.deleteAll()
         }
     }

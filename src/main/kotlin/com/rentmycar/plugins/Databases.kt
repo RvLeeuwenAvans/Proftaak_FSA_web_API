@@ -30,6 +30,8 @@ fun Application.configureDatabases() {
         SchemaUtils.create(Notifications) // Notifications table
 
         // Seed tables with default values for testing purposes.
-        Seeder()
+        if (environment.config.propertyOrNull("ktor.environment.type")?.getString() == "development") {
+            Seeder()
+        }
     }
 }
