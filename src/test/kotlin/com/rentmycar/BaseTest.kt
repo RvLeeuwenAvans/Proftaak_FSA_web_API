@@ -6,6 +6,7 @@ import com.rentmycar.dtos.requests.user.UserRegistrationRequest
 import com.rentmycar.entities.Cars
 import com.rentmycar.entities.Notifications
 import com.rentmycar.entities.Users
+import com.rentmycar.entities.seeders.Seeder
 import com.rentmycar.plugins.configureDatabases
 import com.rentmycar.utils.UserRole
 import io.ktor.client.HttpClient
@@ -32,11 +33,15 @@ abstract class BaseTest(
         testApplication {
             environment { config = ApplicationConfig("application-test.conf") }
             application {
-                configureDatabases()
+                configureDatabases(seed = false)
             }
         }
 
         transaction {
+            val seeder = Seeder()
+            seeder.seedBrands()
+            seeder.seedModels()
+
             for ((index, user) in usersSeedData.withIndex()) {
                 Users.insert {
                     it[id] = index + 1

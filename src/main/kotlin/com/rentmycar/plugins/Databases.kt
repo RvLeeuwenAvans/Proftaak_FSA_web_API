@@ -7,7 +7,7 @@ import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
 
-fun Application.configureDatabases() {
+fun Application.configureDatabases(seed: Boolean = true) {
     val config = environment.config
     val dbUrl = config.property("ktor.database.url").getString()
     val dbDriver = config.property("ktor.database.driver").getString()
@@ -30,6 +30,8 @@ fun Application.configureDatabases() {
         SchemaUtils.create(Notifications) // Notifications table
 
         // Seed tables with default values for testing purposes.
-        Seeder()
+        if (seed) {
+            Seeder().seed()
+        }
     }
 }

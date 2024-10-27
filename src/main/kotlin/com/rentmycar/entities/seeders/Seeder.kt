@@ -34,7 +34,7 @@ class Seeder {
     /**
      * Seed the brands table and fill the brandsMap with brandName-ID entries.
      */
-    private fun seedBrands() = transaction {
+    fun seedBrands() = transaction {
         for (brand in brands) {
             val exists = Brands.selectAll().where { name eq brand }.singleOrNull()
 
@@ -51,7 +51,7 @@ class Seeder {
     /**
      * Seed the Models table and get the IDs of available models.
      */
-    private fun seedModels() = transaction {
+    fun seedModels() = transaction {
         for ((modelName, brandName) in models) {
             val brandId = brandsMap[brandName]
             val exists = Models.select(Models.id).where { Models.name eq modelName }.singleOrNull()
@@ -185,8 +185,7 @@ class Seeder {
         }
     }
 
-    init {
-        transaction {
+    fun seed() = transaction {
             seedBrands()
             seedModels()
             seedUsers()
@@ -194,6 +193,5 @@ class Seeder {
             seedLocations()
             seedTimeslots()
             seedReservations()
-        }
     }
 }
