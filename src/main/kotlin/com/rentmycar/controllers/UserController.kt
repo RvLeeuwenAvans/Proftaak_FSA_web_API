@@ -22,9 +22,17 @@ class UserController(private val config: JWTConfig) {
         val registrationRequest = call.receive<UserRegistrationRequest>()
         registrationRequest.validate()
 
-        userService.create(registrationRequest, registrationRequest.generateRole())
+       val user = userService.create(registrationRequest, registrationRequest.generateRole())
 
-        call.respond(HttpStatusCode.OK, "User registered successfully")
+        val token = JWT.create()
+            .withAudience(config.audience)
+            .withIssuer(config.issuer)
+            .withClaim("email", user.email)
+            .withClaim("id", user.id.value)
+            .withExpiresAt(Date(System.currentTimeMillis() + 3600000))
+            .sign(config.algorithm)
+
+        call.respond(mapOf("token" to token))
     }
 
     suspend fun loginUser(call: ApplicationCall) {
