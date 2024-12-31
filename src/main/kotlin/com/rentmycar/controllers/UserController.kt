@@ -22,7 +22,7 @@ class UserController(private val config: JWTConfig) {
         val registrationRequest = call.receive<UserRegistrationRequest>()
         registrationRequest.validate()
 
-       val user = userService.create(registrationRequest, registrationRequest.generateRole())
+        val user = userService.create(registrationRequest, registrationRequest.generateRole())
 
         val token = JWT.create()
             .withAudience(config.audience)
@@ -74,9 +74,18 @@ class UserController(private val config: JWTConfig) {
         call.respond(HttpStatusCode.OK, "User deleted successfully")
     }
 
-    suspend fun getScore(call: ApplicationCall) {
+    suspend fun getUser(call: ApplicationCall) {
         val user = call.user()
 
-        call.respond(HttpStatusCode.OK, mapOf("score" to user.score))
+        call.respond(
+            HttpStatusCode.OK,
+            mapOf(
+                "firstName" to user.firstName,
+                "lastName" to user.lastName,
+                "username" to user.username,
+                "email" to user.email,
+                "score" to user.score
+            )
+        )
     }
 }
