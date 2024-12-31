@@ -64,7 +64,7 @@ class UserController(private val config: JWTConfig) {
 
         userService.update(user, updateRequest)
 
-        call.respond(HttpStatusCode.OK, "User updated successfully")
+        call.respond(HttpStatusCode.OK, mapOf("message" to "User updated successfully"))
     }
 
     suspend fun deleteUser(call: ApplicationCall) {
@@ -72,7 +72,7 @@ class UserController(private val config: JWTConfig) {
 
         userService.delete(user)
 
-        call.respond(HttpStatusCode.OK, "User deleted successfully")
+        call.respond(HttpStatusCode.OK, mapOf("message" to "User deleted successfully"))
     }
 
     suspend fun getUser(call: ApplicationCall) {
