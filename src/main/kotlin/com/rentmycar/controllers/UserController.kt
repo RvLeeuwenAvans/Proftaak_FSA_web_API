@@ -7,6 +7,7 @@ import com.rentmycar.plugins.user
 import com.rentmycar.dtos.requests.user.UserLoginRequest
 import com.rentmycar.dtos.requests.user.UserRegistrationRequest
 import com.rentmycar.dtos.requests.user.UserUpdateRequest
+import com.rentmycar.entities.toDTO
 import com.rentmycar.services.UserService
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -77,15 +78,6 @@ class UserController(private val config: JWTConfig) {
     suspend fun getUser(call: ApplicationCall) {
         val user = call.user()
 
-        call.respond(
-            HttpStatusCode.OK,
-            mapOf(
-                "firstName" to user.firstName,
-                "lastName" to user.lastName,
-                "username" to user.username,
-                "email" to user.email,
-                "score" to user.score
-            )
-        )
+        call.respond(HttpStatusCode.OK, user.toDTO())
     }
 }
