@@ -7,6 +7,7 @@ import com.rentmycar.plugins.user
 import com.rentmycar.dtos.requests.user.UserLoginRequest
 import com.rentmycar.dtos.requests.user.UserRegistrationRequest
 import com.rentmycar.dtos.requests.user.UserUpdateRequest
+import com.rentmycar.entities.toDTO
 import com.rentmycar.services.UserService
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -22,9 +23,17 @@ class UserController(private val config: JWTConfig) {
         val registrationRequest = call.receive<UserRegistrationRequest>()
         registrationRequest.validate()
 
-        userService.create(registrationRequest, registrationRequest.generateRole())
+        val user = userService.create(registrationRequest, registrationRequest.generateRole())
 
-        call.respond(HttpStatusCode.OK, "User registered successfully")
+        val token = JWT.create()
+            .withAudience(config.audience)
+            .withIssuer(config.issuer)
+            .withClaim("email", user.email)
+            .withClaim("id", user.id.value)
+            .withExpiresAt(Date(System.currentTimeMillis() + 3600000))
+            .sign(config.algorithm)
+
+        call.respond(mapOf("token" to token))
     }
 
     suspend fun loginUser(call: ApplicationCall) {
@@ -55,7 +64,7 @@ class UserController(private val config: JWTConfig) {
 
         userService.update(user, updateRequest)
 
-        call.respond(HttpStatusCode.OK, "User updated successfully")
+        call.respond(HttpStatusCode.OK, mapOf("message" to "User updated successfully"))
     }
 
     suspend fun deleteUser(call: ApplicationCall) {
@@ -63,12 +72,12 @@ class UserController(private val config: JWTConfig) {
 
         userService.delete(user)
 
-        call.respond(HttpStatusCode.OK, "User deleted successfully")
+        call.respond(HttpStatusCode.OK, mapOf("message" to "User deleted successfully"))
     }
 
-    suspend fun getScore(call: ApplicationCall) {
+    suspend fun getUser(call: ApplicationCall) {
         val user = call.user()
 
-        call.respond(HttpStatusCode.OK, mapOf("score" to user.score))
+        call.respond(HttpStatusCode.OK, user.toDTO())
     }
 }
