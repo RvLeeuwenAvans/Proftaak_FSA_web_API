@@ -9,8 +9,11 @@ import kotlinx.serialization.Serializable
 data class CarDTO(
     val id: Int,
     val ownerId: Int,
+    val ownerName: String,
+    val ownerEmail: String,
     val locationId: Int? = null,
     val model: String,
+    val brand: String,
     val licensePlate: String,
     val fuel: FuelType,
     val year: Int,

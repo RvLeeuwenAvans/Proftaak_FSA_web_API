@@ -14,7 +14,7 @@ fun Route.imageRoutes() {
             get { imageController.getImages(call) }
             post { imageController.uploadImage(call) }
         }
-
-        staticFiles(remotePath = "/images", dir = File("uploads"))
     }
+
+    staticFiles(remotePath = "/images", dir = File("uploads"))
 }

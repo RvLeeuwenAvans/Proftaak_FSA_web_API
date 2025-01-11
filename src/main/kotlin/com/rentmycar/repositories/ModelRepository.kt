@@ -9,7 +9,6 @@ import org.jetbrains.exposed.sql.transactions.transaction
 
 class ModelRepository {
     fun getModel(modelId: Int): Model = transaction {
-        println(Model.find { Models.id eq modelId }.singleOrNull())
         Model.find { Models.id eq modelId }.singleOrNull()
             ?: throw NotFoundException("Model with id $id not found")
     }
