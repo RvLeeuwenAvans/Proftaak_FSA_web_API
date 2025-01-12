@@ -11,6 +11,8 @@ import com.rentmycar.services.ModelService
 import com.rentmycar.utils.sanitizeId
 import io.ktor.http.*
 import io.ktor.server.application.*
+import io.ktor.server.auth.*
+import io.ktor.server.auth.jwt.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
@@ -19,6 +21,17 @@ import io.ktor.server.routing.*
 class CarController {
     private val carService = CarService()
     private val modelService = ModelService()
+
+suspend fun getOwnerCars(call: ApplicationCall) {
+    val userId = call.principal<JWTPrincipal>()?.getClaim("userId", String::class)?.toIntOrNull()
+    if (userId == null) {
+        call.respond(HttpStatusCode.Unauthorized, "Invalid token")
+        return
+    }
+
+    val cars = carService.getCarsByOwnerId(userId)
+    call.respond(cars)
+}
 
     suspend fun registerCar(call: ApplicationCall) {
         val user = call.user()

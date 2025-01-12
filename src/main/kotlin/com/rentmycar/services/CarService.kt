@@ -14,6 +14,8 @@ import com.rentmycar.utils.FuelType
 import com.rentmycar.utils.LocationData
 import com.rentmycar.utils.Transmission
 import com.rentmycar.entities.Car as CarDAO
+import com.rentmycar.entities.Cars
+import org.jetbrains.exposed.sql.transactions.transaction
 
 /**
  * used to calculate the TCO of a car.
@@ -24,6 +26,14 @@ private const val AVERAGE_KILOMETERS_PER_YEAR = 12000
 
 class CarService {
     private val carRepository = CarRepository()
+
+
+  fun getCarsByOwnerId(ownerId: Int): List<Car> {
+        return transaction {
+            Car.find { Cars.user eq ownerId }.toList()
+        }
+    }
+
 
     fun register(user: User, model: Model, registrationRequest: RegisterCarRequest): CarBO {
         ensureLicensePlateIsUnique(registrationRequest.licensePlate)
