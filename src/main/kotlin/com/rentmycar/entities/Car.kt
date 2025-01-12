@@ -45,9 +45,12 @@ fun Car.toDTO(): CarDTO = transaction {
     CarDTO(
         id = this@toDTO.id.value,
         ownerId = this@toDTO.owner.id.value,
+        ownerName = this@toDTO.owner.username,
+        ownerEmail = this@toDTO.owner.email,
         locationId = this@toDTO.location?.id?.value,
         licensePlate = this@toDTO.licensePlate,
         model = this@toDTO.model.name,
+        brand = this@toDTO.model.brand.name,
         fuel = this@toDTO.fuel,
         year = this@toDTO.year,
         color = this@toDTO.color,
