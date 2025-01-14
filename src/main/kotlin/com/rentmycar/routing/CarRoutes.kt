@@ -15,6 +15,8 @@ fun Route.carRoutes() {
             post("/register") { carController.registerCar(call) }
             get("/{id}") { carController.getCar(call) }
             get("/all/filtered") { carController.getFilteredCars(call) }
+            get("/owner") { carController.getOwnerCars(call) }
+
 
             get("/directions") { carController.getDirectionsToCar(call) }
             put("/update") { carController.updateCar(call) }
