@@ -1,5 +1,6 @@
 package com.rentmycar.services
 
+import com.rentmycar.dtos.CarDTO
 import com.rentmycar.dtos.requests.car.RegisterCarRequest
 import com.rentmycar.dtos.requests.car.UpdateCarRequest
 import com.rentmycar.entities.Car
@@ -28,11 +29,11 @@ class CarService {
     private val carRepository = CarRepository()
 
 
-  fun getCarsByOwnerId(ownerId: Int): List<Car> {
-        return transaction {
-            Car.find { Cars.user eq ownerId }.toList()
-        }
+fun getCarsByOwnerId(ownerId: Int): List<CarDTO> {
+    return transaction {
+        Car.find { Cars.user eq ownerId }.map { it.toDTO() }
     }
+}
 
 
     fun register(user: User, model: Model, registrationRequest: RegisterCarRequest): CarBO {
