@@ -16,21 +16,26 @@ import io.ktor.server.auth.jwt.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-
+import javax.naming.AuthenticationException
+import io.ktor.http.HttpStatusCode
+import io.ktor.server.application.ApplicationCall
+import io.ktor.server.application.call
+import io.ktor.server.response.respond
 
 class CarController {
     private val carService = CarService()
     private val modelService = ModelService()
 
 suspend fun getOwnerCars(call: ApplicationCall) {
-    val userId = call.principal<JWTPrincipal>()?.getClaim("userId", String::class)?.toIntOrNull()
-    if (userId == null) {
-        call.respond(HttpStatusCode.Unauthorized, "Invalid token")
-        return
+    try {
+        val user = call.user() // This uses the extension function we saw in Security.kt
+        val cars = carService.getCarsByOwnerId(user.id.value)
+        call.respond(HttpStatusCode.OK, cars)
+    } catch (e: AuthenticationException) {
+        call.respond(HttpStatusCode.Unauthorized, "Invalid or missing token")
+    } catch (e: Exception) {
+        call.respond(HttpStatusCode.InternalServerError, "An error occurred while fetching cars")
     }
-
-    val cars = carService.getCarsByOwnerId(userId)
-    call.respond(cars)
 }
 
     suspend fun registerCar(call: ApplicationCall) {

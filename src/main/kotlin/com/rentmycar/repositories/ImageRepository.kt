@@ -19,5 +19,9 @@ class ImageRepository {
         Image.find { Images.car eq carId }.toList()
     }
 
+    fun getCarImagePaths(carId: Int): List<String> = transaction {
+        Image.find { Images.car eq carId }.map { it.path }
+    }
+
     fun delete(image: Image) = transaction { image.delete() }
 }

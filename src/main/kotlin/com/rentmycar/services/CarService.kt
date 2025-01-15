@@ -30,10 +30,10 @@ class CarService {
 
 
 fun getCarsByOwnerId(ownerId: Int): List<CarDTO> {
-    return transaction {
-        Car.find { Cars.user eq ownerId }.map { it.toDTO() }
+        return transaction {
+            Car.find { Cars.user eq ownerId }.map { it.toDTO() }
+        }
     }
-}
 
 
     fun register(user: User, model: Model, registrationRequest: RegisterCarRequest): CarBO {
