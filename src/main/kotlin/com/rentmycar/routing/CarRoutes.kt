@@ -3,11 +3,12 @@ package com.rentmycar.routing
 import com.rentmycar.controllers.CarController
 import com.rentmycar.controllers.LocationController
 import io.ktor.server.auth.*
+import io.ktor.server.config.*
 import io.ktor.server.routing.*
 
-fun Route.carRoutes() {
+fun Route.carRoutes(config: ApplicationConfig) {
 
-    val carController = CarController()
+    val carController = CarController(config)
     val locationController = LocationController()
 
     authenticate {
@@ -18,7 +19,7 @@ fun Route.carRoutes() {
             get("/owner") { carController.getOwnerCars(call) }
 
 
-            get("/directions") { carController.getDirectionsToCar(call) }
+            post("/directions") { carController.getDirectionsToCar(call) }
             put("/update") { carController.updateCar(call) }
             delete("/{id}") { carController.deleteCar(call) }
 

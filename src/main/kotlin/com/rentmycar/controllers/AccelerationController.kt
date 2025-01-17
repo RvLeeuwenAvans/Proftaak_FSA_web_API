@@ -17,12 +17,14 @@ class AccelerationController {
         val request = call.receive<ProvideAccelerationDataRequest>()
         val user = call.user()
 
-        UserService().updateUserScore(user, accelerationService.getScore(
-            request.ax,
-            request.ay,
-            request.az
-        ))
-        call.respond(HttpStatusCode.OK, "Acceleration data successfully received.")
+        UserService().updateUserScore(
+            user, accelerationService.getScore(
+                request.ax,
+                request.ay,
+                request.az
+            )
+        )
+        call.respond(HttpStatusCode.OK, mapOf("message" to "Acceleration data successfully received."))
     }
 
     suspend fun calculateVelocity(call: ApplicationCall) {

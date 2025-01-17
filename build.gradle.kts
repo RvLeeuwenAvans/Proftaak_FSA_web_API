@@ -1,5 +1,6 @@
 val kotlin_version: String by project
 val logback_version: String by project
+val ktor_version: String by project
 val exposed_version: String by project
 val h2_version: String by project
 val postgres_version: String by project
@@ -25,7 +26,8 @@ repositories {
 }
 
 dependencies {
-
+    implementation("io.ktor:ktor-client-core:$ktor_version")
+    implementation("io.ktor:ktor-client-okhttp:$ktor_version")
     implementation("org.mindrot:jbcrypt:0.4")
     implementation("io.ktor:ktor-server-core-jvm")
     implementation("io.ktor:ktor-server-auth-jvm")
