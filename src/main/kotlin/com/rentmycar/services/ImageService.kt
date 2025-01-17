@@ -7,12 +7,12 @@ import com.rentmycar.repositories.ImageRepository
 class ImageService {
     private val imageRepository = ImageRepository()
 
-    fun getByCar(carId: Int): List<Image> = imageRepository.getByCar(carId)
+    fun getCarImagePaths(carId: Int): List<String> = imageRepository.getCarImagePaths(carId)
 
     fun create(path: String, car: Car): Image = imageRepository.createImage(path, car)
 
     fun delete(carId: Int) {
-        val images = getByCar(carId)
+        val images = imageRepository.getByCar(carId)
         for (image in images) {
             imageRepository.delete(image)
         }
