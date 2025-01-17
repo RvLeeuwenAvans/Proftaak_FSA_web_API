@@ -9,14 +9,18 @@ import com.rentmycar.repositories.LocationRepository
 import com.rentmycar.services.CarService
 import com.rentmycar.services.ModelService
 import com.rentmycar.utils.sanitizeId
+import io.ktor.client.*
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.server.application.*
+import io.ktor.server.config.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 
 
-class CarController {
+class CarController(val config: ApplicationConfig) {
     private val carService = CarService()
     private val modelService = ModelService()
 
@@ -96,9 +100,15 @@ class CarController {
         request.validate()
 
         val location = LocationRepository().getByCar(request.carId)
-        return call.respond(
-            "https://www.google.com/maps/dir/?api=1&origin=${request.latitude},${request.longitude}&destination=${location.latitude},${location.longitude}&travelmode=walking"
-        )
+        val apiKey = config.property("ktor.api_key_conf.google_maps_api_key").getString()
+
+        val response = HttpClient().get(
+            "https://maps.googleapis.com/maps/api/directions/json?api=1&origin=" +
+                    "${request.latitude},${request.longitude}&destination=${location.latitude},${location.longitude}" +
+                    "&travelmode=walking&key=${apiKey}"
+        ).bodyAsText()
+
+        call.respond(response)
     }
 
     suspend fun deleteCar(call: ApplicationCall) {

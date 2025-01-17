@@ -21,7 +21,7 @@ class ReservationController {
         createReservationRequest.validate()
 
         reservationService.createReservation(user, createReservationRequest.timeslotId)
-        call.respond(HttpStatusCode.OK, "reservation created successfully")
+        call.respond(HttpStatusCode.OK, mapOf("message" to "reservation created successfully"))
     }
 
     suspend fun getReservationForTimeSlot(call: ApplicationCall) {
@@ -47,6 +47,6 @@ class ReservationController {
 
         reservationService.deleteReservation(user, reservationId)
 
-        call.respond(HttpStatusCode.OK, "reservation removed successfully")
+        call.respond(HttpStatusCode.OK, mapOf("message" to "Reservation removed successfully"))
     }
 }
