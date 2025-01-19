@@ -63,7 +63,10 @@ class TimeSlotService {
 
     fun deleteTimeSlot(user: User, timeSlotId: Int) {
         val timeSlot = getTimeSlot(timeSlotId)
-        if (isFutureTimeSlot(timeSlot.toDTO())) throw throw NotAllowedException("cannot delete an active or past timeslot")
+        if (
+            isFutureTimeSlot(timeSlot.toDTO()) &&
+            !isPastTimeSlot(timeSlot.toDTO())
+        ) throw NotAllowedException("cannot delete an active timeslot")
 
         CarService.ensureUserIsCarOwner(user, timeSlot.toDTO().carId)
         val car = CarService.getBusinessObject(timeSlot.toDTO().carId).getCar()
@@ -75,6 +78,11 @@ class TimeSlotService {
     private fun isFutureTimeSlot(timeSlot: TimeslotDTO): Boolean {
         val currentTime = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
         return timeSlot.availableFrom <= currentTime
+    }
+
+    private fun isPastTimeSlot(timeSlot: TimeslotDTO): Boolean {
+        val currentTime = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
+        return timeSlot.availableUntil <= currentTime
     }
 }
 

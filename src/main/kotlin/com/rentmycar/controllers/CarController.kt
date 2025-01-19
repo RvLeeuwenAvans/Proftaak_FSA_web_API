@@ -131,7 +131,7 @@ suspend fun getOwnerCars(call: ApplicationCall) {
 
         return call.respond(
             HttpStatusCode.OK,
-            "Car deleted successfully."
+             mapOf("message" to "Car deleted successfully.")
         )
     }
 }
