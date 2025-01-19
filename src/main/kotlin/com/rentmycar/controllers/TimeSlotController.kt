@@ -24,7 +24,7 @@ class TimeSlotController {
         val timeSlotRange = createTimeSlotRequest.availableFrom.rangeUntil(createTimeSlotRequest.availableUntil)
         timeSlotService.createTimeSlot(call.user(), createTimeSlotRequest.carId, timeSlotRange)
 
-        call.respond(HttpStatusCode.OK, "Timeslot created successfully")
+        call.respond(HttpStatusCode.OK, mapOf("message" to "Timeslot created successfully"))
     }
 
     suspend fun updateTimeSlot(call: ApplicationCall) {
@@ -70,8 +70,6 @@ class TimeSlotController {
         val timeslotId = sanitizeId(call.parameters["id"])
         timeSlotService.deleteTimeSlot(call.user(), timeslotId)
 
-        call.respond(HttpStatusCode.OK, "Timeslot deleted")
+        call.respond(HttpStatusCode.OK, mapOf("message" to "Timeslot deleted"))
     }
-
-
 }
